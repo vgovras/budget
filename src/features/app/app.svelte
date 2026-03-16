@@ -1,0 +1,90 @@
+<script lang="ts">
+	import ScreenTrack from '$features/navigation/screen-track/screen-track.svelte';
+	import BottomNav from '$features/navigation/bottom-nav/bottom-nav.svelte';
+	import HomeScreen from '$features/home/home-screen/home-screen.svelte';
+	import HistoryScreen from '$features/history/history-screen/history-screen.svelte';
+	import AnalyticsScreen from '$features/analytics/analytics-screen/analytics-screen.svelte';
+	import SettingsScreen from '$features/settings/settings-screen/settings-screen.svelte';
+	import AddExpenseSheet from '$features/add-expense/add-expense-sheet.svelte';
+	import { AddExpenseSheetViewModel } from '$features/add-expense/add-expense-sheet.svelte.js';
+	import EditExpense from '$features/expenses/edit-expense/edit-expense.svelte';
+	import { EditExpenseViewModel } from '$features/expenses/edit-expense/edit-expense.svelte.js';
+	import ConfirmDialog from '$lib/ui/confirm-dialog/confirm-dialog.svelte';
+	import { ConfirmDialogViewModel } from '$lib/ui/confirm-dialog/confirm-dialog.svelte.js';
+	import AddAccountSheet from '$features/accounts/add-account/add-account-sheet.svelte';
+	import { AddAccountSheetViewModel } from '$features/accounts/add-account/add-account-sheet.svelte.js';
+	import Onboarding from '$features/onboarding/onboarding.svelte';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
+
+	const addExpenseVM = new AddExpenseSheetViewModel();
+	const addAccountVM = new AddAccountSheetViewModel();
+	const editExpenseVM = new EditExpenseViewModel();
+	const confirmVM = new ConfirmDialogViewModel();
+</script>
+
+<div class="phone">
+	<ScreenTrack>
+		<div class="screen">
+			<HistoryScreen onEdit={(id: number) => editExpenseVM.open(id)} />
+		</div>
+		<div class="screen">
+			<HomeScreen
+				onEdit={(id: number) => editExpenseVM.open(id)}
+				onAddAccount={() => addAccountVM.open()}
+			/>
+		</div>
+		<div class="screen">
+			<AnalyticsScreen />
+		</div>
+		<div class="screen">
+			<SettingsScreen {confirmVM} />
+		</div>
+	</ScreenTrack>
+
+	<BottomNav onAdd={() => addExpenseVM.open()} />
+
+	<AddExpenseSheet vm={addExpenseVM} />
+	<AddAccountSheet vm={addAccountVM} />
+	<EditExpense vm={editExpenseVM} />
+	<ConfirmDialog vm={confirmVM} />
+
+	{#if settingsVM.loaded && !settingsVM.onboardingDone}
+		<Onboarding />
+	{/if}
+</div>
+
+<style>
+	.phone {
+		width: 100%;
+		height: 100vh;
+		padding-top: calc(12px + env(safe-area-inset-top));
+		background: var(--bg);
+		overflow: hidden;
+		position: relative;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* Ambient mesh gradient — sits behind everything */
+	.phone::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(ellipse 600px 400px at 30% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
+			radial-gradient(ellipse 500px 500px at 70% 80%, rgba(255, 255, 255, 0.015) 0%, transparent 100%);
+	}
+
+	.screen {
+		flex-shrink: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		z-index: 1;
+	}
+</style>
