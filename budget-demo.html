@@ -1,0 +1,4495 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Budget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400&display=swap&font-display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --bg:            #0e0e10;
+  --card:          #18181c;
+  --overlay:       rgba(0, 0, 0, 0.72);
+  --border:        rgba(255, 255, 255, 0.07);
+  --border-hi:     rgba(255, 255, 255, 0.13);
+
+  /* Primary — violet/purple */
+  --led:           #b57aff;
+  --led-bright:    #cc99ff;
+  --led-bg:        rgba(160, 100, 255, 0.06);
+  --led-border:    rgba(160, 100, 255, 0.25);
+  --led-border-hi: rgba(160, 100, 255, 0.42);
+  --led-glow-sm:   rgba(160, 100, 255, 0.22);
+  --led-glow-md:   rgba(140,  80, 240, 0.10);
+  --led-glow-lg:   rgba(120,  60, 220, 0.04);
+
+  /* Secondary — cyan accent */
+  --cyan:          #00e5ff;
+  --cyan-bright:   #40f0ff;
+  --cyan-bg:       rgba(0, 220, 255, 0.05);
+  --cyan-border:   rgba(0, 220, 255, 0.22);
+  --cyan-glow:     rgba(0, 220, 255, 0.15);
+
+  /* Text — WCAG AA compliant contrast */
+  --text-hi:       #ffffff;                    /* primary — все важливе */
+  --text-mid:      rgba(255, 255, 255, 0.62);  /* secondary — підписи, нотатки */
+  --text-lo:       rgba(255, 255, 255, 0.38);  /* tertiary — мітки, капшн */
+  --text-accent:   rgba(0, 220, 255, 0.90);    /* cyan акцент */
+
+  /* Витрати — приглушений, не агресивний */
+  --expense:       rgba(255, 100, 100, 0.65);
+
+  /* Радіуси */
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 22px;
+  --r-xl: 26px;
+
+  --font:      'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; margin: 0; background: #000; font-family: var(--font); color: var(--text-hi); -webkit-font-smoothing: antialiased; }
+body { overflow: hidden; }
+button { font-family: var(--font); cursor: pointer; border: none; background: none; }
+input  { font-family: var(--font); border: none; outline: none; background: none; color: var(--text-hi); }
+
+/* ============================================================
+   SHELL
+   ============================================================ */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.phone {
+  width: 100%; height: 100vh;
+  background: var(--bg);
+  overflow: hidden; position: relative;
+  flex: 1;
+  display: flex; flex-direction: column;
+}
+
+#bg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+/* screen styles moved to gesture_css */
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: rgba(22, 22, 28, 0.92);
+  contain: layout paint style;
+  border-radius: var(--r-lg);
+  position: relative;
+  /* Specular rim — градієнтний border */
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  /* Внутрішня глибина + зовнішня тінь */
+  box-shadow:
+    /* Rim light зверху-зліва — де б'є світло */
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 1px 0 0 rgba(255,255,255,0.07),
+    /* Темна тінь знизу-справа — глибина */
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    /* Зовнішнє підняття */
+    0 4px 24px rgba(0,0,0,0.35),
+    0 1px 0 rgba(255,255,255,0.04);
+}
+/* Border через outline щоб не конфліктував з background-clip */
+.card::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(255,255,255,0.08);
+  pointer-events: none;
+}
+
+.card-led {
+  background: rgba(18, 18, 24, 0.95);
+  border-radius: var(--r-xl);
+  position: relative;
+  box-shadow:
+    /* LED specular rim зверху */
+    inset 0 1px 0 rgba(221,232,240,0.28),
+    inset 1px 0 0 rgba(221,232,240,0.10),
+    inset -1px 0 0 rgba(221,232,240,0.04),
+    inset 0 -1px 0 rgba(0,0,0,0.30),
+    /* Зовнішнє LED свічення */
+    0 0 0 1px rgba(221,232,240,0.14),
+    0 0 40px rgba(221,232,240,0.06),
+    0 16px 48px rgba(0,0,0,0.55);
+}
+/* Specular highlight — яскрава пляма зверху-зліва */
+.card-led::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.055) 0%,
+    rgba(255,255,255,0.01) 60%,
+    transparent 100%
+  );
+  pointer-events: none; z-index: 0;
+}
+/* Контент поверх */
+.card-led > * { position: relative; z-index: 1; }
+
+/* ============================================================
+   EXPENSE ROW
+   ============================================================ */
+.exp-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s ease;
+  contain: layout style;
+}
+.exp-row:hover { background: rgba(255,255,255,0.03); }
+
+/* Іконка — tinted колір задається inline через JS */
+.exp-icon {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  position: relative;
+  /* Проста напівпрозора іконка без blur */
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    0 1px 4px rgba(0,0,0,0.20);
+}
+
+.exp-info { flex: 1; min-width: 0; }
+.exp-name { font-size: 17px; font-weight: 500; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-hi); }
+.exp-note { font-size: 13px; color: var(--text-mid); font-family: var(--font-mono); letter-spacing: 0.01em; }
+.exp-amount { font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--expense); flex-shrink: 0; letter-spacing: -0.02em; }
+.exp-divider { height: 1px; background: var(--border); margin: 0 16px; }
+
+/* ============================================================
+   BOTTOM NAV — Liquid Glass
+   ============================================================ */
+.bottom-nav {
+  /* Плаваючий nav — фіксований поверх всього */
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  z-index: 20;
+  flex-shrink: 0;
+  /* Pill форма */
+  border-radius: 99px;
+  /* Liquid glass */
+  background: rgba(14,14,18,0.72);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    0 8px 32px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 0 30px rgba(0,220,255,0.04);
+  will-change: auto;
+}
+.bottom-nav.hidden {
+  transform: translateX(-50%) translateY(calc(100% + 32px));
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease;
+}
+
+/* Блік зверху pill */
+.bottom-nav::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 15%; right: 15%; height: 1px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.20) 50%, transparent);
+}
+
+.nav-tab {
+  flex: 0 0 44px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  gap: 3px; padding: 8px 6px; border-radius: 88px;
+  color: var(--text-lo); font-size: 0px;
+  transition: all 0.2s ease;
+}
+.nav-tab.active {
+  color: var(--led-bright);
+  background: rgba(160,100,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(160,100,255,0.15);
+}
+.nav-tab:hover:not(.active) { color: var(--text-mid); }
+
+/* Центральна кнопка + в nav */
+.nav-add-btn {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  background: rgba(140,80,255,0.18);
+  border: 1px solid rgba(160,100,255,0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.25),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    0 0 20px rgba(140,80,255,0.15),
+    0 4px 12px rgba(0,0,0,0.3);
+  transition: all 0.2s var(--ease-spring);
+  position: relative;
+}
+.nav-add-btn::before {
+  content: '';
+  position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,160,255,0.5), transparent);
+  border-radius: 99px;
+}
+.nav-add-btn svg {
+  width: 20px; height: 20px;
+  stroke: rgba(220,180,255,0.95); stroke-width: 2.2;
+}
+.nav-add-btn:hover {
+  background: rgba(150,90,255,0.22);
+  transform: scale(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.35),
+    0 0 28px rgba(140,80,255,0.25),
+    0 6px 16px rgba(0,0,0,0.35);
+}
+.nav-add-btn:active {
+  transform: scale(0.93);
+  transition-duration: 0.1s;
+}
+.nav-tab-icon {
+  width: 22px; height: 22px;
+  stroke: currentColor; stroke-width: 1.8;
+  display: block;
+}
+.fab-icon {
+  width: 26px; height: 26px;
+  stroke: currentColor; stroke-width: 1.8;
+}
+.badge-icon {
+  width: 13px; height: 13px;
+  stroke: currentColor; stroke-width: 2;
+  opacity: 0.7;
+}
+.link-icon {
+  width: 14px; height: 14px;
+  stroke: currentColor; stroke-width: 2;
+  vertical-align: -2px; display: inline;
+}
+.back-btn i {
+  width: 20px; height: 20px;
+  stroke: currentColor; stroke-width: 2;
+  display: block;
+}
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+#screen-home .content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 16px 100px;
+  display: flex; flex-direction: column; gap: 12px;
+  scrollbar-width: none;
+  max-width: 600px; margin: 0 auto; width: 100%;
+}
+#screen-home .content::-webkit-scrollbar { display: none; }
+
+.budget-card { padding: 24px 22px 22px; }
+
+.budget-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 99px;
+  border: 1px solid rgba(0,220,255,0.18);
+  background: rgba(0,220,255,0.06);
+  font-size: 13px; font-weight: 500;
+  color: rgba(0,220,255,0.80); letter-spacing: 0.02em;
+  margin-bottom: 22px;
+}
+.badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--led); box-shadow: 0 0 8px var(--led-glow-sm);
+  animation: blink 2.8s ease-in-out infinite;
+}
+@keyframes blink {
+  0%,100% { opacity:1; box-shadow: 0 0 8px var(--led-glow-sm); }
+  50%     { opacity:0.35; box-shadow: none; }
+}
+
+/* Типографічна hierarchy */
+.bal-label {
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-lo); margin-bottom: 6px;
+}
+/* Велике число — домінує */
+.bal-amount {
+  font-family: var(--font-mono);
+  font-size: 56px; font-weight: 300;
+  letter-spacing: -0.03em; line-height: 1;
+  color: var(--text-hi);
+  text-shadow: 0 0 60px rgba(0,220,255,0.12);
+}
+.bal-amount .cur {
+  font-size: 22px; font-weight: 300;
+  color: var(--text-lo);
+  margin-right: 3px; vertical-align: 13px;
+}
+/* Підпис — чітко менший */
+.bal-sub {
+  margin-top: 8px; font-size: 14px;
+  font-family: var(--font-mono); font-weight: 300;
+  color: var(--text-mid); letter-spacing: 0.01em;
+}
+.bal-sub .hi { color: var(--text-hi); font-weight: 400; }
+
+/* Прогрес — 5px, помітніший */
+.prog-wrap { margin-top: 22px; }
+.prog-meta {
+  display: flex; justify-content: space-between;
+  font-size: 12px; font-family: var(--font-mono);
+  color: var(--text-mid); margin-bottom: 10px;
+  letter-spacing: 0.01em;
+}
+.prog-meta .pct { color: var(--text-hi); font-weight: 500; }
+
+.prog-track {
+  height: 5px; border-radius: 99px;
+  background: rgba(255,255,255,0.06);
+  position: relative; overflow: visible;
+}
+.prog-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, rgba(221,232,240,0.65), var(--led-bright));
+  box-shadow: 0 0 10px var(--led-glow-sm), 0 0 22px var(--led-glow-md);
+  position: relative; transition: width 1s var(--ease-out);
+}
+.prog-fill::after {
+  content: ''; position: absolute;
+  right: -3px; top: 50%; transform: translateY(-50%);
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--led-bright);
+  box-shadow: 0 0 10px var(--led), 0 0 22px var(--led-glow-sm), 0 0 36px var(--led-glow-md);
+}
+
+/* Section header — sentence case */
+.section-header {
+  display: flex; justify-content: space-between; align-items: center; padding: 0 2px;
+}
+.section-label { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-hi); }
+.link-all { font-size: 15px; color: var(--led); font-weight: 400; cursor: pointer; transition: opacity 0.15s ease; opacity: 0.85; }
+.link-all:hover { opacity: 1; }
+
+.expenses-card { overflow: visible; }
+.day-label {
+  font-size: 12px; font-weight: 500; color: var(--text-lo);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 16px 16px 8px;
+}
+
+/* FAB — Liquid Glass */
+.fab {
+  display: none;
+  position: absolute;
+  bottom: 100px; right: 20px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  /* Liquid glass — фіолетовий відтінок */
+  background: rgba(140, 80, 255, 0.12);
+  border: 1px solid rgba(160, 100, 255, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    0 0 0 1px rgba(140,80,255,0.12),
+    0 8px 24px rgba(0,0,0,0.40),
+    0 0 28px rgba(160,100,255,0.14),
+    0 0 60px rgba(140,80,240,0.06);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
+  will-change: transform;
+}
+
+/* Highlight — верхня половина ніби освітлена */
+.fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 40% 30%,
+    rgba(255,255,255,0.22) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+/* Іконка + */
+.fab-icon {
+  width: 22px; height: 22px;
+  stroke: rgba(255,255,255,1);
+  stroke-width: 2.2;
+  position: relative; z-index: 1;
+  filter: none;
+}
+
+.fab:hover {
+  transform: scale(1.07) translateY(-1px);
+  background: rgba(150, 90, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.35),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    0 0 0 1px rgba(160,100,255,0.22),
+    0 10px 28px rgba(0,0,0,0.45),
+    0 0 36px rgba(160,100,255,0.20),
+    0 0 80px rgba(140,80,240,0.08);
+}
+.fab:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
+  background: rgba(120, 70, 220, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.18),
+    inset 0 2px 6px rgba(0,0,0,0.20),
+    0 4px 12px rgba(0,0,0,0.30);
+}
+
+/* ============================================================
+   HISTORY SCREEN
+   ============================================================ */
+#screen-history .top-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 16px 10px; flex-shrink: 0;
+  max-width: 600px; margin: 0 auto; width: 100%;
+}
+.back-btn {
+  width: 36px; height: 36px; border-radius: 11px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.07);
+  color: var(--text-hi); font-size: 17px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 2px 8px rgba(0,0,0,0.2);
+}
+.back-btn:hover {
+  background: rgba(255,255,255,0.11);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 4px 12px rgba(0,0,0,0.25);
+}
+.top-bar-title { font-size: 20px; font-weight: 700; letter-spacing: -0.03em; color: var(--text-hi); }
+
+.filters {
+  display: flex; gap: 8px; padding: 0 16px 12px;
+  overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
+  max-width: 600px; margin: 0 auto; width: 100%;
+}
+.filters::-webkit-scrollbar { display: none; }
+.filter-pill {
+  padding: 6px 14px; border-radius: 99px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-mid); font-size: 13px; font-weight: 500;
+  white-space: nowrap; flex-shrink: 0; transition: all 0.2s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    0 1px 4px rgba(0,0,0,0.2);
+}
+.filter-pill.active {
+  border-color: rgba(221,232,240,0.30);
+  background: rgba(221,232,240,0.10);
+  color: var(--led-bright);
+  box-shadow:
+    inset 0 1px 0 rgba(221,232,240,0.25),
+    0 0 16px rgba(221,232,240,0.12),
+    0 2px 8px rgba(0,0,0,0.2);
+}
+.filter-pill:hover:not(.active) {
+  border-color: rgba(255,255,255,0.18);
+  color: var(--text-hi);
+  background: rgba(255,255,255,0.09);
+}
+
+#screen-history .content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 16px 40px;
+  display: flex; flex-direction: column; gap: 12px;
+  scrollbar-width: none;
+  max-width: 600px; margin: 0 auto; width: 100%;
+}
+#screen-history .content::-webkit-scrollbar { display: none; }
+
+.month-total { display: flex; justify-content: space-between; align-items: center; padding: 4px 2px; }
+.month-total-label { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-hi); }
+.month-total-amount { font-family: var(--font-mono); font-size: 17px; font-weight: 500; color: var(--text-mid); }
+
+/* ============================================================
+   SHEET — Liquid Glass
+   ============================================================ */
+.sheet-overlay {
+  position: absolute; inset: 0;
+  background: var(--overlay); z-index: 20;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.sheet-overlay.open { opacity: 1; pointer-events: all; }
+
+.sheet {
+  position: absolute; bottom: 0;
+  left: 50%; transform: translateX(-50%) translateY(100%);
+  width: 100%; max-width: 600px;
+  background: rgba(16,16,20,0.70);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-radius: 28px 28px 0 0;
+  border: 1px solid var(--border-hi); border-bottom: none;
+  z-index: 21; padding: 14px 20px 36px;
+  display: flex; flex-direction: column; gap: 18px;
+  transform: translateY(100%);
+  transition: transform 0.42s var(--ease-out);
+  box-shadow:
+    /* Specular rim зверху шторки */
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    inset 1px 0 0 rgba(255,255,255,0.06),
+    inset -1px 0 0 rgba(255,255,255,0.06),
+    /* LED glow */
+    0 -4px 40px rgba(221,232,240,0.06),
+    0 -40px 80px rgba(0,0,0,0.4);
+}
+.sheet::before {
+  content: ''; position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(221,232,240,0.28) 50%, transparent);
+}
+.sheet.open { transform: translateX(-50%) translateY(0); }
+
+.sheet-handle { width: 36px; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.14); margin: 0 auto 2px; }
+.sheet-title { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-lo); text-align: center; margin-top: -4px; }
+
+.amount-field {
+  display: flex; align-items: baseline; gap: 8px; padding: 16px 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r-md);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 2px 12px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+.amount-field:focus-within {
+  border-color: rgba(221,232,240,0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(221,232,240,0.20),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 0 28px rgba(221,232,240,0.10),
+    0 4px 16px rgba(0,0,0,0.25);
+}
+.amount-currency { font-family: var(--font-mono); font-size: 28px; font-weight: 300; color: var(--text-lo); }
+.amount-input { flex: 1; font-family: var(--font-mono); font-size: 40px; font-weight: 300; letter-spacing: -0.03em; width: 100%; caret-color: var(--led); color: var(--text-hi); }
+.amount-input::placeholder { color: var(--text-lo); }
+
+.cat-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-lo); margin-bottom: -8px; }
+.categories { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.cat-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  padding: 12px 8px; border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-hi); font-size: 12px; font-weight: 500;
+  transition: all 0.18s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 2px 8px rgba(0,0,0,0.2);
+}
+.cat-btn .cat-emoji { font-size: 22px; }
+.cat-btn:hover {
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.20),
+    inset 0 -1px 0 rgba(0,0,0,0.15),
+    0 4px 12px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
+}
+.cat-btn.selected {
+  border-color: rgba(221,232,240,0.35);
+  background: rgba(221,232,240,0.10);
+  color: var(--led-bright);
+  box-shadow:
+    inset 0 1px 0 rgba(221,232,240,0.30),
+    0 0 20px rgba(221,232,240,0.12),
+    0 4px 12px rgba(0,0,0,0.2);
+}
+
+.note-field {
+  padding: 13px 16px; border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.05);
+  font-size: 15px; width: 100%; transition: all 0.2s ease; color: var(--text-hi);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.12);
+}
+.note-field::placeholder { color: var(--text-mid); }
+.note-field:focus { border-color: rgba(255,255,255,0.18); outline: none; }
+
+.btn-save {
+  width: 100%; padding: 17px; border-radius: var(--r-md);
+  border: 1px solid rgba(221,232,240,0.25);
+  background: rgba(221,232,240,0.09);
+  color: #ffffff; font-size: 17px; font-weight: 600; letter-spacing: 0.01em;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; transition: all 0.22s ease;
+  box-shadow:
+    /* Specular rim зверху */
+    inset 0 1px 0 rgba(221,232,240,0.35),
+    inset 1px 0 0 rgba(221,232,240,0.10),
+    inset -1px 0 0 rgba(221,232,240,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    /* LED свічення */
+    0 0 24px rgba(221,232,240,0.12),
+    0 0 60px rgba(221,232,240,0.05),
+    0 6px 20px rgba(0,0,0,0.35);
+}
+/* Highlight градієнт всередині */
+.btn-save::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, transparent 100%);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  pointer-events: none;
+}
+.btn-save:disabled { opacity: 0.22; cursor: not-allowed; box-shadow: none; border-color: var(--border); }
+.btn-save:not(:disabled):hover {
+  background: rgba(221,232,240,0.14);
+  border-color: rgba(221,232,240,0.40);
+  box-shadow:
+    inset 0 1px 0 rgba(221,232,240,0.45),
+    inset 0 -1px 0 rgba(0,0,0,0.20),
+    0 0 36px rgba(221,232,240,0.18),
+    0 0 80px rgba(221,232,240,0.08),
+    0 8px 24px rgba(0,0,0,0.40);
+  transform: translateY(-1px);
+}
+.btn-save:not(:disabled):active { transform: scale(0.99) translateY(0); }
+
+
+/* ============================================================
+   LIGHT BEAM — specular highlight що переміщається між екранами
+   ============================================================ */
+#light-beam {
+  position: absolute;
+  width: 520px;
+  height: 280px;
+  border-radius: 50%;
+  pointer-events: none;
+  /* Поверх всього — картки прозорі тому він просвічує */
+  z-index: 25;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(180, 100, 255, 0.22) 0%,
+    rgba(150,  80, 240, 0.12) 25%,
+    rgba(130,  60, 220, 0.06) 50%,
+    rgba(110,  40, 200, 0.02) 70%,
+    transparent 85%
+  );
+  filter: blur(70px);
+  transition:
+    top  0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    left 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.5s ease;
+  animation: beam-drift 7s ease-in-out infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes beam-drift {
+  0%   { margin-top:  0px; margin-left:  0px; }
+  25%  { margin-top:  6px; margin-left:  8px; }
+  50%  { margin-top: 10px; margin-left: -5px; }
+  75%  { margin-top: -4px; margin-left:  9px; }
+  100% { margin-top:  0px; margin-left:  0px; }
+}
+/* ============================================================
+   SPRING BLOCKS
+   ============================================================ */
+.spring-block { }
+
+@keyframes new-entry {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.exp-row.new-entry { animation: new-entry 0.5s var(--ease-spring) both; }
+
+
+/* ============================================================
+   SETTINGS SCREEN
+   ============================================================ */
+#screen-settings .content {
+  flex: 1; min-height: 0; overflow-y: auto;
+  padding: 8px 16px 40px;
+  display: flex; flex-direction: column; gap: 24px;
+  scrollbar-width: none;
+  max-width: 600px; margin: 0 auto; width: 100%;
+}
+#screen-settings .content::-webkit-scrollbar { display: none; }
+
+.settings-section-title {
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-lo);
+  padding: 0 4px 8px;
+}
+
+/* Settings group — картка з рядками */
+.settings-group {
+  background: rgba(20,20,26,0.45);
+  border-radius: var(--r-lg);
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 1px 0 0 rgba(255,255,255,0.07),
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    0 4px 24px rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+.settings-group::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(255,255,255,0.08);
+  pointer-events: none;
+}
+
+/* Рядок налаштування */
+.settings-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; cursor: pointer;
+  transition: background 0.15s ease;
+  position: relative;
+}
+.settings-row:not(:last-child)::after {
+  content: ''; position: absolute;
+  bottom: 0; left: 16px; right: 16px;
+  height: 1px; background: var(--border);
+}
+.settings-row:hover { background: rgba(255,255,255,0.03); }
+.settings-row:active { background: rgba(255,255,255,0.05); }
+
+.settings-row-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 18px;
+}
+
+.settings-row-info { flex: 1; min-width: 0; }
+.settings-row-label {
+  font-size: 17px; font-weight: 400; color: var(--text-hi);
+}
+.settings-row-value {
+  font-size: 13px; color: var(--text-lo);
+  font-family: var(--font-mono); margin-top: 1px;
+}
+
+.settings-row-right {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text-lo); flex-shrink: 0;
+}
+.settings-row-right svg {
+  width: 16px; height: 16px; stroke: currentColor;
+  stroke-width: 1.8; flex-shrink: 0;
+}
+
+/* Value badge */
+.settings-val-badge {
+  font-family: var(--font-mono);
+  font-size: 15px; font-weight: 500;
+  color: var(--text-mid);
+}
+
+/* Toggle switch */
+.toggle {
+  width: 48px; height: 28px; border-radius: 99px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.10);
+  position: relative; cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.15);
+}
+.toggle.on {
+  background: rgba(0,220,255,0.20);
+  border-color: rgba(0,220,255,0.30);
+  box-shadow:
+    inset 0 1px 0 rgba(0,220,255,0.25),
+    0 0 14px rgba(0,220,255,0.15);
+}
+.toggle::after {
+  content: '';
+  position: absolute; top: 3px; left: 3px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255,255,255,0.70);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  transition: all 0.25s var(--ease-spring);
+}
+.toggle.on::after {
+  left: calc(100% - 23px);
+  background: var(--led-bright);
+  box-shadow: 0 0 8px rgba(0,220,255,0.4), 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Danger row */
+.settings-row.danger .settings-row-label { color: rgba(255,80,80,0.85); }
+.settings-row.danger .settings-row-icon { background: rgba(255,80,80,0.12); }
+
+/* Settings modal input */
+.settings-input-modal {
+  position: absolute; inset: 0; z-index: 30;
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+  background: rgba(0,0,0,0.6);
+}
+.settings-input-modal.open { opacity: 1; pointer-events: all; }
+
+.settings-input-card {
+  width: 100%; padding: 24px 20px 36px;
+  background: rgba(16,16,20,0.95);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-radius: 28px 28px 0 0;
+  border: 1px solid var(--border-hi); border-bottom: none;
+  display: flex; flex-direction: column; gap: 16px;
+  transform: translateY(20px);
+  transition: transform 0.3s var(--ease-out);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    0 -4px 40px rgba(0,220,255,0.04);
+}
+.settings-input-modal.open .settings-input-card { transform: translateY(0); }
+
+.settings-input-title {
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-lo); text-align: center;
+}
+.settings-number-input {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 16px 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r-md);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.15);
+}
+.settings-number-input:focus-within {
+  border-color: rgba(0,220,255,0.28);
+  box-shadow: inset 0 1px 0 rgba(0,220,255,0.18), 0 0 24px rgba(0,220,255,0.10);
+}
+.settings-input-cur { font-family: var(--font-mono); font-size: 24px; color: var(--text-lo); }
+.settings-input-field {
+  flex: 1; font-family: var(--font-mono);
+  font-size: 36px; font-weight: 300;
+  letter-spacing: -0.03em;
+  border: none; outline: none; background: none;
+  color: var(--text-hi); caret-color: var(--led);
+}
+.settings-input-field::placeholder { color: var(--text-lo); }
+.settings-input-sub {
+  font-size: 13px; color: var(--text-lo);
+  font-family: var(--font-mono); text-align: center;
+}
+.btn-settings-save {
+  width: 100%; padding: 16px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(0,220,255,0.25);
+  background: rgba(0,220,255,0.09);
+  color: #fff; font-size: 17px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  transition: all 0.2s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(0,220,255,0.25),
+    0 0 20px rgba(0,220,255,0.10);
+}
+.btn-settings-save:hover {
+  background: rgba(0,220,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(0,220,255,0.35), 0 0 30px rgba(0,220,255,0.16);
+}
+
+
+/* ============================================================
+   GOAL CARD — візуальний прогрес накопичення
+   ============================================================ */
+.goal-card {
+  background: rgba(18, 18, 24, 0.95);
+  border-radius: var(--r-xl);
+  position: relative;
+  padding: 24px 22px 22px;
+  box-shadow:
+    inset 0 1px 0 rgba(200, 100, 255, 0.22),
+    inset 1px 0 0 rgba(200, 100, 255, 0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    0 0 0 1px rgba(200, 100, 255, 0.14),
+    0 0 40px rgba(200, 100, 255, 0.05),
+    0 16px 48px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+
+/* Specular highlight зверху */
+.goal-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 50%;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  background: linear-gradient(180deg, rgba(200,100,255,0.06) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Ambient glow у правому куті */
+.goal-card::after {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(200,100,255,0.10) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.goal-card > * { position: relative; z-index: 1; }
+
+/* Header рядок */
+.goal-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; margin-bottom: 20px;
+}
+
+.goal-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 12px; border-radius: 99px;
+  border: 1px solid rgba(200,100,255,0.22);
+  background: rgba(200,100,255,0.08);
+  font-size: 12px; font-weight: 500;
+  color: rgba(200,100,255,0.85); letter-spacing: 0.02em;
+}
+
+.goal-edit-btn {
+  width: 32px; height: 32px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s ease;
+  color: var(--text-lo);
+}
+.goal-edit-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; }
+.goal-edit-btn:hover { background: rgba(255,255,255,0.09); color: var(--text-hi); }
+
+/* Назва цілі */
+.goal-name {
+  font-size: 22px; font-weight: 600;
+  letter-spacing: -0.02em; color: var(--text-hi);
+  margin-bottom: 4px;
+}
+
+/* Зібрано / ціль */
+.goal-amounts {
+  display: flex; align-items: baseline; gap: 8px;
+  margin-bottom: 20px;
+}
+.goal-saved {
+  font-family: var(--font-mono);
+  font-size: 36px; font-weight: 300;
+  letter-spacing: -0.04em; color: var(--text-hi);
+  text-shadow: 0 0 40px rgba(200,100,255,0.20);
+}
+.goal-saved .cur { font-size: 18px; opacity: 0.35; margin-right: 2px; vertical-align: 8px; }
+.goal-target {
+  font-family: var(--font-mono);
+  font-size: 14px; font-weight: 300;
+  color: var(--text-lo);
+}
+
+/* Кільцевий прогрес */
+.goal-ring-wrap {
+  display: flex; align-items: center; gap: 20px;
+  margin-bottom: 22px;
+}
+
+.goal-ring {
+  position: relative; flex-shrink: 0;
+  width: 100px; height: 100px;
+}
+
+.goal-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+.goal-ring-bg {
+  fill: none;
+  stroke: rgba(255,255,255,0.06);
+  stroke-width: 8;
+}
+
+.goal-ring-fill {
+  fill: none;
+  stroke: url(#goal-gradient);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s var(--ease-out);
+}
+
+.goal-ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.goal-ring-pct {
+  font-family: var(--font-mono);
+  font-size: 22px; font-weight: 300;
+  color: var(--text-hi); letter-spacing: -0.03em;
+}
+.goal-ring-label {
+  font-size: 10px; font-weight: 500;
+  color: var(--text-lo); letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Статистика справа від кільця */
+.goal-stats {
+  flex: 1; display: flex; flex-direction: column; gap: 12px;
+}
+
+.goal-stat-row {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.goal-stat-label {
+  font-size: 11px; font-weight: 500;
+  color: var(--text-lo); letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.goal-stat-val {
+  font-family: var(--font-mono);
+  font-size: 16px; font-weight: 400; color: var(--text-hi);
+}
+.goal-stat-val .accent { color: rgba(200,100,255,0.90); }
+
+/* Прогрес-бар лінійний */
+.goal-bar-wrap { margin-top: 0; }
+.goal-bar-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; font-family: var(--font-mono);
+  color: var(--text-lo); margin-bottom: 8px;
+}
+.goal-bar-track {
+  height: 5px; border-radius: 99px;
+  background: rgba(255,255,255,0.06);
+  position: relative; overflow: visible;
+}
+.goal-bar-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, rgba(160,80,220,0.8), rgba(200,120,255,1));
+  box-shadow: 0 0 12px rgba(200,100,255,0.35), 0 0 24px rgba(200,100,255,0.15);
+  transition: width 1.2s var(--ease-out);
+  position: relative;
+}
+.goal-bar-fill::after {
+  content: ''; position: absolute;
+  right: -3px; top: 50%; transform: translateY(-50%);
+  width: 11px; height: 11px; border-radius: 50%;
+  background: rgba(220,140,255,1);
+  box-shadow: 0 0 10px rgba(200,100,255,0.7), 0 0 20px rgba(200,100,255,0.35);
+}
+
+/* Кнопка поповнити */
+.goal-add-btn {
+  width: 100%; margin-top: 18px;
+  padding: 14px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(200,100,255,0.25);
+  background: rgba(200,100,255,0.08);
+  color: rgba(210,130,255,0.90);
+  font-size: 15px; font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer; font-family: var(--font);
+  transition: all 0.2s ease;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  position: relative;
+  box-shadow:
+    inset 0 1px 0 rgba(200,100,255,0.25),
+    0 0 20px rgba(200,100,255,0.08);
+}
+.goal-add-btn:hover {
+  background: rgba(200,100,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(200,100,255,0.35), 0 0 28px rgba(200,100,255,0.14);
+  transform: translateY(-1px);
+}
+.goal-add-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.8; }
+
+
+/* ============================================================
+   ACCOUNTS CAROUSEL
+   ============================================================ */
+
+/* Обгортка каруселі — фіксована висота, не скролиться разом з контентом */
+.accounts-carousel-wrap {
+  flex-shrink: 0;
+  position: relative;
+  padding: 12px 0 0;
+}
+
+/* Горизонтальний scroll-snap контейнер */
+.accounts-carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0 16px 0;
+  gap: 12px;
+  perspective: 1000px;
+}
+.accounts-carousel::-webkit-scrollbar { display: none; }
+
+/* Картка рахунку */
+.account-card {
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  contain: layout paint style;
+  flex-shrink: 0;
+  width: calc(100% - 32px);
+  border-radius: var(--r-xl);
+  padding: 22px 22px 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-out);
+  /* Base glass */
+}
+
+/* Картка "Загальний" — cyan акцент */
+.account-card.main {
+  background: rgba(22, 12, 42, 0.95);
+  border: 1px solid rgba(160,100,255,0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 8px 24px rgba(0,0,0,0.40);
+}
+
+/* Кольорові картки рахунків */
+.account-card.acc-purple {
+  background: rgba(32, 12, 52, 0.95);
+  border: 1px solid rgba(160,80,255,0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(160,80,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.25),
+    0 0 0 1px rgba(160,80,255,0.10),
+    0 0 40px rgba(160,80,255,0.07),
+    0 16px 48px rgba(0,0,0,0.5);
+}
+.account-card.acc-green {
+  background: rgba(0, 28, 20, 0.95);
+  border: 1px solid rgba(0,200,120,0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 8px 24px rgba(0,0,0,0.40);
+}
+.account-card.acc-amber {
+  background: rgba(38, 24, 0, 0.95);
+  border: 1px solid rgba(255,180,50,0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 8px 24px rgba(0,0,0,0.40);
+}
+
+/* Картка + додати */
+.account-card.add-card {
+  background: rgba(24, 24, 30, 0.90);
+  border: 1px dashed rgba(255,255,255,0.14);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; min-height: 160px;
+  box-shadow: none;
+  transition: all 0.2s ease;
+}
+.account-card.add-card:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(0,220,255,0.25);
+}
+.add-card-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-lo);
+}
+.add-card-icon svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6; }
+.add-card-label { font-size: 14px; color: var(--text-lo); font-weight: 400; }
+
+
+
+/* Контент картки */
+.acc-header {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+.acc-type {
+  font-size: 12px; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-lo);
+}
+.acc-menu-btn {
+  width: 28px; height: 28px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-lo);
+  font-size: 14px; line-height: 1;
+  transition: all 0.15s;
+}
+.acc-menu-btn:hover { color: var(--text-hi); background: rgba(255,255,255,0.09); }
+
+.acc-balance {
+  font-family: var(--font-mono);
+  font-size: 38px; font-weight: 300;
+  letter-spacing: -0.04em; line-height: 1;
+  color: var(--text-hi);
+  position: relative; z-index: 1;
+  text-shadow: 0 0 40px rgba(255,255,255,0.08);
+}
+.acc-balance .cur { font-size: 18px; opacity: 0.35; margin-right: 2px; vertical-align: 9px; }
+
+.acc-name {
+  font-size: 13px; color: var(--text-mid);
+  margin-top: 5px; font-weight: 400;
+  position: relative; z-index: 1;
+}
+
+.acc-footer {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-top: 16px;
+  position: relative; z-index: 1;
+}
+.acc-budget-label {
+  font-size: 11px; font-family: var(--font-mono);
+  color: var(--text-lo);
+}
+
+/* Прогрес мінібар на картці */
+.acc-mini-prog {
+  height: 3px; border-radius: 99px;
+  background: rgba(255,255,255,0.06);
+  margin-top: 14px; position: relative; z-index: 1;
+  overflow: visible;
+}
+.acc-mini-fill {
+  height: 100%; border-radius: 99px;
+  transition: width 0.8s var(--ease-out);
+  position: relative;
+}
+.acc-mini-fill::after {
+  content: ''; position: absolute;
+  right: -2px; top: 50%; transform: translateY(-50%);
+  width: 7px; height: 7px; border-radius: 50%;
+  background: inherit;
+}
+
+/* Акцентні кольори прогресу */
+.main .acc-mini-fill    { background: linear-gradient(90deg, rgba(140,80,220,0.8), #c080ff); box-shadow: 0 0 8px rgba(160,100,255,0.4); }
+.acc-purple .acc-mini-fill { background: linear-gradient(90deg, rgba(140,60,220,0.8), #c060ff); box-shadow: 0 0 8px rgba(160,80,255,0.4); }
+.acc-green .acc-mini-fill  { background: linear-gradient(90deg, rgba(0,160,100,0.8), #00cc80); box-shadow: 0 0 8px rgba(0,200,120,0.4); }
+.acc-amber .acc-mini-fill  { background: linear-gradient(90deg, rgba(200,130,0,0.8), #ffb830); box-shadow: 0 0 8px rgba(255,180,50,0.4); }
+
+/* Індикатор точок */
+.carousel-dots {
+  display: flex; justify-content: center; gap: 6px;
+  padding: 10px 0 4px;
+}
+.carousel-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  transition: all 0.25s ease;
+}
+.carousel-dot.active {
+  background: var(--led-bright);
+  width: 18px; border-radius: 99px;
+  box-shadow: 0 0 8px rgba(0,220,255,0.4);
+}
+
+/* ── Шторка нового рахунку ── */
+.acc-sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(14,14,20,0.96);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-radius: 28px 28px 0 0;
+  border: 1px solid var(--border-hi); border-bottom: none;
+  z-index: 22; padding: 14px 20px 36px;
+  display: flex; flex-direction: column; gap: 16px;
+  transform: translateY(100%);
+  transition: transform 0.42s var(--ease-out);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 -4px 40px rgba(0,220,255,0.04);
+}
+.acc-sheet.open { transform: translateY(0); }
+
+.acc-sheet-handle { width: 36px; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.14); margin: 0 auto 4px; }
+.acc-sheet-title { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-lo); text-align: center; }
+
+/* Поле назви */
+.acc-name-field {
+  padding: 14px 16px; border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.05);
+  font-size: 16px; font-weight: 400; width: 100%;
+  color: var(--text-hi); transition: all 0.2s ease;
+  font-family: var(--font);
+}
+.acc-name-field::placeholder { color: var(--text-lo); }
+.acc-name-field:focus { outline: none; border-color: rgba(0,220,255,0.28); box-shadow: 0 0 20px rgba(0,220,255,0.08); }
+
+/* Вибір кольору рахунку */
+.acc-color-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-lo); }
+.acc-colors {
+  display: flex; gap: 10px;
+}
+.acc-color-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  cursor: pointer; transition: all 0.15s ease;
+  border: 2px solid transparent;
+  position: relative;
+}
+.acc-color-btn.selected {
+  border-color: rgba(255,255,255,0.6);
+  transform: scale(1.15);
+}
+.acc-color-btn::after {
+  content: '';
+  position: absolute; inset: 3px;
+  border-radius: 50%;
+  background: inherit;
+}
+
+/* Вибір валюти */
+.acc-currencies { display: flex; gap: 8px; }
+.acc-cur-btn {
+  flex: 1; padding: 10px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-mid); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s ease;
+  font-family: var(--font);
+}
+.acc-cur-btn.selected {
+  border-color: rgba(0,220,255,0.30);
+  background: rgba(0,220,255,0.08);
+  color: var(--led-bright);
+  box-shadow: inset 0 1px 0 rgba(0,220,255,0.20);
+}
+
+.btn-acc-save {
+  width: 100%; padding: 16px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(0,220,255,0.25);
+  background: rgba(0,220,255,0.09);
+  color: #fff; font-size: 17px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 0 rgba(0,220,255,0.25), 0 0 20px rgba(0,220,255,0.08);
+}
+.btn-acc-save:hover {
+  background: rgba(0,220,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(0,220,255,0.35), 0 0 30px rgba(0,220,255,0.14);
+}
+
+
+/* ── Sheet type tabs ── */
+.sheet-tabs {
+  display: flex;
+  background: rgba(30,30,36,0.95);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 3px;
+}
+.sheet-tab {
+  flex: 1; padding: 9px 8px;
+  border-radius: 9px; border: none;
+  font-family: var(--font); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s ease;
+  color: var(--text-lo); background: transparent;
+}
+.sheet-tab.active-expense {
+  background: rgba(255,90,90,0.15);
+  color: rgba(255,110,110,0.90);
+  box-shadow: inset 0 1px 0 rgba(255,100,100,0.20);
+}
+.sheet-tab.active-income {
+  background: rgba(0,200,120,0.15);
+  color: rgba(0,220,130,0.90);
+  box-shadow: inset 0 1px 0 rgba(0,200,120,0.20);
+}
+
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+#onboarding {
+  position: fixed; inset: 0; z-index: 100;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  transition: opacity 0.5s ease, transform 0.5s var(--ease-out);
+}
+
+#onboarding.hide {
+  opacity: 0; transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* Canvas за onboarding */
+#ob-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+
+/* Прогрес зверху */
+.ob-progress {
+  position: relative; z-index: 1;
+  display: flex; gap: 6px;
+  padding: 20px 24px 0;
+}
+.ob-prog-dot {
+  flex: 1; height: 3px; border-radius: 99px;
+  background: rgba(255,255,255,0.10);
+  transition: background 0.4s ease;
+  overflow: hidden;
+}
+.ob-prog-dot.done    { background: rgba(160,100,255,0.60); }
+.ob-prog-dot.skipped { background: rgba(255,255,255,0.15); }
+.ob-prog-dot.active {
+  background: rgba(160,100,255,0.20);
+  position: relative;
+}
+.ob-prog-dot.active::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, #9d5cff, #cc99ff);
+  border-radius: 99px;
+  animation: ob-prog-fill 0.6s var(--ease-out) both;
+  transform-origin: left;
+}
+@keyframes ob-prog-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Слайди */
+.ob-slides {
+  position: relative; z-index: 1;
+  flex: 1; overflow: hidden;
+}
+.ob-slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 32px 28px 24px;
+  opacity: 0;
+  transform: translateX(60px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+}
+.ob-slide.active {
+  opacity: 1; transform: none; pointer-events: all;
+}
+.ob-slide.exit {
+  opacity: 0; transform: translateX(-60px) scale(0.97);
+}
+
+/* Іконка слайду */
+.ob-icon {
+  font-size: 56px; line-height: 1;
+  margin-bottom: 28px;
+  filter: drop-shadow(0 0 20px rgba(160,100,255,0.4));
+  animation: ob-float 3s ease-in-out infinite;
+}
+@keyframes ob-float {
+  0%,100% { transform: translateY(0);    }
+  50%      { transform: translateY(-8px); }
+}
+
+/* Текст */
+.ob-title {
+  font-size: 32px; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.1;
+  color: var(--text-hi); margin-bottom: 12px;
+}
+.ob-subtitle {
+  font-size: 16px; font-weight: 400; line-height: 1.5;
+  color: var(--text-mid); margin-bottom: 36px;
+}
+
+/* Input поле */
+.ob-input-wrap {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(160,100,255,0.25);
+  border-radius: var(--r-lg);
+  margin-bottom: 12px;
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.15),
+    0 0 24px rgba(160,100,255,0.08);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.ob-input-wrap:focus-within {
+  border-color: rgba(160,100,255,0.50);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.25),
+    0 0 32px rgba(160,100,255,0.15);
+}
+.ob-input-cur {
+  font-family: var(--font-mono); font-size: 26px;
+  font-weight: 300; color: var(--text-lo);
+}
+.ob-input {
+  flex: 1; font-family: var(--font-mono);
+  font-size: 36px; font-weight: 300;
+  letter-spacing: -0.03em; color: var(--text-hi);
+  caret-color: var(--led); background: none;
+  border: none; outline: none; width: 100%;
+}
+.ob-input::placeholder { color: rgba(255,255,255,0.15); }
+
+.ob-input-hint {
+  font-size: 12px; color: var(--text-lo);
+  font-family: var(--font-mono); padding: 0 4px;
+}
+
+/* Вибір дня — сегментед пілюлі */
+.ob-day-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 6px; margin-bottom: 12px;
+}
+.ob-day-btn {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-mid); font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--font);
+  transition: all 0.15s ease;
+  display: flex; align-items: center; justify-content: center;
+}
+.ob-day-btn:hover { border-color: rgba(160,100,255,0.30); color: var(--text-hi); }
+.ob-day-btn.selected {
+  background: rgba(140,80,255,0.18);
+  border-color: rgba(160,100,255,0.50);
+  color: var(--led-bright);
+  box-shadow: inset 0 1px 0 rgba(200,160,255,0.20), 0 0 12px rgba(160,100,255,0.15);
+}
+
+/* Skip */
+.ob-skip {
+  font-size: 13px; color: var(--text-lo);
+  cursor: pointer; text-align: center;
+  padding: 8px; transition: color 0.15s ease;
+  background: none; border: none; font-family: var(--font);
+}
+.ob-skip:hover { color: var(--text-mid); }
+
+/* Кнопка далі */
+.ob-footer {
+  transition: opacity 0.3s ease;
+  position: relative; z-index: 1;
+  padding: 16px 24px 32px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.ob-btn {
+  width: 100%; padding: 17px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(160,100,255,0.35);
+  background: rgba(140,80,255,0.14);
+  color: #fff; font-size: 17px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  position: relative; overflow: hidden;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 4px 16px rgba(0,0,0,0.30);
+}
+.ob-btn::before {
+  content: '';
+  position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,160,255,0.4) 50%, transparent);
+}
+.ob-btn:hover {
+  background: rgba(150,90,255,0.22);
+  border-color: rgba(180,120,255,0.50);
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.35),
+    0 0 36px rgba(140,80,255,0.20),
+    0 6px 20px rgba(0,0,0,0.35);
+  transform: translateY(-1px);
+}
+.ob-btn:active { transform: scale(0.99); }
+
+/* Slide готово */
+.ob-done-ring {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: rgba(140,80,255,0.12);
+  border: 1px solid rgba(160,100,255,0.30);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; margin-bottom: 28px;
+  box-shadow:
+    inset 0 1px 0 rgba(200,160,255,0.20),
+    0 0 40px rgba(140,80,255,0.20),
+    0 0 80px rgba(140,80,255,0.08);
+  animation: ob-float 3s ease-in-out infinite;
+}
+
+
+/* Quick repeat chips */
+.quick-chip {
+  flex: 1; padding: 10px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(160,100,255,0.18);
+  background: rgba(160,100,255,0.06);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; transition: all 0.15s ease; min-width: 0;
+}
+.quick-chip:hover { background: rgba(160,100,255,0.12); border-color: rgba(160,100,255,0.30); transform: translateY(-1px); }
+.quick-chip:active { transform: scale(0.97); }
+.quick-chip-emoji { font-size: 20px; }
+.quick-chip-note  { font-size: 11px; color: var(--text-mid); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; width:100%; text-align:center; }
+.quick-chip-amt   { font-size: 12px; font-family: var(--font-mono); color: var(--expense); }
+
+/* Note suggestion pills */
+.note-sug {
+  padding: 5px 12px; border-radius: 99px;
+  border: 1px solid var(--border-hi);
+  background: rgba(255,255,255,0.04);
+  font-size: 12px; color: var(--text-mid);
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.note-sug:hover { background: rgba(255,255,255,0.08); color: var(--text-hi); }
+
+/* Edit modal */
+.edit-modal {
+  position: absolute; inset: 0; z-index: 30;
+  background: rgba(0,0,0,0.65);
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.edit-modal.open { opacity:1; pointer-events:all; }
+.edit-card {
+  width: 100%; padding: 20px 20px 36px;
+  background: rgba(16,16,20,0.97);
+  border-radius: 28px 28px 0 0;
+  border: 1px solid var(--border-hi); border-bottom: none;
+  display: flex; flex-direction: column; gap: 14px;
+  transform: translateY(16px);
+  transition: transform 0.3s var(--ease-out);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 -4px 40px rgba(0,0,0,0.4);
+}
+.edit-modal.open .edit-card { transform: translateY(0); }
+.edit-title { font-size: 13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-lo); text-align:center; }
+.edit-actions { display:flex; gap:10px; }
+.edit-btn {
+  flex:1; padding:14px; border-radius:var(--r-md);
+  border:1px solid var(--border); background:rgba(255,255,255,0.04);
+  color:var(--text-hi); font-size:15px; font-weight:500;
+  cursor:pointer; font-family:var(--font); transition:all 0.15s ease;
+}
+.edit-btn:hover { background:rgba(255,255,255,0.08); }
+.edit-btn.danger { color:rgba(255,80,80,0.85); border-color:rgba(255,80,80,0.20); }
+.edit-btn.danger:hover { background:rgba(255,80,80,0.08); }
+
+/* Analytics screen */
+#screen-analytics .content {
+  flex:1; min-height:0; overflow-y:auto;
+  padding:12px 16px 100px;
+  display:flex; flex-direction:column; gap:14px;
+  scrollbar-width:none; max-width:600px; margin:0 auto; width:100%;
+}
+#screen-analytics .content::-webkit-scrollbar { display:none; }
+
+.analytics-card {
+  background: rgba(20,20,26,0.95);
+  border-radius: var(--r-xl);
+  padding: 20px;
+  border: 1px solid rgba(160,100,255,0.18);
+  box-shadow: inset 0 1px 0 rgba(160,100,255,0.14), 0 8px 32px rgba(0,0,0,0.4);
+}
+.analytics-title {
+  font-size:12px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--text-lo); margin-bottom:16px;
+}
+
+/* Donut chart */
+.donut-wrap { display:flex; align-items:center; gap:20px; }
+.donut-svg-wrap {
+  flex-shrink: 0;
+  position: relative;
+  width: 148px; height: 148px;
+}
+/* Glow під SVG через box-shadow на pseudo */
+.donut-svg-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(181,122,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.donut-svg {
+  width: 148px; height: 148px;
+  filter: drop-shadow(0 0 12px rgba(181,122,255,0.35))
+          drop-shadow(0 0 28px rgba(181,122,255,0.15));
+}
+.donut-legend { flex:1; display:flex; flex-direction:column; gap:10px; }
+.donut-item { display:flex; align-items:center; gap:10px; }
+.donut-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  box-shadow: 0 0 6px var(--dot-glow, rgba(181,122,255,0.8));
+}
+.donut-label { font-size:13px; color:var(--text-mid); flex:1; }
+.donut-pct { font-size:14px; font-family:var(--font-mono); color:var(--text-hi); font-weight:500; }
+.donut-bar {
+  height: 2px; border-radius: 99px; margin-top: 2px;
+  background: linear-gradient(90deg, var(--bar-color), transparent);
+  transition: width 0.8s var(--ease-out);
+}
+
+/* Weekly bars */
+.weekly-bars { display:flex; align-items:flex-end; gap:6px; height:80px; }
+.week-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+.week-bar {
+  width:100%; border-radius:4px 4px 0 0;
+  background: linear-gradient(180deg, rgba(160,100,255,0.7) 0%, rgba(120,60,220,0.4) 100%);
+  min-height:4px; transition:height 0.6s var(--ease-out);
+}
+.week-bar.current { background: linear-gradient(180deg, #b57aff 0%, rgba(160,100,255,0.6) 100%); box-shadow:0 0 8px rgba(160,100,255,0.3); }
+.week-label { font-size:10px; color:var(--text-lo); font-weight:500; }
+
+/* Daily budget hint */
+.daily-budget-card {
+  background: rgba(0,200,120,0.06);
+  border: 1px solid rgba(0,200,120,0.18);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display:flex; align-items:center; gap:12px;
+  box-shadow: inset 0 1px 0 rgba(0,200,120,0.15);
+}
+.daily-budget-emoji { font-size:24px; }
+.daily-budget-info { flex:1; }
+.daily-budget-label { font-size:11px; color:var(--text-lo); text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+.daily-budget-val { font-size:22px; font-weight:300; font-family:var(--font-mono); color:var(--text-hi); letter-spacing:-.03em; }
+
+/* Category limit bars in settings */
+.cat-limit-row { padding:12px 16px; }
+.cat-limit-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.cat-limit-name { font-size:14px; font-weight:500; }
+.cat-limit-nums { font-size:12px; font-family:var(--font-mono); color:var(--text-lo); }
+.cat-limit-track {
+  height:4px; border-radius:99px;
+  background:rgba(255,255,255,0.06); overflow:hidden;
+}
+.cat-limit-fill { height:100%; border-radius:99px; transition:width .6s var(--ease-out); }
+
+
+/* Custom confirm dialog */
+.confirm-overlay {
+  position: absolute; inset: 0; z-index: 40;
+  background: rgba(0,0,0,0.65);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.confirm-overlay.open { opacity: 1; pointer-events: all; }
+.confirm-card {
+  width: 100%; max-width: 320px;
+  background: rgba(20,20,26,0.97);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 24px 20px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 24px 60px rgba(0,0,0,0.6);
+  transform: scale(0.95);
+  transition: transform 0.25s var(--ease-spring);
+}
+.confirm-overlay.open .confirm-card { transform: scale(1); }
+.confirm-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; text-align: center; }
+.confirm-msg { font-size: 14px; color: var(--text-mid); text-align: center; line-height: 1.5; padding: 0 4px; }
+.confirm-btns { display: flex; gap: 8px; margin-top: 8px; }
+.confirm-btn {
+  flex: 1; padding: 13px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-hi);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-hi); font-size: 15px; font-weight: 500;
+  cursor: pointer; font-family: var(--font);
+  transition: all 0.15s ease;
+}
+.confirm-btn:hover { background: rgba(255,255,255,0.09); }
+.confirm-btn.danger {
+  background: rgba(255,70,70,0.12);
+  border-color: rgba(255,70,70,0.25);
+  color: rgba(255,100,100,0.90);
+}
+.confirm-btn.danger:hover { background: rgba(255,70,70,0.20); }
+
+
+/* Swipe hint */
+.swipe-hint {
+  position: absolute;
+  bottom: 10px; right: 16px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  font-family: var(--font-mono);
+  animation: hint-fade 3s ease 1s both;
+  pointer-events: none;
+}
+.swipe-hint svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.8; }
+@keyframes hint-fade {
+  0%   { opacity: 0; transform: translateX(6px); }
+  20%  { opacity: 1; transform: translateX(0);   }
+  70%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+
+/* ============================================================
+   GESTURES & TRANSITIONS
+   ============================================================ */
+
+/* ── Screen slide transitions ── */
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: transform 0.38s cubic-bezier(0.16,1,0.3,1),
+              opacity  0.38s ease;
+  z-index: 1;
+  will-change: transform, opacity;
+}
+.screen.active        { opacity: 1; pointer-events: all; transform: none !important; }
+.screen.slide-in-right  { transform: translateX(100%);  }
+.screen.slide-in-left   { transform: translateX(-100%); }
+.screen.slide-out-left  { transform: translateX(-30%) scale(0.96); opacity: 0; }
+.screen.slide-out-right { transform: translateX(30%)  scale(0.96); opacity: 0; }
+
+
+
+
+
+/* ── Sheet swipe up to expand ── */
+.sheet {
+  transition: transform 0.42s cubic-bezier(0.16,1,0.3,1) !important;
+}
+.sheet.expanded {
+  height: 92vh !important;
+  border-radius: 28px 28px 0 0;
+}
+.sheet-handle { cursor: grab; }
+.sheet-handle:active { cursor: grabbing; }
+
+/* ── Tab swipe between screens ── */
+.screens-container {
+  position: absolute; inset: 0;
+  overflow: hidden;
+}
+
+/* ── Haptic flash ── */
+@keyframes haptic-flash {
+  0%   { background: rgba(160,100,255,0.08); }
+  50%  { background: rgba(160,100,255,0.18); }
+  100% { background: rgba(160,100,255,0.08); }
+}
+.exp-row.haptic { animation: haptic-flash 0.2s ease; }
+
+
+/* Nav icons entrance animation */
+@keyframes nav-icon-in {
+  0%   { opacity:0; transform:translateY(16px) scale(0.6); }
+  60%  { opacity:1; transform:translateY(-3px) scale(1.1); }
+  100% { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes nav-add-in {
+  0%   { opacity:0; transform:scale(0.4) rotate(-45deg); }
+  60%  { opacity:1; transform:scale(1.15) rotate(5deg); }
+  100% { opacity:1; transform:scale(1) rotate(0deg); }
+}
+
+#shared-nav .nav-tab {
+  opacity: 0;
+  animation: nav-icon-in 0.5s var(--ease-spring) both;
+}
+#shared-nav .nav-tab:nth-child(1) { animation-delay: 0.05s; }
+#shared-nav .nav-tab:nth-child(2) { animation-delay: 0.12s; }
+#shared-nav .nav-tab:nth-child(4) { animation-delay: 0.19s; }
+#shared-nav .nav-tab:nth-child(5) { animation-delay: 0.26s; }
+
+#shared-nav .nav-add-btn {
+  opacity: 0;
+  animation: nav-add-in 0.55s var(--ease-spring) 0.15s both;
+}
+
+/* Tap анімація на активний таб */
+@keyframes nav-tap {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.82); }
+  70%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+#shared-nav .nav-tab.tap {
+  animation: nav-tap 0.35s var(--ease-spring) both;
+}
+#shared-nav .nav-add-btn.tap {
+  animation: nav-tap 0.35s var(--ease-spring) both;
+}
+
+
+/* Finish slide */
+.ob-finish-content {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100%; padding: 40px 28px;
+  text-align: center;
+}
+
+@keyframes ob-checkmark {
+  0%   { stroke-dashoffset: 100; opacity: 0; }
+  40%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes ob-ring-scale {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes ob-ring-glow {
+  0%, 100% { box-shadow: 0 0 30px rgba(181,122,255,0.3), 0 0 60px rgba(181,122,255,0.15); }
+  50%       { box-shadow: 0 0 50px rgba(181,122,255,0.6), 0 0 100px rgba(181,122,255,0.25); }
+}
+@keyframes ob-title-in {
+  0%   { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes ob-particles {
+  0%   { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0); opacity: 0; }
+}
+@keyframes ob-exit-up {
+  0%   { opacity: 1; transform: scale(1) translateY(0); }
+  30%  { opacity: 1; transform: scale(1.03) translateY(0); }
+  100% { opacity: 0; transform: scale(0.9) translateY(-40px); }
+}
+@keyframes ob-main-reveal {
+  0%   { opacity: 0; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.ob-check-ring {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: rgba(181,122,255,0.10);
+  border: 1.5px solid rgba(181,122,255,0.35);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 32px;
+  animation: ob-ring-scale 0.7s var(--ease-spring) 0.2s both,
+             ob-ring-glow 2.5s ease-in-out 1s infinite;
+}
+.ob-check-ring svg {
+  width: 52px; height: 52px;
+  stroke: #cc99ff; stroke-width: 2.5;
+  stroke-linecap: round; stroke-linejoin: round;
+  fill: none;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: ob-checkmark 0.7s cubic-bezier(0.16,1,0.3,1) 0.6s both;
+}
+.ob-finish-title {
+  font-size: 34px; font-weight: 700;
+  letter-spacing: -0.04em; color: var(--text-hi);
+  animation: ob-title-in 0.6s var(--ease-out) 0.9s both;
+  margin-bottom: 12px;
+}
+.ob-finish-sub {
+  font-size: 16px; color: var(--text-mid);
+  line-height: 1.55; max-width: 280px;
+  animation: ob-title-in 0.6s var(--ease-out) 1.1s both;
+  margin-bottom: 40px;
+}
+.ob-progress-ring {
+  width: 48px; height: 48px;
+  animation: ob-title-in 0.5s ease 1.4s both;
+}
+.ob-progress-ring circle {
+  stroke-dasharray: 126;
+  stroke-dashoffset: 126;
+  stroke: rgba(181,122,255,0.7);
+  stroke-linecap: round;
+  animation: ob-progress-fill 2.2s linear 1.5s forwards;
+}
+@keyframes ob-progress-fill {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Частинки ✨ */
+.ob-particle {
+  position: absolute;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #b57aff;
+  animation: ob-particles 1.2s ease both;
+}
+
+</style>
+</head>
+<body>
+
+
+<!-- ══════════════════════════════════
+     ONBOARDING
+══════════════════════════════════ -->
+<div id="onboarding">
+  <canvas id="ob-canvas"></canvas>
+
+  <!-- Прогрес -->
+  <div class="ob-progress" id="ob-progress"></div>
+
+  <!-- Слайди -->
+  <div class="ob-slides">
+
+    <!-- 1. Привітання -->
+    <div class="ob-slide active" id="ob-slide-0">
+      <div class="ob-icon">👋</div>
+      <div class="ob-title">Привіт!<br>Давай налаштуємо твій бюджет</div>
+      <div class="ob-subtitle">Це займе менше хвилини. Всі дані зберігаються тільки на твоєму пристрої.</div>
+    </div>
+
+    <!-- 2. Бюджет -->
+    <div class="ob-slide" id="ob-slide-1">
+      <div class="ob-icon">💰</div>
+      <div class="ob-title">Місячний бюджет</div>
+      <div class="ob-subtitle">Скільки ти плануєш витрачати на місяць?</div>
+      <div class="ob-input-wrap">
+        <span class="ob-input-cur">₴</span>
+        <input class="ob-input" id="ob-budget" type="number" inputmode="decimal" placeholder="12 000">
+      </div>
+      <div class="ob-input-hint">Можна змінити пізніше в налаштуваннях</div>
+    </div>
+
+    <!-- 3. Зарплата -->
+    <div class="ob-slide" id="ob-slide-2">
+      <div class="ob-icon">💳</div>
+      <div class="ob-title">Твій дохід</div>
+      <div class="ob-subtitle">Скільки ти отримуєш на місяць? Допоможе відстежувати скільки залишається після витрат.</div>
+      <div class="ob-input-wrap">
+        <span class="ob-input-cur">₴</span>
+        <input class="ob-input" id="ob-salary" type="number" inputmode="decimal" placeholder="45 000">
+      </div>
+      <div class="ob-input-hint">Не обов'язково — можна пропустити</div>
+    </div>
+
+    <!-- 4. День зарплати -->
+    <div class="ob-slide" id="ob-slide-3">
+      <div class="ob-icon">📅</div>
+      <div class="ob-title">Коли зарплата?</div>
+      <div class="ob-subtitle">Оберіть число місяця — бюджет буде скидатись в цей день.</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:12px">
+        <button onclick="obDayStep(-1)"
+          style="width:48px;height:48px;border-radius:50%;border:1px solid rgba(160,100,255,0.25);background:rgba(160,100,255,0.08);color:var(--led-bright);font-size:22px;cursor:pointer;font-family:var(--font);transition:all .15s ease"
+          onmouseover="this.style.background='rgba(160,100,255,0.16)'"
+          onmouseout="this.style.background='rgba(160,100,255,0.08)'">‹</button>
+        <div style="text-align:center;min-width:120px">
+          <div style="font-size:56px;font-weight:300;font-family:var(--font-mono);letter-spacing:-.04em;color:var(--text-hi)" id="ob-day-num">1</div>
+          <div style="font-size:13px;color:var(--text-lo)">число місяця</div>
+        </div>
+        <button onclick="obDayStep(1)"
+          style="width:48px;height:48px;border-radius:50%;border:1px solid rgba(160,100,255,0.25);background:rgba(160,100,255,0.08);color:var(--led-bright);font-size:22px;cursor:pointer;font-family:var(--font);transition:all .15s ease"
+          onmouseover="this.style.background='rgba(160,100,255,0.16)'"
+          onmouseout="this.style.background='rgba(160,100,255,0.08)'">›</button>
+      </div>
+    </div>
+
+    <!-- 5. Ціль -->
+    <div class="ob-slide" id="ob-slide-4">
+      <div class="ob-icon">🎯</div>
+      <div class="ob-title">Є ціль накопичення?</div>
+      <div class="ob-subtitle">На що збираєш? Відпустка, техніка, квартира — ми покажемо прогрес.</div>
+      <div class="ob-input-wrap" style="margin-bottom:12px">
+        <input class="ob-input" id="ob-goal-name" type="text"
+          style="font-family:var(--font);font-size:22px;letter-spacing:-0.01em"
+          placeholder="Назва мрії...">
+      </div>
+      <div class="ob-input-wrap">
+        <span class="ob-input-cur">₴</span>
+        <input class="ob-input" id="ob-goal-amount" type="number" inputmode="decimal" placeholder="80 000">
+      </div>
+    </div>
+
+    <!-- 6. Готово — автозакриття -->
+    <div class="ob-slide" id="ob-slide-5">
+      <div class="ob-finish-content">
+        <div class="ob-check-ring" id="ob-check-ring">
+          <svg viewBox="0 0 52 52">
+            <polyline points="10,26 21,37 42,16"/>
+          </svg>
+        </div>
+        <div class="ob-finish-title">Все готово!</div>
+        <div class="ob-finish-sub">Бюджет налаштовано.<br>Відкриваємо додаток…</div>
+        <!-- Кільцевий прогрес таймер -->
+        <svg class="ob-progress-ring" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="20" fill="none"
+            stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+          <circle cx="24" cy="24" r="20" fill="none"
+            stroke-width="3"
+            style="transform:rotate(-90deg);transform-origin:24px 24px"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Кнопки -->
+  <div class="ob-footer">
+    <button class="ob-btn" id="ob-next-btn" onclick="obNext()">Далі</button>
+    <button class="ob-skip" id="ob-skip-btn" onclick="obSkip()">Пропустити</button>
+  </div>
+</div>
+
+<div class="shell">
+<div class="phone">
+  <canvas id="bg-canvas"></canvas>
+  <div id="light-beam"></div>
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <!-- Карусель рахунків — поза .content щоб не скролилась -->
+    <div class="accounts-carousel-wrap spring-block" data-spring="0">
+      <div class="accounts-carousel" id="accounts-carousel">
+        <!-- Заповнюється JS -->
+      </div>
+      <div class="carousel-dots" id="carousel-dots"></div>
+      <div class="swipe-hint" id="swipe-hint"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7"/></svg>свайп</div>
+    </div>
+
+    <div class="content">
+
+      <div class="section-header spring-block" data-spring="1">
+        <span class="section-label">Останні витрати</span>
+        <span class="link-all" onclick="showScreen('history')">Всі <i data-lucide="arrow-right" class="link-icon"></i></span>
+      </div>
+      <div id="expenses-empty" style="display:none;padding:8px 2px;font-size:14px;color:var(--text-lo);">Витрат поки немає</div>
+
+      <div id="today-card-wrap" class="spring-block" data-spring="2"></div>
+      <div id="yesterday-card-wrap" class="spring-block" data-spring="3"></div>
+
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="screen" id="screen-history">
+    <div class="top-bar spring-block" data-spring="0">
+      <button class="back-btn" onclick="showScreen('home')"><i data-lucide="chevron-left"></i></button>
+      <span class="top-bar-title">Всі витрати</span>
+    </div>
+    <div class="filters spring-block" data-spring="1">
+      <button class="filter-pill active" onclick="setFilter(this,'all')">Всі</button>
+      <button class="filter-pill" onclick="setFilter(this,'🍕')">🍕 Їжа</button>
+      <button class="filter-pill" onclick="setFilter(this,'🚗')">🚗 Транспорт</button>
+      <button class="filter-pill" onclick="setFilter(this,'📺')">📺 Підписки</button>
+      <button class="filter-pill" onclick="setFilter(this,'🎮')">🎮 Розваги</button>
+    </div>
+    <div class="content" id="history-content"></div>
+  </div>
+
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div class="top-bar spring-block" data-spring="0" style="max-width:600px;margin:0 auto;width:100%;padding:16px 16px 10px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+      <span class="top-bar-title">Налаштування</span>
+    </div>
+
+    <div class="content" id="settings-content">
+
+      <!-- Фінанси -->
+      <div class="spring-block" data-spring="1">
+        <div class="settings-section-title">Фінанси</div>
+        <div class="settings-group">
+          <div class="settings-row" onclick="openSettingsInput('budget')">
+            <div class="settings-row-icon" style="background:rgba(0,220,255,0.10)">💰</div>
+            <div class="settings-row-info">
+              <div class="settings-row-label">Місячний бюджет</div>
+              <div class="settings-row-value">Ліміт витрат на місяць</div>
+            </div>
+            <div class="settings-row-right">
+              <span class="settings-val-badge" id="set-budget-val">₴ 12 000</span>
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <div class="settings-row" onclick="openSettingsInput('salary')">
+            <div class="settings-row-icon" style="background:rgba(50,200,120,0.10)">💳</div>
+            <div class="settings-row-info">
+              <div class="settings-row-label">Зарплата</div>
+              <div class="settings-row-value">Дохід на місяць</div>
+            </div>
+            <div class="settings-row-right">
+              <span class="settings-val-badge" id="set-salary-val">₴ 45 000</span>
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <div class="settings-row" onclick="openSettingsInput('payday')">
+            <div class="settings-row-icon" style="background:rgba(255,200,50,0.10)">📅</div>
+            <div class="settings-row-info">
+              <div class="settings-row-label">День зарплати</div>
+              <div class="settings-row-value">Скидання бюджету</div>
+            </div>
+            <div class="settings-row-right">
+              <span class="settings-val-badge" id="set-payday-val">1-го числа</span>
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ціль — візуальна картка -->
+      <div class="spring-block" data-spring="2">
+        <div class="settings-section-title">Ціль накопичення</div>
+
+        <!-- SVG градієнт для кільця -->
+        <svg width="0" height="0" style="position:absolute">
+          <defs>
+            <linearGradient id="goal-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="rgba(160,80,220,0.9)"/>
+              <stop offset="100%" stop-color="rgba(210,130,255,1)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <div class="goal-card">
+
+          <div class="goal-header">
+            <div class="goal-badge">🎯 Ціль</div>
+            <button class="goal-edit-btn" onclick="openGoalEdit()">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+          </div>
+
+          <div class="goal-name" id="goal-card-name">Відпустка в Іспанії</div>
+
+          <div class="goal-amounts">
+            <div class="goal-saved">
+              <span class="cur">₴</span><span id="goal-saved-val">23 000</span>
+            </div>
+            <div class="goal-target">з <span id="goal-target-val">₴ 80 000</span></div>
+          </div>
+
+          <!-- Кільце + статистика -->
+          <div class="goal-ring-wrap">
+            <div class="goal-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="goal-ring-bg" cx="50" cy="50" r="42"/>
+                <circle class="goal-ring-fill" id="goal-ring-circle" cx="50" cy="50" r="42"
+                  stroke-dasharray="263.9"
+                  stroke-dashoffset="189"/>
+              </svg>
+              <div class="goal-ring-center">
+                <div class="goal-ring-pct" id="goal-ring-pct">28%</div>
+                <div class="goal-ring-label">зібрано</div>
+              </div>
+            </div>
+
+            <div class="goal-stats">
+              <div class="goal-stat-row">
+                <div class="goal-stat-label">Залишилось</div>
+                <div class="goal-stat-val">₴ <span id="goal-remaining-val">57 000</span></div>
+              </div>
+              <div class="goal-stat-row">
+                <div class="goal-stat-label">На місяць</div>
+                <div class="goal-stat-val"><span class="accent">₴ <span id="goal-monthly-val">5 000</span></span></div>
+              </div>
+              <div class="goal-stat-row">
+                <div class="goal-stat-label">До цілі</div>
+                <div class="goal-stat-val"><span id="goal-months-val">11</span> міс.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Лінійний прогрес -->
+          <div class="goal-bar-wrap">
+            <div class="goal-bar-label">
+              <span>₴ 0</span>
+              <span id="goal-bar-target">₴ 80 000</span>
+            </div>
+            <div class="goal-bar-track">
+              <div class="goal-bar-fill" id="goal-bar-fill" style="width:28%"></div>
+            </div>
+          </div>
+
+          <!-- Кнопка поповнити -->
+          <button class="goal-add-btn" onclick="openSettingsInput('goal-deposit')">
+            <svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Поповнити накопичення
+          </button>
+        </div>
+      </div>
+
+      <!-- Категорії -->
+      <div class="spring-block" data-spring="3">
+        <div class="settings-section-title">Категорії</div>
+        <div class="settings-group" id="settings-categories">
+          <!-- Заповнюється JS -->
+        </div>
+      </div>
+
+      <!-- Загальне -->
+      <div class="spring-block" data-spring="4">
+        <div class="settings-section-title">Загальне</div>
+        <div class="settings-group">
+          <div class="settings-row" onclick="openSettingsInput('currency')">
+            <div class="settings-row-icon" style="background:rgba(0,180,255,0.10)">🌍</div>
+            <div class="settings-row-info">
+              <div class="settings-row-label">Валюта</div>
+            </div>
+            <div class="settings-row-right">
+              <span class="settings-val-badge" id="set-currency-val">₴ UAH</span>
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+          <div class="settings-row" onclick="toggleNotifications()">
+            <div class="settings-row-icon" style="background:rgba(255,160,50,0.10)">🔔</div>
+            <div class="settings-row-info">
+              <div class="settings-row-label">Нагадування</div>
+              <div class="settings-row-value">Вносити витрати щодня</div>
+            </div>
+            <div class="settings-row-right">
+              <div class="toggle" id="toggle-notif"></div>
+            </div>
+          </div>
+          <div class="settings-row" onclick="toggleWarning()">
+            <div class="settings-row-icon" style="background:rgba(255,80,80,0.10)">⚠️</div>
+            <div class="settings-row-info">
+              <div class="settings-row-label">Попередження</div>
+              <div class="settings-row-value">Коли витрачено 80% бюджету</div>
+            </div>
+            <div class="settings-row-right">
+              <div class="toggle on" id="toggle-warning"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Дані -->
+      <div class="spring-block" data-spring="5">
+        <div class="settings-section-title">Дані</div>
+        <div class="settings-group">
+          <div class="settings-row danger" onclick="clearHistory()">
+            <div class="settings-row-icon">🗑️</div>
+            <div class="settings-row-info">
+              <div class="settings-row-label">Очистити історію</div>
+            </div>
+            <div class="settings-row-right">
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SETTINGS INPUT MODAL -->
+  <div class="settings-input-modal" id="settings-modal" onclick="closeSettingsInput(event)">
+    <div class="settings-input-card">
+      <div class="settings-input-title" id="settings-modal-title">Місячний бюджет</div>
+      <div class="settings-number-input" id="settings-modal-field-wrap">
+        <span class="settings-input-cur" id="settings-modal-cur">₴</span>
+        <input class="settings-input-field" id="settings-modal-input" type="number" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="settings-input-sub" id="settings-modal-sub"></div>
+      <button class="btn-settings-save" onclick="saveSettingsInput()">Зберегти</button>
+    </div>
+  </div>
+
+
+  <!-- ACC SHEET — додати рахунок -->
+  <div class="sheet-overlay" id="acc-overlay" onclick="closeAccSheet()"></div>
+  <div class="acc-sheet" id="acc-sheet">
+    <div class="acc-sheet-handle"></div>
+    <div class="acc-sheet-title">Новий рахунок</div>
+
+    <input class="acc-name-field" id="acc-name-input" type="text" placeholder="Назва рахунку">
+
+    <div>
+      <div class="acc-color-label" style="margin-bottom:10px">Колір</div>
+      <div class="acc-colors">
+        <button class="acc-color-btn selected" data-color="main"    style="background:rgba(0,220,255,0.35)"  onclick="selectAccColor(this,'main')"></button>
+        <button class="acc-color-btn"          data-color="acc-purple" style="background:rgba(160,80,255,0.35)" onclick="selectAccColor(this,'acc-purple')"></button>
+        <button class="acc-color-btn"          data-color="acc-green"  style="background:rgba(0,200,120,0.35)" onclick="selectAccColor(this,'acc-green')"></button>
+        <button class="acc-color-btn"          data-color="acc-amber"  style="background:rgba(255,180,50,0.35)" onclick="selectAccColor(this,'acc-amber')"></button>
+      </div>
+    </div>
+
+    <div>
+      <div class="acc-color-label" style="margin-bottom:10px">Валюта</div>
+      <div class="acc-currencies">
+        <button class="acc-cur-btn selected" data-cur="₴" onclick="selectAccCur(this,'₴')">₴ UAH</button>
+        <button class="acc-cur-btn" data-cur="$" onclick="selectAccCur(this,'$')">$ USD</button>
+        <button class="acc-cur-btn" data-cur="€" onclick="selectAccCur(this,'€')">€ EUR</button>
+      </div>
+    </div>
+
+    <button class="btn-acc-save" onclick="saveAccount()">Додати рахунок</button>
+  </div>
+
+
+  <!-- ANALYTICS -->
+  <div class="screen" id="screen-analytics">
+    <div class="top-bar spring-block" data-spring="0" style="max-width:600px;margin:0 auto;width:100%;padding:16px 16px 10px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+      <span class="top-bar-title">Аналітика</span>
+    </div>
+    <div class="content" id="analytics-content"></div>
+  </div>
+
+  <!-- EDIT EXPENSE MODAL -->
+  <div class="edit-modal" id="edit-modal">
+    <div class="edit-card">
+      <div class="edit-title" id="edit-modal-title">Витрата</div>
+      <div class="amount-field" style="margin:0">
+        <span class="amount-currency">₴</span>
+        <input class="amount-input" id="edit-amount" type="number" inputmode="decimal" placeholder="0">
+      </div>
+      <input class="note-field" id="edit-note" type="text" placeholder="Нотатка">
+      <div class="edit-actions">
+        <button class="edit-btn danger" onclick="deleteExpense()">Видалити</button>
+        <button class="edit-btn" onclick="closeEdit()" style="color:var(--text-mid)">Скасувати</button>
+        <button class="edit-btn" onclick="saveEdit()" style="background:rgba(160,100,255,0.12);border-color:rgba(160,100,255,0.30);color:var(--led-bright)">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Confirm dialog -->
+  <div class="confirm-overlay" id="confirm-overlay">
+    <div class="confirm-card">
+      <div class="confirm-title" id="confirm-title"></div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-btns">
+        <button class="confirm-btn" id="confirm-cancel" onclick="closeConfirm()">Скасувати</button>
+        <button class="confirm-btn" id="confirm-ok" onclick="doConfirm()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHEET -->
+  <div class="sheet-overlay" id="overlay" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-tabs">
+      <button class="sheet-tab active-expense" id="tab-expense" onclick="setSheetType('expense')">
+        — Витрата
+      </button>
+      <button class="sheet-tab" id="tab-income" onclick="setSheetType('income')">
+        + Поповнення
+      </button>
+    </div>
+
+    <!-- Quick repeat — top 3 recent -->
+    <div id="quick-repeat" style="display:flex;gap:8px;"></div>
+
+    <div class="amount-field">
+      <span class="amount-currency">₴</span>
+      <input class="amount-input" id="amount-input" type="number" inputmode="decimal" placeholder="0" oninput="onAmountInput()">
+    </div>
+    <div>
+      <div class="cat-label">Категорія</div>
+      <div class="categories" id="categories"></div>
+    </div>
+    <input class="note-field" id="note-input" type="text"
+      placeholder="Нотатка" autocomplete="off" oninput="onNoteInput(this.value)">
+    <!-- Підказки нотаток -->
+    <div id="note-suggestions" style="display:none;gap:6px;flex-wrap:wrap;"></div>
+
+    <!-- Скільки можна сьогодні -->
+    <div id="daily-limit-hint" style="text-align:center;font-size:12px;font-family:var(--font-mono);color:var(--text-lo);margin-top:-6px;"></div>
+
+    <button class="btn-save" id="btn-save" onclick="saveExpense()" disabled>Зберегти</button>
+  </div>
+
+
+  <!-- Shared floating nav — поза screen-track, завжди зверху -->
+  <nav class="bottom-nav" id="shared-nav">
+    <button class="nav-tab active" onclick="showScreen('home')"><i data-lucide="home" class="nav-tab-icon"></i></button>
+    <button class="nav-tab" onclick="showScreen('history')"><i data-lucide="list" class="nav-tab-icon"></i></button>
+    <button class="nav-add-btn" onclick="openSheet()" aria-label="Додати витрату"><svg viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+    <button class="nav-tab" onclick="showScreen('analytics')"><i data-lucide="bar-chart" class="nav-tab-icon"></i></button>
+    <button class="nav-tab" onclick="showScreen('settings')"><i data-lucide="settings" class="nav-tab-icon"></i></button>
+  </nav>
+</div>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   DATA
+   ============================================================ */
+const CATEGORIES = [
+  { emoji:'🍕', label:'Їжа',       bg:'rgba(255,150,50,0.12)',  border:'rgba(255,150,50,0.25)'  },
+  { emoji:'🚗', label:'Транспорт', bg:'rgba(70,150,255,0.12)',  border:'rgba(70,150,255,0.25)'  },
+  { emoji:'📺', label:'Підписки',  bg:'rgba(150,90,255,0.12)',  border:'rgba(150,90,255,0.25)'  },
+  { emoji:'🎮', label:'Розваги',   bg:'rgba(50,195,110,0.12)',  border:'rgba(50,195,110,0.25)'  },
+  { emoji:'💊', label:"Здоров'я", bg:'rgba(255,90,120,0.12)', border:'rgba(255,90,120,0.25)'  },
+  { emoji:'🏠', label:'Дім',       bg:'rgba(255,200,50,0.12)',  border:'rgba(255,200,50,0.25)'  },
+];
+
+let expenses = [
+  { id:1, emoji:'🍕', label:'Їжа',       note:'Суші бар', amount:420,  day:'today',     accountId:'main', type:'expense' },
+  { id:2, emoji:'🚗', label:'Транспорт', note:'Метро',    amount:40,   day:'today',     accountId:'main', type:'expense' },
+  { id:3, emoji:'📺', label:'Підписки',  note:'Netflix',  amount:215,  day:'yesterday', accountId:'main', type:'expense' },
+  { id:4, emoji:'🎮', label:'Розваги',   note:'Кіно',     amount:180,  day:'yesterday', accountId:'main', type:'expense' },
+  { id:5, emoji:'🍕', label:'Їжа',       note:'Продукти', amount:560,  day:'earlier',   accountId:'main', type:'expense' },
+  { id:6, emoji:'🚗', label:'Транспорт', note:'Таксі',    amount:185,  day:'earlier',   accountId:'cash', type:'expense' },
+  { id:7, emoji:'🏠', label:'Дім',       note:'ЖКГ',      amount:1200, day:'earlier',   accountId:'cash', type:'expense' },
+  { id:8, emoji:'💊', label:"Здоров'я", note:'Аптека',  amount:340,  day:'earlier',   accountId:'main', type:'expense' },
+];
+let nextId = 9;
+
+let accounts = [
+  { id:'main', type:'main',      name:'Загальний',  balance:4320, budget:12000, spent:7680, currency:'₴', label:'Бюджет місяця'   },
+  { id:'cash', type:'acc-green', name:'Готівка',    balance:3200, budget:5000,  spent:1800, currency:'₴', label:'Щоденні витрати' },
+];
+let activeAccountIdx = 0;
+
+let SETTINGS = {
+  budget:12000, salary:45000, payday:1,
+  goalName:'Відпустка в Іспанії', goalAmount:80000,
+  goalMonthly:5000, goalSaved:23000,
+  currency:'₴', notifications:false, warning:true,
+};
+
+const SETTINGS_CONFIG = {
+  budget:        { title:'Місячний бюджет',    cur:'₴', sub:'Ліміт витрат на місяць', isNum:true },
+  salary:        { title:'Зарплата',           cur:'₴', sub:'Дохід на місяць',         isNum:true },
+  payday:        { title:'День зарплати',      cur:'',  sub:'Число місяця (1–31)',      isNum:true },
+  'goal-amount': { title:'Сума цілі',          cur:'₴', sub:'Скільки хочу накопичити', isNum:true },
+  'goal-monthly':{ title:'Відкладати/місяць',  cur:'₴', sub:'Автоматично з бюджету',   isNum:true },
+  'goal-deposit':{ title:'Поповнити ціль',     cur:'₴', sub:'Скільки додати',           isNum:true },
+};
+
+/* ============================================================
+   HELPERS — кешуємо DOM refs при старті
+   ============================================================ */
+const fmt   = n => n.toLocaleString('uk-UA');
+const catOf = emoji => CATEGORIES.find(c => c.emoji === emoji);
+const $     = id => document.getElementById(id);
+
+// DOM cache — заповнюється в init()
+const DOM = {};
+
+function cacheDOM() {
+  const ids = [
+    'accounts-carousel','carousel-dots',
+    'today-card-wrap','yesterday-card-wrap','expenses-empty',
+    'history-content','overlay','sheet',
+    'amount-input','note-input','btn-save','categories',
+    'tab-expense','tab-income',
+    'acc-overlay','acc-sheet','acc-name-input',
+    'settings-modal','settings-modal-title','settings-modal-cur',
+    'settings-modal-input','settings-modal-sub',
+    'settings-categories',
+    'set-budget-val','set-salary-val','set-payday-val',
+    'set-goal-val','set-goal-monthly-val',
+    'toggle-notif','toggle-warning',
+    'light-beam',
+  ];
+  ids.forEach(id => { DOM[id] = document.getElementById(id); });
+  DOM.phone = document.querySelector('.phone');
+}
+
+/* ============================================================
+   COMPUTED — рахуємо один раз на запит
+   ============================================================ */
+function getAccStats(accId) {
+  // Один прохід по масиву замість трьох filter+reduce
+  let spent = 0;
+  for (const e of expenses) {
+    if (e.accountId === accId && e.type !== 'income') spent += e.amount;
+  }
+  return spent;
+}
+
+/* ============================================================
+   RENDER — витрати
+   ============================================================ */
+function renderExpRow(exp) {
+  const isIncome = exp.type === 'income';
+  const c = isIncome ? null : catOf(exp.emoji);
+  const iconStyle = isIncome
+    ? 'background:rgba(0,200,120,0.12);border-color:rgba(0,200,120,0.25)'
+    : (c ? `background:${c.bg};border-color:${c.border}` : '');
+  const amountHtml = isIncome
+    ? `<span style="color:rgba(0,210,120,0.85)">+₴ ${fmt(exp.amount)}</span>`
+    : `<span class="exp-amount">−₴ ${fmt(exp.amount)}</span>`;
+  return `<div class="exp-row" id="exp-${exp.id}" onclick="openEdit(${exp.id})">
+    <div class="exp-icon" style="${iconStyle}">${exp.emoji}</div>
+    <div class="exp-info">
+      <div class="exp-name">${exp.label}</div>
+      <div class="exp-note">${exp.note||''}</div>
+    </div>
+    ${amountHtml}
+  </div>`;
+}
+
+function renderGroup(list) {
+  return list.map((e,i) =>
+    renderExpRow(e) + (i < list.length-1 ? '<div class="exp-divider"></div>' : '')
+  ).join('');
+}
+
+function renderDayCard(list, label) {
+  if (!list.length) return '';
+  return `<div class="card expenses-card"><div class="day-label">${label}</div>${renderGroup(list)}</div>`;
+}
+
+/* ============================================================
+   RENDER HOME
+   ============================================================ */
+function renderHome() {
+  const acc      = accounts[activeAccountIdx] || accounts[0];
+  const filtered = expenses.filter(e => e.accountId === acc.id);
+  const today     = filtered.filter(e => e.day === 'today');
+  const yesterday = filtered.filter(e => e.day === 'yesterday');
+  const hasAny    = today.length || yesterday.length;
+
+  if (DOM['today-card-wrap'])   DOM['today-card-wrap'].innerHTML   = renderDayCard(today, 'Сьогодні');
+  if (DOM['yesterday-card-wrap']) DOM['yesterday-card-wrap'].innerHTML = renderDayCard(yesterday, 'Вчора');
+  if (DOM['expenses-empty'])    DOM['expenses-empty'].style.display = hasAny ? 'none' : 'block';
+}
+
+/* ============================================================
+   RENDER HISTORY
+   ============================================================ */
+let currentFilter = 'all';
+
+function renderHistory() {
+  const acc      = accounts[activeAccountIdx] || accounts[0];
+  const base     = expenses.filter(e => e.accountId === acc.id);
+  const filtered = currentFilter === 'all' ? base : base.filter(e => e.emoji === currentFilter);
+  const total    = filtered.reduce((s,e) => s + e.amount, 0);
+
+  const groups = {
+    today:     filtered.filter(e => e.day === 'today'),
+    yesterday: filtered.filter(e => e.day === 'yesterday'),
+    earlier:   filtered.filter(e => e.day === 'earlier'),
+  };
+  const labels = { today:'Сьогодні', yesterday:'Вчора', earlier:'17 лютого' };
+
+  let html = `<div class="month-total">
+    <span class="month-total-label">${acc.name} · Лютий 2026</span>
+    <span class="month-total-amount">₴ ${fmt(total)}</span>
+  </div>`;
+
+  let si = 2;
+  for (const [k, list] of Object.entries(groups)) {
+    if (!list.length) continue;
+    html += `<div class="card expenses-card spring-block" data-spring="${si++}">
+      <div class="day-label">${labels[k]}</div>${renderGroup(list)}</div>`;
+  }
+
+  if (DOM['history-content']) {
+    DOM['history-content'].innerHTML = html;
+
+  }
+  initIcons();
+}
+
+function setFilter(btn, filter) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = filter;
+  renderHistory();
+}
+
+/* ============================================================
+   RENDER CAROUSEL
+   ============================================================ */
+let _scrollRaf = null; // throttle scroll handler
+
+function renderCarousel() {
+  const carousel = DOM['accounts-carousel'];
+  const dots     = DOM['carousel-dots'];
+  if (!carousel || !dots) return;
+
+  // Зберегти поточну позицію скролу
+  const savedScroll = carousel.scrollLeft;
+
+  const allCards = [...accounts, { id:'add', type:'add-card' }];
+
+  carousel.innerHTML = allCards.map((acc, i) => {
+    if (acc.type === 'add-card') {
+      return `<div class="account-card add-card" onclick="openAccSheet()">
+        <div class="add-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+        </div>
+        <div class="add-card-label">Додати рахунок</div>
+      </div>`;
+    }
+    const p = acc.budget > 0 ? Math.min(Math.round((acc.spent / acc.budget) * 100), 100) : 0;
+    return `<div class="account-card ${acc.type}" onclick="setActiveAccount(${i})">
+      <div class="acc-header">
+        <span class="acc-type">${acc.label}</span>
+        <button class="acc-menu-btn" onclick="event.stopPropagation()">···</button>
+      </div>
+      <div class="acc-balance"><span class="cur">${acc.currency}</span>${acc.balance > 0 ? fmt(acc.balance) : '<span style="opacity:0.25">0</span>'}</div>
+      <div class="acc-name">${acc.name}</div>
+      <div class="acc-mini-prog">
+        <div class="acc-mini-fill" style="width:${p}%"></div>
+      </div>
+      <div class="acc-footer">
+        <span class="acc-budget-label">витрачено ${p}% · ${acc.currency} ${fmt(acc.spent)} з ${fmt(acc.budget)}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Відновити скрол без анімації
+  carousel.scrollLeft = savedScroll;
+
+  // Dots
+  dots.innerHTML = accounts.map((_, i) =>
+    `<div class="carousel-dot${i === activeAccountIdx ? ' active' : ''}" onclick="scrollToAccount(${i})"></div>`
+  ).join('') + `<div class="carousel-dot" onclick="openAccSheet()"></div>`;
+
+  // Attach scroll handler — один раз через нову функцію
+  carousel.onscroll = onCarouselScroll;
+  onCarouselScroll(); // встановити початкові трансформи
+}
+
+function onCarouselScroll() {
+  // Throttle через rAF
+  if (_scrollRaf) return;
+  _scrollRaf = requestAnimationFrame(() => {
+    _scrollRaf = null;
+    const carousel = DOM['accounts-carousel'];
+    if (!carousel) return;
+
+    const W       = carousel.offsetWidth;
+    const scrollX = carousel.scrollLeft;
+    const cards   = carousel.querySelectorAll('.account-card');
+    const cardStep = W + 12;
+
+    cards.forEach((card, i) => {
+      const center = i * cardStep + W / 2;
+      const offset = (scrollX + W / 2) - center;
+      const ratio  = Math.max(-1, Math.min(1, offset / W));
+      const rotY   = ratio * 18;
+      const scale  = 1 - Math.abs(ratio) * 0.06;
+      const transZ = -Math.abs(ratio) * 30;
+      card.style.transform = `perspective(800px) rotateY(${rotY}deg) scale(${scale}) translateZ(${transZ}px)`;
+      card.style.opacity   = String(1 - Math.abs(ratio) * 0.25);
+    });
+
+    // Сховати swipe hint після першого свайпу
+    const hint = document.getElementById('swipe-hint');
+    if (hint && scrollX > 20) hint.style.display = 'none';
+    const newIdx = Math.round(scrollX / cardStep);
+    if (newIdx !== activeAccountIdx && newIdx >= 0 && newIdx < accounts.length) {
+      activeAccountIdx = newIdx;
+      document.querySelectorAll('.carousel-dot').forEach((d,i) =>
+        d.classList.toggle('active', i === activeAccountIdx)
+      );
+      renderHome();
+    }
+  });
+}
+
+function scrollToAccount(idx) {
+  const carousel = DOM['accounts-carousel'];
+  if (!carousel) return;
+  carousel.scrollTo({ left: idx * (carousel.offsetWidth + 12), behavior:'smooth' });
+}
+
+function setActiveAccount(idx) {
+  activeAccountIdx = idx;
+  renderHome();
+  document.querySelectorAll('.carousel-dot').forEach((d,i) =>
+    d.classList.toggle('active', i === idx)
+  );
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+const BEAM_POSITIONS = {
+  home:    { top:0.16, left:0.38 },
+  history: { top:0.10, left:0.65 },
+  sheet:   { top:0.88, left:0.50 },
+};
+
+function moveBeam(pos) {
+  const beam  = DOM['light-beam'];
+  const phone = DOM.phone;
+  if (!beam || !phone) return;
+  beam.style.top  = (pos.top  * phone.offsetHeight) + 'px';
+  beam.style.left = (pos.left * phone.offsetWidth)  + 'px';
+}
+
+function showScreen(id) {
+  const fromId = _currentScreen || 'home';
+  const dir = SCREEN_ORDER.indexOf(id) > SCREEN_ORDER.indexOf(fromId) ? 1 : -1;
+
+  // Деактивувати всі з slide-out
+  document.querySelectorAll('.screen').forEach(s => {
+    if (s.classList.contains('active')) {
+      s.classList.remove('active');
+      s.classList.add(dir > 0 ? 'slide-out-left' : 'slide-out-right');
+      setTimeout(() => s.classList.remove('slide-out-left','slide-out-right'), 420);
+    }
+  });
+
+  document.querySelectorAll('#shared-nav .nav-tab').forEach(t =>
+    t.classList.toggle('active', !!t.getAttribute('onclick')?.includes(`'${id}'`))
+  );
+
+  const toScreen = document.getElementById('screen-' + id);
+  if (toScreen) {
+    toScreen.classList.add(dir > 0 ? 'slide-in-right' : 'slide-in-left');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      toScreen.classList.remove('slide-in-right','slide-in-left');
+      toScreen.classList.add('active');
+    }));
+  }
+
+  _currentScreen = id;
+
+  // home spring тепер керується через activateScreen
+
+  if (id === 'history') {
+    renderHistory();
+    document.querySelectorAll('#screen-history .spring-block').forEach(el => {
+      el.classList.add('will-animate');
+      el.style.opacity = ''; el.style.transform = '';
+    });
+    setTimeout(() => window.__springAnimate('history'), 20);
+  }
+
+  if (id === 'settings') {
+    renderSettingsCategories();
+    updateSettingsDisplay();
+    updateGoalCard();
+    initIcons();
+    document.querySelectorAll('#screen-settings .spring-block').forEach(el => {
+      el.style.opacity = '0'; el.style.transform = 'translateY(60px) scale(0.96)';
+    });
+    setTimeout(() => window.__springAnimate('settings'), 20);
+  }
+
+  // spring керується через activateScreen
+  if (BEAM_POSITIONS[id]) moveBeam(BEAM_POSITIONS[id]);
+}
+
+/* ============================================================
+   SHEET — add expense / income
+   ============================================================ */
+let sheetType   = 'expense';
+let selectedCat = null;
+
+function setSheetType(type) {
+  sheetType = type;
+  DOM['tab-expense'].className = 'sheet-tab' + (type === 'expense' ? ' active-expense' : '');
+  DOM['tab-income'].className  = 'sheet-tab' + (type === 'income'  ? ' active-income'  : '');
+  const catWrap = DOM['categories']?.parentElement;
+  if (catWrap) catWrap.style.display = type === 'expense' ? '' : 'none';
+  if (DOM['btn-save']) DOM['btn-save'].textContent = type === 'expense' ? 'Зберегти' : 'Додати поповнення';
+  checkSaveEnabled();
+}
+
+function checkSaveEnabled() {
+  const ok = parseFloat(DOM['amount-input']?.value) > 0;
+  if (DOM['btn-save']) DOM['btn-save'].disabled = !ok;
+}
+
+function openSheet() {
+  // Tap анімація на + кнопку
+  const addBtn = document.querySelector('#shared-nav .nav-add-btn');
+  if (addBtn) {
+    addBtn.classList.remove('tap');
+    void addBtn.offsetWidth;
+    addBtn.classList.add('tap');
+    setTimeout(() => addBtn.classList.remove('tap'), 400);
+  }
+  sheetType   = 'expense';
+  selectedCat = null;
+  if (DOM['amount-input']) DOM['amount-input'].value = '';
+  if (DOM['note-input'])   DOM['note-input'].value   = '';
+  if (DOM['btn-save'])     DOM['btn-save'].disabled  = true;
+  renderCategories();
+  setSheetType('expense');
+  DOM['overlay']?.classList.add('open');
+  DOM['sheet']?.classList.add('open');
+  moveBeam(BEAM_POSITIONS.sheet);
+  renderQuickRepeat();
+  renderDailyHint();
+  setTimeout(() => DOM['amount-input']?.focus(), 420);
+}
+
+function closeSheet() {
+  DOM['overlay']?.classList.remove('open');
+  DOM['sheet']?.classList.remove('open');
+  moveBeam(BEAM_POSITIONS.home);
+}
+
+function selectCat(emoji) {
+  selectedCat = emoji;
+  renderCategories();
+}
+
+function onAmountInput() { checkSaveEnabled(); }
+
+function renderCategories() {
+  if (!DOM['categories']) return;
+  DOM['categories'].innerHTML = CATEGORIES.map(c =>
+    `<button class="cat-btn${selectedCat === c.emoji ? ' selected' : ''}" onclick="selectCat('${c.emoji}')">
+      <span class="cat-emoji">${c.emoji}</span>${c.label}
+    </button>`
+  ).join('');
+}
+
+function saveExpense() {
+  const amount = parseFloat(DOM['amount-input']?.value);
+  if (!amount || amount <= 0) return;
+  const note    = DOM['note-input']?.value.trim() || '';
+  const acc     = accounts[activeAccountIdx] || accounts[0];
+
+  if (sheetType === 'income') {
+    acc.balance = (acc.balance || 0) + amount;
+    expenses.unshift({ id:nextId++, emoji:'💰', label:'Поповнення',
+      note: note || 'Поповнення', amount, day:'today', date:new Date().toISOString(),
+      accountId: acc.id, type:'income' });
+  } else {
+    const cat = catOf(selectedCat) || CATEGORIES[0];
+    acc.spent   = (acc.spent   || 0) + amount;
+    acc.balance = Math.max(0, (acc.balance || 0) - amount);
+    expenses.unshift({ id:nextId++, emoji:cat.emoji, label:cat.label,
+      note: note || cat.label, amount, day:'today', date:new Date().toISOString(),
+      accountId: acc.id, type:'expense' });
+  }
+
+  closeSheet();
+  renderHome();
+  renderCarousel();
+
+  // Підсвітити новий рядок
+  setTimeout(() => {
+    const el = document.getElementById(`exp-${nextId-1}`);
+    if (el) el.classList.add('new-entry');
+  }, 80);
+}
+
+/* ============================================================
+   ACCOUNTS SHEET
+   ============================================================ */
+let selectedAccColor = 'main';
+let selectedAccCur   = '₴';
+
+function openAccSheet() {
+  if (DOM['acc-name-input']) DOM['acc-name-input'].value = '';
+  selectedAccColor = 'main';
+  selectedAccCur   = '₴';
+  document.querySelectorAll('.acc-color-btn').forEach(b =>
+    b.classList.toggle('selected', b.dataset.color === 'main')
+  );
+  document.querySelectorAll('.acc-cur-btn').forEach(b =>
+    b.classList.toggle('selected', b.dataset.cur === '₴')
+  );
+  DOM['acc-overlay']?.classList.add('open');
+  DOM['acc-sheet']?.classList.add('open');
+  setTimeout(() => DOM['acc-name-input']?.focus(), 300);
+}
+
+function closeAccSheet() {
+  DOM['acc-overlay']?.classList.remove('open');
+  DOM['acc-sheet']?.classList.remove('open');
+}
+
+function selectAccColor(btn, color) {
+  selectedAccColor = color;
+  document.querySelectorAll('.acc-color-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function selectAccCur(btn, cur) {
+  selectedAccCur = cur;
+  document.querySelectorAll('.acc-cur-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function saveAccount() {
+  const name = DOM['acc-name-input']?.value.trim() || 'Новий рахунок';
+  accounts.push({
+    id: 'acc-' + Date.now(), type: selectedAccColor, name,
+    balance:0, budget: SETTINGS.budget, spent:0,
+    currency: selectedAccCur, label: name,
+  });
+  closeAccSheet();
+  renderCarousel();
+  setTimeout(() => scrollToAccount(accounts.length - 1), 100);
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+let settingsModalKey = null;
+
+function renderSettingsCategories() {
+  const el = DOM['settings-categories'];
+  if (!el) return;
+  const divider = '<div style="height:1px;background:var(--border);margin:0 16px"></div>';
+  el.innerHTML = CATEGORIES.map((c,i) =>
+    `<div class="settings-row">
+      <div class="settings-row-icon" style="background:${c.bg};font-size:20px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center">${c.emoji}</div>
+      <div class="settings-row-info"><div class="settings-row-label">${c.label}</div></div>
+      <div class="settings-row-right" style="color:var(--text-lo)">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>` + (i < CATEGORIES.length-1 ? divider : '')
+  ).join('') + divider +
+  `<div class="settings-row" onclick="alert('Незабаром!')">
+    <div class="settings-row-icon" style="background:rgba(255,255,255,0.06);font-size:18px;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--text-mid)">+</div>
+    <div class="settings-row-info"><div class="settings-row-label" style="color:var(--led)">Додати категорію</div></div>
+  </div>`;
+}
+
+function openSettingsInput(key) {
+  const cfg = SETTINGS_CONFIG[key];
+  if (!cfg) return;
+  settingsModalKey = key;
+
+  const valMap = { budget:'budget', salary:'salary', payday:'payday',
+    'goal-amount':'goalAmount', 'goal-monthly':'goalMonthly', 'goal-deposit':null };
+
+  if (DOM['settings-modal-title']) DOM['settings-modal-title'].textContent = cfg.title;
+  if (DOM['settings-modal-cur'])  {
+    DOM['settings-modal-cur'].textContent  = cfg.cur;
+    DOM['settings-modal-cur'].style.display = cfg.cur ? '' : 'none';
+  }
+  if (DOM['settings-modal-sub'])   DOM['settings-modal-sub'].textContent = cfg.sub;
+  if (DOM['settings-modal-input']) {
+    const sKey = valMap[key];
+    DOM['settings-modal-input'].value = sKey ? (SETTINGS[sKey] || '') : '';
+    DOM['settings-modal-input'].type  = cfg.isNum ? 'number' : 'text';
+    DOM['settings-modal-input'].inputMode = cfg.isNum ? 'decimal' : 'text';
+  }
+
+  DOM['settings-modal']?.classList.add('open');
+  setTimeout(() => DOM['settings-modal-input']?.focus(), 300);
+}
+
+function closeSettingsInput(e) {
+  if (e && e.target !== DOM['settings-modal']) return;
+  DOM['settings-modal']?.classList.remove('open');
+}
+
+function saveSettingsInput() {
+  const raw = DOM['settings-modal-input']?.value;
+  const val = parseFloat(raw) || raw || 0;
+  const valMap = { budget:'budget', salary:'salary', payday:'payday',
+    'goal-amount':'goalAmount', 'goal-monthly':'goalMonthly' };
+
+  if (settingsModalKey === 'goal-deposit') {
+    SETTINGS.goalSaved = (SETTINGS.goalSaved || 0) + (parseFloat(raw) || 0);
+  } else {
+    const sKey = valMap[settingsModalKey];
+    if (sKey) SETTINGS[sKey] = val;
+  }
+
+  updateSettingsDisplay();
+  updateGoalCard();
+  DOM['settings-modal']?.classList.remove('open');
+}
+
+function updateSettingsDisplay() {
+  const f  = n => typeof n === 'number' ? fmt(n) : n;
+  const setEl = (id, txt) => { const e = DOM[id]; if (e) e.textContent = txt; };
+  setEl('set-budget-val',       `₴ ${f(SETTINGS.budget)}`);
+  setEl('set-salary-val',       `₴ ${f(SETTINGS.salary)}`);
+  setEl('set-payday-val',       `${SETTINGS.payday}-го числа`);
+  setEl('set-goal-val',         `₴ ${f(SETTINGS.goalAmount)}`);
+  setEl('set-goal-monthly-val', `₴ ${f(SETTINGS.goalMonthly)}`);
+}
+
+function toggleNotifications() {
+  SETTINGS.notifications = !SETTINGS.notifications;
+  DOM['toggle-notif']?.classList.toggle('on', SETTINGS.notifications);
+}
+
+function toggleWarning() {
+  SETTINGS.warning = !SETTINGS.warning;
+  DOM['toggle-warning']?.classList.toggle('on', SETTINGS.warning);
+}
+
+function clearHistory() {
+  showConfirm(
+    'Очистити всі дані?',
+    'Вся історія та налаштування будуть видалені. Відкриється початкове налаштування.',
+    'Очистити', 'danger',
+    () => {
+      // Скинути дані в пам'яті
+      expenses = [];
+      accounts = [
+        { id:'main', type:'main', name:'Загальний', balance:0, budget:12000, spent:0, currency:'₴', label:'Бюджет місяця' },
+      ];
+      nextId = 1;
+      Object.assign(SETTINGS, { budget:12000, salary:0, payday:1,
+        goalName:'', goalAmount:0, goalMonthly:0, goalSaved:0,
+        currency:'₴', notifications:false, warning:true });
+      // Показати onboarding
+      const ob = document.getElementById('onboarding');
+      if (ob) {
+        ob.style.display = 'flex';
+        ob.classList.remove('hide');
+        // Скинути на перший слайд
+        document.querySelectorAll('.ob-slide').forEach((s,i) => {
+          s.classList.toggle('active', i === 0);
+          s.classList.remove('exit');
+        });
+        if (typeof buildProgress === 'function') buildProgress();
+        if (typeof updateButtons  === 'function') updateButtons();
+      }
+    }
+  );
+}
+
+/* ============================================================
+   GOAL CARD
+   ============================================================ */
+function updateGoalCard() {
+  const saved    = SETTINGS.goalSaved   || 0;
+  const target   = SETTINGS.goalAmount  || 1;
+  const monthly  = SETTINGS.goalMonthly || 0;
+  const pct      = Math.min(Math.round((saved / target) * 100), 100);
+  const remaining = Math.max(target - saved, 0);
+  const months   = monthly > 0 ? Math.ceil(remaining / monthly) : '∞';
+
+  const setEl = (id, txt) => { const e = $(id); if (e) e.textContent = txt; };
+  setEl('goal-card-name',     SETTINGS.goalName);
+  setEl('goal-saved-val',     fmt(saved));
+  setEl('goal-target-val',    '₴ ' + fmt(target));
+  setEl('goal-ring-pct',      pct + '%');
+  setEl('goal-remaining-val', fmt(remaining));
+  setEl('goal-monthly-val',   fmt(monthly));
+  setEl('goal-months-val',    String(months));
+  setEl('goal-bar-target',    '₴ ' + fmt(target));
+
+  const fill = $('goal-bar-fill');
+  if (fill) fill.style.width = pct + '%';
+
+  const circle = $('goal-ring-circle');
+  if (circle) {
+    const offset = 263.9 * (1 - pct / 100);
+    requestAnimationFrame(() => { circle.style.strokeDashoffset = offset; });
+  }
+}
+
+function openGoalEdit() { openSettingsInput('goal-amount'); }
+
+/* ============================================================
+   ICONS
+   ============================================================ */
+const ICONS = {
+  home: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  list: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
+  plus: `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  'chevron-left': `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
+  calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  settings: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  'bar-chart': `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="butt" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+  'arrow-right': `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="butt" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+};
+
+function initIcons() {
+  document.querySelectorAll('[data-lucide]').forEach(el => {
+    const name = el.getAttribute('data-lucide');
+    if (ICONS[name]) {
+      el.innerHTML = ICONS[name];
+      el.style.cssText += ';display:inline-flex;align-items:center;justify-content:center';
+    }
+  });
+}
+
+/* ============================================================
+   LIGHT BEAM
+   ============================================================ */
+(function initBeam() {
+  const beam  = document.getElementById('light-beam');
+  const phone = document.querySelector('.phone');
+  if (!beam || !phone) return;
+  beam.style.transition = 'none';
+  const pos = BEAM_POSITIONS.home;
+  beam.style.top  = (pos.top  * phone.offsetHeight) + 'px';
+  beam.style.left = (pos.left * phone.offsetWidth)  + 'px';
+  requestAnimationFrame(() => requestAnimationFrame(() => { beam.style.transition = ''; }));
+})();
+
+/* ============================================================
+   ANIMATED BACKGROUND — canvas orbs
+   ============================================================ */
+(function initBackground() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive:true });
+
+  const orbs = [
+    { x:0.55, y:0.10, r:0.55, vx:0.00012,  vy:0.00008,  color:[160,100,255], a:0.055, phase:0.0 },
+    { x:0.85, y:0.50, r:0.45, vx:-0.00009, vy:0.00006,  color:[180,80,240],  a:0.045, phase:2.1 },
+    { x:0.20, y:0.70, r:0.40, vx:0.00008,  vy:-0.00007, color:[120,60,220],  a:0.028, phase:4.2 },
+    { x:0.60, y:0.88, r:0.35, vx:-0.00007, vy:-0.00008, color:[0,200,240],   a:0.018, phase:1.0 },
+  ];
+
+  let lastTs = 0;
+
+  function draw(ts) {
+    const dt = ts - lastTs;
+    lastTs = ts;
+
+    const W = canvas.width, H = canvas.height;
+    ctx.fillStyle = '#0e0e10';
+    ctx.fillRect(0, 0, W, H);
+
+    for (const o of orbs) {
+      // Час у секундах — незалежно від fps
+      const t  = ts / 1000;
+      const px = (o.x + Math.sin(t * o.vx * 800 + o.phase) * 0.09) * W;
+      const py = (o.y + Math.cos(t * o.vy * 800 + o.phase * 1.4) * 0.09) * H;
+      const r  = o.r * Math.min(W, H);
+      const [R,G,B] = o.color;
+      const g  = ctx.createRadialGradient(px, py, 0, px, py, r);
+      g.addColorStop(0,    `rgba(${R},${G},${B},${o.a})`);
+      g.addColorStop(0.45, `rgba(${R},${G},${B},${o.a * 0.35})`);
+      g.addColorStop(1,    `rgba(${R},${G},${B},0)`);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    const topG = ctx.createLinearGradient(0, 0, 0, H * 0.28);
+    topG.addColorStop(0, 'rgba(140,80,255,0.03)');
+    topG.addColorStop(1, 'rgba(120,60,220,0)');
+    ctx.fillStyle = topG;
+    ctx.fillRect(0, 0, W, H);
+
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ============================================================
+   SPRING PHYSICS
+   ============================================================ */
+(function initSpring() {
+  const S = { stiffness:260, damping:20, mass:1, precision:0.008 };
+  const STAGGER = 72;
+
+  class SpringItem {
+    constructor(el, delay) {
+      this.el = el; this.delay = delay;
+      // Стартові значення — читаємо з CSS .will-animate
+      this.y = 60; this.scale = 0.96; this.opacity = 0;
+      this.vy = 0; this.vs = 0;
+      this.startTime = 0; this.done = false;
+    }
+    start(now) { this.startTime = now + this.delay; }
+    tick(now, dt) {
+      if (this.done) return;
+      if (now < this.startTime) {
+        this.el.style.opacity   = '0';
+        this.el.style.transform = `translateY(${this.y}px) scale(${this.scale})`;
+        return;
+      }
+      const fy = -S.stiffness * this.y    - S.damping * this.vy;
+      this.vy += (fy / S.mass) * dt; this.y += this.vy * dt;
+      const fs = -S.stiffness * (this.scale - 1) - S.damping * this.vs;
+      this.vs += (fs / S.mass) * dt; this.scale += this.vs * dt;
+      this.opacity = Math.min(1, this.opacity + dt * 7);
+
+      this.el.style.opacity   = this.opacity.toFixed(3);
+      this.el.style.transform = `translateY(${this.y.toFixed(3)}px) scale(${this.scale.toFixed(4)})`;
+
+      if (Math.abs(this.y) < S.precision && Math.abs(this.vy) < S.precision &&
+          Math.abs(1 - this.scale) < S.precision / 10 && this.opacity >= 1) {
+        this.el.style.opacity    = '1';
+        this.el.style.transform  = 'none';
+        this.el.style.willChange = 'auto';
+        this.el.classList.remove('will-animate');
+        this.done = true;
+      }
+    }
+  }
+
+  let items = [], rafId = null, lastTime = null;
+
+  function tick(now) {
+    const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 0.016;
+    lastTime = now;
+    for (const item of items) item.tick(now, dt);
+    if (items.some(i => !i.done)) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      rafId = null;
+    }
+  }
+
+  function animate(screenId) {
+    if (rafId) cancelAnimationFrame(rafId);
+    lastTime = null;
+    const sel    = `#screen-${screenId || 'home'}.active .spring-block`;
+    const blocks = document.querySelectorAll(sel);
+    const now    = performance.now();
+    items = Array.from(blocks).map(el => {
+      if (!el.classList.contains('will-animate')) return null;
+      el.style.willChange = 'transform, opacity';
+      const item = new SpringItem(el, parseInt(el.dataset.spring ?? 0) * STAGGER);
+      item.start(now);
+      return item;
+    }).filter(Boolean);
+    if (items.length) rafId = requestAnimationFrame(tick);
+  }
+
+  window.__springAnimate = animate;
+  window.addEventListener('load', () => setTimeout(() => animate('home'), 60), { once:true });
+})();
+
+
+/* ============================================================
+   STATE — all data lives in JS memory only
+   ============================================================ */
+function saveToStorage() { /* no-op — data in JS */ }
+function loadFromStorage() { return false; }
+
+/* ============================================================
+   REAL DATES — group expenses by actual date
+   ============================================================ */
+function getDateKey(date) {
+  const now   = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yest  = new Date(today); yest.setDate(yest.getDate() - 1);
+  const d     = new Date(date);
+  const day   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+  if (day.getTime() === today.getTime()) return 'today';
+  if (day.getTime() === yest.getTime())  return 'yesterday';
+  return d.toLocaleDateString('uk-UA', { day:'numeric', month:'long' });
+}
+
+function groupByDate(list) {
+  const groups = {};
+  for (const e of list) {
+    const key = e.date ? getDateKey(e.date) : (e.day || 'earlier');
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  }
+  return groups;
+}
+
+/* ============================================================
+   SMART PREDICTION — quick repeat + note suggestions
+   ============================================================ */
+function getRecentUnique(limit = 3) {
+  // Топ витрат за частотою за останні 30 днів
+  const freq = {};
+  const acc  = accounts[activeAccountIdx] || accounts[0];
+  for (const e of expenses) {
+    if (e.accountId !== acc.id || e.type === 'income') continue;
+    const key = `${e.emoji}|${e.note}|${e.amount}`;
+    freq[key] = (freq[key] || 0) + 1;
+  }
+  return Object.entries(freq)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([key]) => {
+      const [emoji, note, amount] = key.split('|');
+      return { emoji, note, amount: parseFloat(amount) };
+    });
+}
+
+function getNoteSuggestions(prefix) {
+  if (!prefix || prefix.length < 1) return [];
+  const acc = accounts[activeAccountIdx] || accounts[0];
+  const seen = new Set();
+  const res  = [];
+  for (const e of expenses) {
+    if (e.accountId !== acc.id) continue;
+    if (e.note && e.note.toLowerCase().startsWith(prefix.toLowerCase()) && !seen.has(e.note)) {
+      seen.add(e.note);
+      res.push(e.note);
+      if (res.length >= 4) break;
+    }
+  }
+  return res;
+}
+
+function renderQuickRepeat() {
+  const el = document.getElementById('quick-repeat');
+  if (!el) return;
+  const recent = getRecentUnique(3);
+  if (!recent.length) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.innerHTML = recent.map(r => `
+    <button class="quick-chip" onclick="quickFill('${r.emoji}','${r.note}',${r.amount})">
+      <span class="quick-chip-emoji">${r.emoji}</span>
+      <span class="quick-chip-note">${r.note}</span>
+      <span class="quick-chip-amt">₴${r.amount}</span>
+    </button>`).join('');
+}
+
+function quickFill(emoji, note, amount) {
+  if (DOM['amount-input']) DOM['amount-input'].value = amount;
+  if (DOM['note-input'])   DOM['note-input'].value   = note;
+  const cat = CATEGORIES.find(cc => cc.emoji === emoji);
+  if (cat) { selectedCat = cat.emoji; renderCategories(); }
+  checkSaveEnabled();
+  // НЕ зберігаємо одразу — юзер підтверджує
+}
+
+function onNoteInput(val) {
+  const sugsEl = document.getElementById('note-suggestions');
+  if (!sugsEl) return;
+  const sugs = getNoteSuggestions(val);
+  if (!sugs.length || !val) { sugsEl.style.display = 'none'; return; }
+  sugsEl.style.display = 'flex';
+  sugsEl.innerHTML = sugs.map(s =>
+    `<button class="note-sug" onclick="pickNote('${s.replace(/'/g,"\'")}')"> ${s}</button>`
+  ).join('');
+}
+
+function pickNote(note) {
+  if (DOM['note-input']) DOM['note-input'].value = note;
+  const sugsEl = document.getElementById('note-suggestions');
+  if (sugsEl) sugsEl.style.display = 'none';
+  // Predict category from note
+  const match = expenses.find(e => e.note === note);
+  if (match) { selectedCat = match.emoji; renderCategories(); }
+  checkSaveEnabled();
+}
+
+/* ============================================================
+   DAILY BUDGET — скільки можна витратити сьогодні
+   ============================================================ */
+function getDailyBudget() {
+  const acc = accounts[activeAccountIdx] || accounts[0];
+  if (!acc) return 0;
+  const now       = new Date();
+  const daysLeft  = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate() - now.getDate() + 1;
+  const spent     = expenses
+    .filter(e => e.accountId === acc.id && e.type !== 'income' && e.date && getDateKey(e.date) === 'today')
+    .reduce((s,e) => s+e.amount, 0);
+  const remaining = Math.max(0, acc.budget - expenses.filter(e=>e.accountId===acc.id&&e.type!=='income').reduce((s,e)=>s+e.amount,0));
+  return Math.floor(remaining / Math.max(daysLeft, 1));
+}
+
+function renderDailyHint() {
+  const el = document.getElementById('daily-limit-hint');
+  if (!el) return;
+  const daily = getDailyBudget();
+  el.textContent = daily > 0 ? `можна сьогодні: ₴${daily.toLocaleString('uk-UA')}` : '';
+}
+
+/* ============================================================
+   ANALYTICS
+   ============================================================ */
+let _donutAnimated = false;
+const CAT_COLORS = [
+  '#b57aff', // violet primary
+  '#40f0ff', // cyan secondary
+  '#e066ff', // violet bright
+  '#00c8e0', // cyan deep
+  '#cc80ff', // violet soft
+  '#00a8c0', // teal
+  '#9040ff', // violet dark
+];
+
+// Glow кольори для кожного сегменту
+const CAT_GLOWS = [
+  'rgba(181,122,255,0.6)',
+  'rgba(64,240,255,0.6)',
+  'rgba(224,102,255,0.6)',
+  'rgba(0,200,224,0.6)',
+  'rgba(204,128,255,0.6)',
+  'rgba(0,168,192,0.6)',
+  'rgba(144,64,255,0.6)',
+];
+
+function renderAnalytics() {
+  const el = document.getElementById('analytics-content');
+  if (!el) return;
+  // Очистити will-animate зі старих елементів
+
+  const acc      = accounts[activeAccountIdx] || accounts[0];
+  const accExp   = expenses.filter(e => e.accountId === acc.id && e.type !== 'income');
+  const total    = accExp.reduce((s,e) => s+e.amount, 0);
+
+  // By category
+  const byCat = {};
+  for (const e of accExp) {
+    byCat[e.emoji] = (byCat[e.emoji] || 0) + e.amount;
+  }
+  const catArr = Object.entries(byCat)
+    .map(([emoji, sum]) => ({ emoji, label: catOf(emoji)?.label || emoji, sum }))
+    .sort((a,b) => b.sum - a.sum);
+
+  // Weekly spending (last 7 days)
+  const weekDays = Array.from({length:7}, (_,i) => {
+    const d = new Date(); d.setDate(d.getDate() - (6-i));
+    return d;
+  });
+  const weekAmounts = weekDays.map(d => {
+    const key = d.toLocaleDateString('uk-UA', {day:'2-digit',month:'2-digit'});
+    return accExp
+      .filter(e => e.date && new Date(e.date).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit'}) === key)
+      .reduce((s,e) => s+e.amount, 0);
+  });
+  const weekMax = Math.max(...weekAmounts, 1);
+
+  // Daily budget
+  const daily = getDailyBudget();
+
+  // Build SVG donut — з gap між сегментами і CSS анімацією
+  const r = 58, cx = 74, cy = 74, circ = 2*Math.PI*r;
+  const GAP = 3; // px між сегментами
+  let offset = 0;
+  const slices = catArr.map((cat,i) => {
+    const pct    = total > 0 ? cat.sum / total : 0;
+    const color  = CAT_COLORS[i % CAT_COLORS.length];
+    const glow   = CAT_GLOWS[i % CAT_GLOWS.length];
+    // Зменшити довжину на gap
+    const dash   = Math.max(0, pct * circ - GAP);
+    const slice  = `
+    <!-- filter для glow конкретного сегменту -->
+    <defs>
+      <filter id="glow-${i}" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feFlood flood-color="${color}" flood-opacity="0.5" result="color"/>
+        <feComposite in="color" in2="blur" operator="in" result="glow"/>
+        <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
+      stroke="${color}"
+      stroke-width="18"
+      stroke-linecap="butt"
+      stroke-dasharray="${dash} ${circ - dash}"
+      stroke-dashoffset="${-(offset * circ)}"
+      filter="url(#glow-${i})"
+      style="transform:rotate(-90deg);transform-origin:${cx}px ${cy}px;
+             animation:${_donutAnimated ? 'none' : `donut-in-${i} 0.8s ${i*0.1}s var(--ease-out) both`}"/>`;
+    offset += pct;
+    return slice;
+  }).join('');
+
+  // CSS анімації для кожного сегменту
+  const keyframes = catArr.map((_,i) => `
+    @keyframes donut-in-${i} {
+      from { stroke-dashoffset: ${circ}; opacity:0; }
+    }`).join('');
+
+  if (!accExp.length) {
+    el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;opacity:0.6">
+      <div style="font-size:48px">📊</div>
+      <div style="font-size:17px;font-weight:500;color:var(--text-hi)">Ще немає даних</div>
+      <div style="font-size:14px;color:var(--text-lo);text-align:center;line-height:1.5">Додай перші витрати,<br>щоб побачити аналітику</div>
+    </div>`;
+    return;
+  }
+
+  const _animDonut = !_donutAnimated;
+  _donutAnimated = true;
+  el.innerHTML = `
+    <!-- Daily budget card -->
+    ${daily > 0 ? `<div class="daily-budget-card spring-block" data-spring="0">
+      <div class="daily-budget-emoji">📊</div>
+      <div class="daily-budget-info">
+        <div class="daily-budget-label">Можна сьогодні</div>
+        <div class="daily-budget-val">₴ ${daily.toLocaleString('uk-UA')}</div>
+      </div>
+    </div>` : ''}
+
+    <!-- Donut -->
+    <div class="analytics-card spring-block" data-spring="1">
+      <div class="analytics-title">По категоріях · ${new Date().toLocaleDateString('uk-UA',{month:'long'})}</div>
+      ${total > 0 ? `<div class="donut-wrap">
+<div class="donut-svg-wrap">
+          <style>${keyframes}
+/* Nav icons entrance animation */
+@keyframes nav-icon-in {
+  0%   { opacity:0; transform:translateY(16px) scale(0.6); }
+  60%  { opacity:1; transform:translateY(-3px) scale(1.1); }
+  100% { opacity:1; transform:translateY(0) scale(1); }
+}
+@keyframes nav-add-in {
+  0%   { opacity:0; transform:scale(0.4) rotate(-45deg); }
+  60%  { opacity:1; transform:scale(1.15) rotate(5deg); }
+  100% { opacity:1; transform:scale(1) rotate(0deg); }
+}
+
+#shared-nav .nav-tab {
+  opacity: 0;
+  animation: nav-icon-in 0.5s var(--ease-spring) both;
+}
+#shared-nav .nav-tab:nth-child(1) { animation-delay: 0.05s; }
+#shared-nav .nav-tab:nth-child(2) { animation-delay: 0.12s; }
+#shared-nav .nav-tab:nth-child(4) { animation-delay: 0.19s; }
+#shared-nav .nav-tab:nth-child(5) { animation-delay: 0.26s; }
+
+#shared-nav .nav-add-btn {
+  opacity: 0;
+  animation: nav-add-in 0.55s var(--ease-spring) 0.15s both;
+}
+
+/* Tap анімація на активний таб */
+@keyframes nav-tap {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.82); }
+  70%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+#shared-nav .nav-tab.tap {
+  animation: nav-tap 0.35s var(--ease-spring) both;
+}
+#shared-nav .nav-add-btn.tap {
+  animation: nav-tap 0.35s var(--ease-spring) both;
+}
+
+
+/* Finish slide */
+.ob-finish-content {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100%; padding: 40px 28px;
+  text-align: center;
+}
+
+@keyframes ob-checkmark {
+  0%   { stroke-dashoffset: 100; opacity: 0; }
+  40%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes ob-ring-scale {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes ob-ring-glow {
+  0%, 100% { box-shadow: 0 0 30px rgba(181,122,255,0.3), 0 0 60px rgba(181,122,255,0.15); }
+  50%       { box-shadow: 0 0 50px rgba(181,122,255,0.6), 0 0 100px rgba(181,122,255,0.25); }
+}
+@keyframes ob-title-in {
+  0%   { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes ob-particles {
+  0%   { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0); opacity: 0; }
+}
+@keyframes ob-exit-up {
+  0%   { opacity: 1; transform: scale(1) translateY(0); }
+  30%  { opacity: 1; transform: scale(1.03) translateY(0); }
+  100% { opacity: 0; transform: scale(0.9) translateY(-40px); }
+}
+@keyframes ob-main-reveal {
+  0%   { opacity: 0; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.ob-check-ring {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: rgba(181,122,255,0.10);
+  border: 1.5px solid rgba(181,122,255,0.35);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 32px;
+  animation: ob-ring-scale 0.7s var(--ease-spring) 0.2s both,
+             ob-ring-glow 2.5s ease-in-out 1s infinite;
+}
+.ob-check-ring svg {
+  width: 52px; height: 52px;
+  stroke: #cc99ff; stroke-width: 2.5;
+  stroke-linecap: round; stroke-linejoin: round;
+  fill: none;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: ob-checkmark 0.7s cubic-bezier(0.16,1,0.3,1) 0.6s both;
+}
+.ob-finish-title {
+  font-size: 34px; font-weight: 700;
+  letter-spacing: -0.04em; color: var(--text-hi);
+  animation: ob-title-in 0.6s var(--ease-out) 0.9s both;
+  margin-bottom: 12px;
+}
+.ob-finish-sub {
+  font-size: 16px; color: var(--text-mid);
+  line-height: 1.55; max-width: 280px;
+  animation: ob-title-in 0.6s var(--ease-out) 1.1s both;
+  margin-bottom: 40px;
+}
+.ob-progress-ring {
+  width: 48px; height: 48px;
+  animation: ob-title-in 0.5s ease 1.4s both;
+}
+.ob-progress-ring circle {
+  stroke-dasharray: 126;
+  stroke-dashoffset: 126;
+  stroke: rgba(181,122,255,0.7);
+  stroke-linecap: round;
+  animation: ob-progress-fill 2.2s linear 1.5s forwards;
+}
+@keyframes ob-progress-fill {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Частинки ✨ */
+.ob-particle {
+  position: absolute;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #b57aff;
+  animation: ob-particles 1.2s ease both;
+}
+
+</style>
+          <svg class="donut-svg" viewBox="0 0 148 148" xmlns="http://www.w3.org/2000/svg">
+            <!-- Фонове кільце -->
+            <circle cx="74" cy="74" r="58" fill="none"
+              stroke="rgba(255,255,255,0.05)" stroke-width="18"/>
+            ${slices}
+            <!-- Текст по центру -->
+            <text x="74" y="68" text-anchor="middle" font-size="10"
+              fill="rgba(255,255,255,0.35)" font-family="Geist Mono"
+              letter-spacing="1">ВСЬОГО</text>
+            <text x="74" y="86" text-anchor="middle" font-size="18"
+              fill="white" font-family="Geist Mono" font-weight="300"
+              letter-spacing="-1">₴${(total/1000).toFixed(1)}k</text>
+          </svg>
+        </div>
+        <div class="donut-legend">
+          ${catArr.slice(0,5).map((cat,i) => {
+            const color = CAT_COLORS[i % CAT_COLORS.length];
+            const glow  = CAT_GLOWS[i % CAT_GLOWS.length];
+            const pct   = total > 0 ? Math.round(cat.sum/total*100) : 0;
+            return `<div class="donut-item">
+              <div class="donut-dot" style="background:${color};box-shadow:0 0 8px ${glow};"></div>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div class="donut-label">${cat.label}</div>
+                  <div class="donut-pct">${pct}%</div>
+                </div>
+                <div class="donut-bar" style="width:${pct}%;--bar-color:${color};"></div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : '<div style="color:var(--text-lo);font-size:14px;text-align:center;padding:20px 0">Ще немає витрат</div>'}
+    </div>
+
+    <!-- Weekly bars -->
+    <div class="analytics-card spring-block" data-spring="2">
+      <div class="analytics-title">Тижень</div>
+      <div class="weekly-bars">
+        ${weekDays.map((d,i) => {
+          const h = weekMax > 0 ? Math.max(4, Math.round(weekAmounts[i]/weekMax*72)) : 4;
+          const isToday = i === 6;
+          const label = d.toLocaleDateString('uk-UA',{weekday:'short'}).slice(0,2);
+          return `<div class="week-bar-wrap">
+            <div class="week-bar${isToday?' current':''}" style="height:${h}px"></div>
+            <div class="week-label">${label}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Category limits -->
+    <div class="analytics-card spring-block" data-spring="3">
+      <div class="analytics-title">Ліміти категорій</div>
+      ${CATEGORIES.map((cat,i) => {
+        const limit = SETTINGS.catLimits?.[cat.emoji] || 0;
+        const spent = accExp.filter(e=>e.emoji===cat.emoji).reduce((s,e)=>s+e.amount,0);
+        const pct   = limit > 0 ? Math.min(Math.round(spent/limit*100),100) : 0;
+        const color = pct > 90 ? '#ff6060' : pct > 70 ? '#ffb830' : CAT_COLORS[i%CAT_COLORS.length];
+        return `<div class="cat-limit-row" data-cat-emoji="${cat.emoji}" onclick="editCatLimit('${cat.emoji}')">
+          <div class="cat-limit-header">
+            <span class="cat-limit-name">${cat.emoji} ${cat.label}</span>
+            <span class="cat-limit-nums">₴${spent.toLocaleString('uk-UA')}${limit?' / ₴'+limit.toLocaleString('uk-UA'):' · без ліміту'}</span>
+          </div>
+          ${limit ? `<div class="cat-limit-track">
+            <div class="cat-limit-fill" style="width:${pct}%;background:${color}"></div>
+          </div>` : ''}
+        </div>`;
+      }).join('<div style="height:1px;background:var(--border);margin:0 16px"></div>')}
+    </div>
+  `;
+}
+
+function editCatLimit(emoji) {
+  const cat = catOf(emoji);
+  const cur = SETTINGS.catLimits?.[emoji] || 0;
+  // Показати inline input у аналітиці
+  const rowId = 'cat-limit-input-' + emoji;
+  const existing = document.getElementById(rowId);
+  if (existing) { existing.remove(); return; }
+  const row = document.querySelector(`[data-cat-emoji="${emoji}"]`);
+  if (!row) return;
+  const wrap = document.createElement('div');
+  wrap.id = rowId;
+  wrap.style.cssText = 'display:flex;gap:8px;padding:8px 16px 12px;';
+  wrap.innerHTML = `
+    <div class="ob-input-wrap" style="flex:1;padding:10px 14px;margin:0">
+      <span class="ob-input-cur" style="font-size:18px">₴</span>
+      <input id="cat-limit-val-${emoji}" type="number" inputmode="decimal"
+        class="ob-input" style="font-size:22px" placeholder="0" value="${cur||''}">
+    </div>
+    <button onclick="saveCatLimit('${emoji}')"
+      style="padding:10px 16px;border-radius:var(--r-sm);border:1px solid rgba(160,100,255,0.30);background:rgba(160,100,255,0.12);color:var(--led-bright);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font)">
+      OK
+    </button>`;
+  row.after(wrap);
+  document.getElementById(`cat-limit-val-${emoji}`)?.focus();
+}
+
+function saveCatLimit(emoji) {
+  const input = document.getElementById(`cat-limit-val-${emoji}`);
+  if (!SETTINGS.catLimits) SETTINGS.catLimits = {};
+  SETTINGS.catLimits[emoji] = parseFloat(input?.value) || 0;
+  renderAnalytics();
+}
+
+/* ============================================================
+   EDIT / DELETE EXPENSE
+   ============================================================ */
+let editingExpenseId = null;
+
+function openEdit(id) {
+  const exp = expenses.find(e => e.id === id);
+  if (!exp) return;
+  editingExpenseId = id;
+  const modal = document.getElementById('edit-modal');
+  const title = document.getElementById('edit-modal-title');
+  const amt   = document.getElementById('edit-amount');
+  const note  = document.getElementById('edit-note');
+  if (!modal) return;
+  if (title) title.textContent = `${exp.emoji} ${exp.label}`;
+  if (amt)   amt.value  = exp.amount;
+  if (note)  note.value = exp.note || '';
+  modal.classList.add('open');
+}
+
+function closeEdit() {
+  document.getElementById('edit-modal')?.classList.remove('open');
+  editingExpenseId = null;
+}
+
+function saveEdit() {
+  const exp = expenses.find(e => e.id === editingExpenseId);
+  if (!exp) return;
+  const newAmt  = parseFloat(document.getElementById('edit-amount')?.value) || exp.amount;
+  const newNote = document.getElementById('edit-note')?.value.trim() || exp.note;
+  const diff    = newAmt - exp.amount;
+  // Оновити баланс рахунку
+  const acc = accounts.find(a => a.id === exp.accountId);
+  if (acc && exp.type !== 'income') {
+    acc.spent   = Math.max(0, (acc.spent || 0) + diff);
+    acc.balance = Math.max(0, (acc.balance || 0) - diff);
+  }
+  exp.amount = newAmt;
+  exp.note   = newNote;
+  closeEdit();
+  renderHome(); renderCarousel();
+  if (document.getElementById('screen-history')?.classList.contains('active')) renderHistory();
+}
+
+function deleteExpense() {
+  const idx = expenses.findIndex(e => e.id === editingExpenseId);
+  if (idx === -1) return;
+  const exp = expenses[idx];
+  const acc = accounts.find(a => a.id === exp.accountId);
+  if (acc && exp.type !== 'income') {
+    acc.spent   = Math.max(0, (acc.spent || 0) - exp.amount);
+    acc.balance = (acc.balance || 0) + exp.amount;
+  }
+  expenses.splice(idx, 1);
+  closeEdit();
+  renderHome(); renderCarousel();
+  if (document.getElementById('screen-history')?.classList.contains('active')) renderHistory();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+cacheDOM();
+// Add date to existing expenses without date
+expenses.forEach(e => { if (!e.date) { const d = new Date(); if(e.day==='yesterday') d.setDate(d.getDate()-1); if(e.day==='earlier') d.setDate(d.getDate()-7); e.date = d.toISOString(); } });
+renderHome();
+renderCarousel();
+renderSettingsCategories();
+updateSettingsDisplay();
+updateGoalCard();
+window.addEventListener('load', initIcons, { once:true });
+
+/* ============================================================
+   NAV HIDE ON SCROLL
+   ============================================================ */
+(function() {
+  let lastY     = 0;
+  let navHidden = false;
+  const THRESHOLD = 10;
+
+  function setNavVisible(visible) {
+    if (navHidden === !visible) return; // no-op
+    navHidden = !visible;
+    const nav = document.getElementById('shared-nav');
+    if (nav) nav.classList.toggle('hidden', !visible);
+  }
+
+  function onScroll(e) {
+    const y    = e.target.scrollTop;
+    const diff = y - lastY;
+    if (Math.abs(diff) < THRESHOLD) return;
+    lastY = y;
+    setNavVisible(diff < 0 || y < 40); // вгору або майже зверху — показати
+  }
+
+  function attach() {
+    document.querySelectorAll('.content').forEach(el => {
+      el.removeEventListener('scroll', onScroll);
+      el.addEventListener('scroll', onScroll, { passive: true });
+    });
+  }
+
+  // Показати nav і скинути позицію при зміні екрану
+  const _orig = window.showScreen;
+  window.showScreen = function(id) {
+    setNavVisible(true);
+    lastY = 0;
+    _orig(id);
+    setTimeout(attach, 60);
+  };
+
+  window.addEventListener('load', attach, { once: true });
+
+  // ВИДАЛЕНО: MutationObserver — він скидав hidden при кожному рендері
+})();
+
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+(function() {
+  const TOTAL_SLIDES = 6;
+  let currentSlide = 0;
+  let obPayday = 1;
+
+  // Перевірити чи вже пройдено
+  // Онбординг завжди показується при старті
+
+  // Побудувати прогрес-бар
+  window.buildProgress = function buildProgress() {
+    const el = document.getElementById('ob-progress');
+    if (!el) return;
+    el.innerHTML = Array.from({ length: TOTAL_SLIDES }, (_, i) =>
+      `<div class="ob-prog-dot" id="ob-dot-${i}"></div>`
+    ).join('');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    for (let i = 0; i < TOTAL_SLIDES; i++) {
+      const dot = document.getElementById(`ob-dot-${i}`);
+      if (!dot) continue;
+      dot.className = 'ob-prog-dot ' +
+        (i < currentSlide ? 'done' : i === currentSlide ? 'active' : '');
+    }
+  }
+
+  // Побудувати вибір дня
+  function buildDayGrid() {
+    const el = document.getElementById('ob-day-grid');
+    if (!el) return;
+    el.innerHTML = Array.from({ length: 28 }, (_, i) => i + 1).map(d =>
+      `<button class="ob-day-btn${d === obPayday ? ' selected' : ''}"
+        onclick="obSelectDay(${d})">${d}</button>`
+    ).join('');
+  }
+
+  window.obDayStep = function(delta) {
+    obPayday = Math.min(28, Math.max(1, obPayday + delta));
+    const numEl = document.getElementById('ob-day-num');
+    if (numEl) numEl.textContent = obPayday;
+  };
+  window.obSelectDay = function(d) {
+    obPayday = d;
+    document.querySelectorAll('.ob-day-btn').forEach((b, i) =>
+      b.classList.toggle('selected', i + 1 === d)
+    );
+    const hint = document.getElementById('ob-day-hint');
+    if (hint) hint.textContent = `Обрано: ${d}-го числа`;
+  };
+
+  function goToSlide(idx) {
+    const prev = document.getElementById(`ob-slide-${currentSlide}`);
+    const next = document.getElementById(`ob-slide-${idx}`);
+    if (!next) return;
+
+    if (prev) prev.classList.add('exit');
+    setTimeout(() => { if (prev) { prev.classList.remove('active', 'exit'); } }, 400);
+
+    next.classList.add('active');
+    currentSlide = idx;
+    updateProgress();
+    updateButtons();
+
+    // Автофокус на інпут
+    setTimeout(() => {
+      const inp = next.querySelector('.ob-input');
+      if (inp) inp.focus();
+    }, 450);
+  }
+
+  window.updateButtons = function updateButtons() {
+    const btn    = document.getElementById('ob-next-btn');
+    const skip   = document.getElementById('ob-skip-btn');
+    const footer = document.querySelector('.ob-footer');
+    if (!btn || !skip) return;
+
+    const isLast = currentSlide === TOTAL_SLIDES - 1;
+
+    if (isLast) {
+      // Ховаємо footer повністю і запускаємо автозакриття
+      if (footer) {
+        footer.style.transition = 'opacity 0.3s ease';
+        footer.style.opacity    = '0';
+        footer.style.pointerEvents = 'none';
+      }
+      startAutoFinish();
+    } else {
+      if (footer) {
+        footer.style.opacity       = '1';
+        footer.style.pointerEvents = 'all';
+      }
+      btn.textContent = 'Далі';
+      skip.style.display = [2, 4].includes(currentSlide) ? '' : 'none';
+    }
+  };
+
+  window.obNext = function() {
+    // Зберегти дані поточного кроку
+    if (currentSlide === 1) {
+      const v = parseFloat(document.getElementById('ob-budget')?.value);
+      if (v > 0) {
+        SETTINGS.budget = v;
+        accounts[0].budget = v;
+      }
+    }
+    if (currentSlide === 2) {
+      const v = parseFloat(document.getElementById('ob-salary')?.value);
+      if (v > 0) SETTINGS.salary = v;
+    }
+    if (currentSlide === 3) {
+      SETTINGS.payday = obPayday;
+    }
+    if (currentSlide === 4) {
+      const name   = document.getElementById('ob-goal-name')?.value.trim();
+      const amount = parseFloat(document.getElementById('ob-goal-amount')?.value);
+      if (name)   SETTINGS.goalName   = name;
+      if (amount) SETTINGS.goalAmount = amount;
+    }
+
+    if (currentSlide < TOTAL_SLIDES - 1) {
+      goToSlide(currentSlide + 1);
+    }
+  };
+
+  window.obSkip = function() {
+    // Позначити поточний dot як skipped (dim)
+    const dot = document.getElementById('ob-dot-' + currentSlide);
+    if (dot) dot.className = 'ob-prog-dot skipped';
+    goToSlide(currentSlide + 1);
+  };
+
+  function finishOnboarding() {
+    window._obRunning = false;
+    const ob = document.getElementById('onboarding');
+    if (ob) ob.classList.add('hide');
+    // Оновити головний екран з новими даними
+    setTimeout(() => {
+      if (ob) ob.style.display = 'none';
+      // Оновити баланс першого рахунку з введеного бюджету
+      if (accounts[0]) accounts[0].budget = SETTINGS.budget;
+      renderHome();
+      renderCarousel();
+      updateSettingsDisplay();
+      updateGoalCard();
+    }, 500);
+  }
+
+  // Canvas background (спрощений — без orbs, просто gradient)
+  (function() {
+    const canvas = document.getElementById('ob-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width  = window.innerWidth  || 390;
+    canvas.height = window.innerHeight || 844;
+
+    const orbs = [
+      { x:0.3, y:0.2, r:0.6, color:[140,80,255], a:0.06, phase:0   },
+      { x:0.8, y:0.7, r:0.5, color:[80,40,180],  a:0.04, phase:2.1 },
+    ];
+
+    function draw(ts) {
+      if (!window._obRunning) return;
+      const W = canvas.width, H = canvas.height;
+      ctx.fillStyle = '#0e0e10'; ctx.fillRect(0,0,W,H);
+      const t = (ts || 0) / 1000;
+      for (const o of orbs) {
+        const px = (o.x + Math.sin(t * 0.15 + o.phase) * 0.08) * W;
+        const py = (o.y + Math.cos(t * 0.12 + o.phase) * 0.08) * H;
+        const r  = o.r * Math.min(W,H);
+        const [R,G,B] = o.color;
+        const g = ctx.createRadialGradient(px,py,0,px,py,r);
+        g.addColorStop(0,    `rgba(${R},${G},${B},${o.a})`);
+        g.addColorStop(0.5,  `rgba(${R},${G},${B},${o.a*0.3})`);
+        g.addColorStop(1,    'rgba(0,0,0,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+      }
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  })();
+
+  window._obRunning = true;
+  // Ініціалізація
+  buildProgress();
+  buildDayGrid();
+  updateButtons();
+})();
+
+
+/* Custom confirm */
+let _confirmCb = null;
+function showConfirm(title, msg, okLabel, okStyle, cb) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent   = msg;
+  const ok = document.getElementById('confirm-ok');
+  ok.textContent = okLabel;
+  ok.className   = 'confirm-btn' + (okStyle === 'danger' ? ' danger' : '');
+  _confirmCb = cb;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  _confirmCb = null;
+}
+function doConfirm() {
+  closeConfirm();
+  if (_confirmCb) _confirmCb();
+}
+
+
+/* Long press для редагування */
+let _lpTimer = null;
+function startLongPress(id) {
+  _lpTimer = setTimeout(() => { openEdit(id); }, 500);
+}
+function cancelLongPress() {
+  if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+}
+
+
+/* ============================================================
+   GESTURE ENGINE — horizontal screen swipe
+   ============================================================ */
+const SCREEN_ORDER = ['home','history','analytics','settings'];
+let _currentScreen  = 'home';
+let _screenTrack    = null;
+const _animatedOnce = new Set(); // екрани що вже були анімовані
+
+/* ── Будуємо горизонтальний track ── */
+function buildScreenTrack() {
+  const phone = document.querySelector('.phone');
+  if (!phone || document.getElementById('screen-track')) return;
+
+  const track = document.createElement('div');
+  track.id = 'screen-track';
+  track.style.cssText = [
+    'position:absolute', 'top:0', 'left:0',
+    'height:100%',
+    'display:flex', 'flex-direction:row',
+    'width:' + (SCREEN_ORDER.length * 100) + '%',
+    'will-change:transform',
+    'contain:strict',
+    'transition:transform 0.42s cubic-bezier(0.16,1,0.3,1)',
+    'z-index:1',
+  ].join(';');
+
+  // Вставити track в phone
+  phone.appendChild(track);
+
+  // Перемістити screens в track
+  SCREEN_ORDER.forEach(id => {
+    const s = document.getElementById('screen-' + id);
+    if (!s) return;
+    // Скинути absolute позиціонування
+    s.style.cssText = [
+      'position:relative', 'inset:auto',
+      'width:' + (100 / SCREEN_ORDER.length) + '%',
+      'height:100%',
+      'flex-shrink:0',
+      'display:flex', 'flex-direction:column',
+      'overflow:hidden',
+      'opacity:1',
+    ].join(';');
+    s.classList.remove('active');
+    s.style.pointerEvents = 'none';
+    track.appendChild(s);
+  });
+
+  _screenTrack = track;
+  goToScreenInstant('home');
+}
+
+function getScreenIdx(id) { return SCREEN_ORDER.indexOf(id); }
+
+function goToScreenInstant(id) {
+  if (!_screenTrack) return;
+  const idx = getScreenIdx(id);
+  if (idx < 0) return;
+  const W = document.querySelector('.phone')?.offsetWidth || window.innerWidth;
+  _screenTrack.style.transition = 'none';
+  _screenTrack.style.transform  = 'translateX(' + (-idx * W) + 'px)';
+  activateScreen(id);
+}
+
+function goToScreen(id, animated) {
+  if (!_screenTrack) return;
+  const idx = getScreenIdx(id);
+  if (idx < 0) return;
+  const W = document.querySelector('.phone')?.offsetWidth || window.innerWidth;
+  _screenTrack.style.transition = animated === false
+    ? 'none'
+    : 'transform 0.42s cubic-bezier(0.16,1,0.3,1)';
+  _screenTrack.style.transform = 'translateX(' + (-idx * W) + 'px)';
+  activateScreen(id);
+}
+
+function activateScreen(id) {
+  const prev = _currentScreen;
+  _currentScreen = id;
+
+  SCREEN_ORDER.forEach(sid => {
+    const s = document.getElementById('screen-' + sid);
+    if (!s) return;
+    const active = sid === id;
+    s.classList.toggle('active', active);
+    s.style.pointerEvents = active ? 'all' : 'none';
+  });
+
+  // Nav
+  document.querySelectorAll('#shared-nav .nav-tab').forEach(t =>
+    t.classList.toggle('active', !!t.getAttribute('onclick')?.includes("'" + id + "'"))
+  );
+
+  // Render
+  if (id === 'history')   renderHistory();
+  if (id === 'analytics') { renderAnalytics(); initIcons(); }
+  if (id === 'settings')  { renderSettingsCategories(); updateSettingsDisplay(); updateGoalCard(); initIcons(); }
+  if (id === 'home')      renderHome();
+
+  // Spring — тільки home, тільки один раз
+  if (id === 'home' && !_animatedOnce.has('home')) {
+    _animatedOnce.add('home');
+    setTimeout(() => {
+      document.querySelectorAll('#screen-home .spring-block').forEach(el => {
+        el.classList.add('will-animate');
+      });
+      window.__springAnimate('home');
+    }, 80);
+  }
+
+  if (BEAM_POSITIONS[id]) moveBeam(BEAM_POSITIONS[id]);
+}
+
+/* ── Touch swipe ── */
+const _sw = { startX:0, startY:0, lastX:0, lastT:0, dragging:false, lockAxis:null, vel:0 };
+
+function swipeStart(e) {
+  // Блокувати тільки в шторках і каруселях
+  if (e.target.closest('.sheet.open, .acc-sheet.open, .edit-modal.open, .confirm-overlay.open, #onboarding, .accounts-carousel')) return;
+  const t = e.touches[0];
+  _sw.startX = _sw.lastX = t.clientX;
+  _sw.startY = t.clientY;
+  _sw.lastT  = Date.now();
+  _sw.dragging = true;
+  _sw.lockAxis = null;
+  _sw.vel = 0;
+  if (_screenTrack) _screenTrack.style.transition = 'none';
+}
+
+function swipeMove(e) {
+  if (!_sw.dragging) return;
+  const t  = e.touches[0];
+  const dx = t.clientX - _sw.startX;
+  const dy = t.clientY - _sw.startY;
+
+  if (!_sw.lockAxis) {
+    if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+      _sw.lockAxis = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    }
+    return;
+  }
+  if (_sw.lockAxis !== 'h') return;
+
+  const now = Date.now();
+  _sw.vel  = (t.clientX - _sw.lastX) / Math.max(1, now - _sw.lastT);
+  _sw.lastX = t.clientX;
+  _sw.lastT = now;
+
+  const W   = document.querySelector('.phone')?.offsetWidth || window.innerWidth;
+  const idx = getScreenIdx(_currentScreen);
+  let newX  = -idx * W + dx;
+
+  // Гумка на краях
+  const minX = -(SCREEN_ORDER.length - 1) * W;
+  if (newX > 0)    newX = newX * 0.2;
+  if (newX < minX) newX = minX + (newX - minX) * 0.2;
+
+  if (_screenTrack) _screenTrack.style.transform = 'translateX(' + newX + 'px)';
+}
+
+function swipeEnd(e) {
+  if (!_sw.dragging) return;
+  _sw.dragging = false;
+  if (_sw.lockAxis !== 'h') return;
+
+  const dx  = e.changedTouches[0].clientX - _sw.startX;
+  const W   = document.querySelector('.phone')?.offsetWidth || window.innerWidth;
+  const idx = getScreenIdx(_currentScreen);
+  const fast = Math.abs(_sw.vel) > 0.3;
+  const big  = Math.abs(dx) > W * 0.25;
+
+  if (dx < 0 && (fast || big) && idx < SCREEN_ORDER.length - 1) {
+    goToScreen(SCREEN_ORDER[idx + 1]);
+  } else if (dx > 0 && (fast || big) && idx > 0) {
+    goToScreen(SCREEN_ORDER[idx - 1]);
+  } else {
+    goToScreen(_currentScreen);
+  }
+}
+
+document.addEventListener('touchstart', swipeStart, { passive: true });
+document.addEventListener('touchmove',  swipeMove,  { passive: true });
+document.addEventListener('touchend',   swipeEnd,   { passive: true });
+
+/* ── Sheet swipe up ── */
+function initSheetSwipe() {
+  const handle = document.querySelector('.sheet-handle');
+  const sheet  = document.getElementById('sheet');
+  if (!handle || !sheet) return;
+  let sy = 0;
+  handle.addEventListener('touchstart', e => { sy = e.touches[0].clientY; }, { passive:true });
+  handle.addEventListener('touchmove',  e => {
+    const dy = sy - e.touches[0].clientY;
+    if (dy > 30)  sheet.classList.add('expanded');
+    if (dy < -20) sheet.classList.remove('expanded');
+  }, { passive:true });
+}
+
+/* ── Патч showScreen (кнопки nav) ── */
+const __navShowScreen = window.showScreen;
+window.showScreen = function(id) {
+  const sn = document.getElementById('shared-nav'); if (sn) sn.classList.remove('hidden');
+  goToScreen(id);
+};
+
+/* ── Init ── */
+window.addEventListener('load', () => {
+  buildScreenTrack();
+  initSheetSwipe();
+}, { once: true });
+
+/* Auto-finish onboarding */
+function startAutoFinish() {
+  spawnParticles();
+  // Через 2.5с — красиво закрити
+  setTimeout(() => {
+    const ob = document.getElementById('onboarding');
+    if (!ob) return;
+    ob.style.transition = 'opacity 0.6s ease, transform 0.6s var(--ease-out)';
+    ob.style.opacity    = '0';
+    ob.style.transform  = 'scale(1.04) translateY(-20px)';
+    setTimeout(() => {
+      ob.style.display = 'none';
+      window._obRunning = false;
+      // Оновити дані
+      if (accounts[0]) accounts[0].budget = SETTINGS.budget;
+      renderHome();
+      renderCarousel();
+      updateSettingsDisplay();
+      updateGoalCard();
+    }, 600);
+  }, 2500);
+}
+
+function spawnParticles() {
+  const ring = document.getElementById('ob-check-ring');
+  if (!ring) return;
+  const colors = ['#b57aff','#cc99ff','#40f0ff','#e066ff','#ffffff'];
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'ob-particle';
+    const angle = (i / 12) * 360;
+    const dist  = 60 + Math.random() * 40;
+    const x = Math.cos(angle * Math.PI/180) * dist;
+    const y = Math.sin(angle * Math.PI/180) * dist;
+    p.style.cssText = [
+      'left:50%', 'top:50%',
+      `margin-left:${x}px`, `margin-top:${y}px`,
+      `background:${colors[i % colors.length]}`,
+      `width:${4 + Math.random() * 5}px`,
+      `height:${4 + Math.random() * 5}px`,
+      `animation-delay:${0.8 + i * 0.06}s`,
+      `box-shadow:0 0 8px ${colors[i % colors.length]}`,
+    ].join(';');
+    ring.parentElement.appendChild(p);
+  }
+}
+
+</script>
+</body>
+</html>
