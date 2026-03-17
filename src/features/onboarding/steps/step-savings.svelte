@@ -61,7 +61,7 @@
 	<div class="slider-wrap">
 		<div class="slider-track">
 			<div class="slider-fill" style="width:{fillPct}%"></div>
-			{#each steps as pct, i}
+			{#each steps as pct, i (pct)}
 				<button
 					class="slider-stop"
 					class:active={activeIdx !== null && i <= activeIdx}
@@ -75,7 +75,7 @@
 			{/each}
 		</div>
 		<div class="slider-labels">
-			{#each steps as pct, i}
+			{#each steps as pct, i (pct)}
 				<button
 					class="slider-label"
 					class:active={i === activeIdx}
@@ -92,7 +92,8 @@
 		{m.onboarding_remaining_for_expenses()} <strong>₴{fmt(budgetAmount)}</strong>
 	</div>
 	<div class="budget-hint daily">
-		≈ <strong>₴{fmt(dailyAmount)}</strong> {m.home_per_day()}
+		≈ <strong>₴{fmt(dailyAmount)}</strong>
+		{m.home_per_day()}
 	</div>
 
 	<button class="step-btn" onclick={onNext}>{m.button_next()}</button>

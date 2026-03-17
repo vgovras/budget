@@ -28,6 +28,10 @@ export function groupByDate(list: Expense[]): Record<string, Expense[]> {
 	return groups;
 }
 
+export function nowISO(): string {
+	return new Date().toISOString();
+}
+
 export function getDateLabel(key: string): string {
 	if (key === 'today') return m.date_today();
 	if (key === 'yesterday') return m.date_yesterday();

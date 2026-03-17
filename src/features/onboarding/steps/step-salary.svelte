@@ -16,7 +16,9 @@
 	<div class="input-wrap">
 		<MoneyInput bind:value placeholder="30 000" size="md" />
 	</div>
-	<button class="step-btn" disabled={!value || value <= 0} onclick={onNext}>{m.button_next()}</button>
+	<button class="step-btn" disabled={!value || value <= 0} onclick={onNext}
+		>{m.button_next()}</button
+	>
 </div>
 
 <style>

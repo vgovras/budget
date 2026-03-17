@@ -74,8 +74,16 @@
 		z-index: 0;
 		pointer-events: none;
 		background:
-			radial-gradient(ellipse 600px 400px at 30% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 100%),
-			radial-gradient(ellipse 500px 500px at 70% 80%, rgba(255, 255, 255, 0.015) 0%, transparent 100%);
+			radial-gradient(
+				ellipse 600px 400px at 30% 20%,
+				rgba(255, 255, 255, 0.02) 0%,
+				transparent 100%
+			),
+			radial-gradient(
+				ellipse 500px 500px at 70% 80%,
+				rgba(255, 255, 255, 0.015) 0%,
+				transparent 100%
+			);
 	}
 
 	.screen {

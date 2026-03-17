@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Expense } from '$lib/types.js';
-	import { CATEGORIES } from '$lib/constants.js';
 	import { fmt } from '$lib/utils/format.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 
@@ -9,14 +8,11 @@
 		onclick,
 		isNew = false
 	}: { expense: Expense; onclick?: () => void; isNew?: boolean } = $props();
-
-	const cat = $derived(CATEGORIES.find((c) => c.icon === expense.icon));
-	const bg = $derived(cat?.bg ?? 'rgba(255,255,255,0.08)');
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="exp-row" class:new-entry={isNew} onclick={onclick}>
+<div class="exp-row" class:new-entry={isNew} {onclick}>
 	<div class="exp-icon">
 		<Icon name={expense.icon} size={20} />
 	</div>
@@ -27,7 +23,7 @@
 		{/if}
 	</div>
 	<span class="exp-amount">
-		{expense.type === 'income' ? '+' : '−'}{expense.type !== 'income' ? '₴' : '₴'}{' '}{fmt(expense.amount)}
+		{expense.type === 'income' ? '+' : '−'}₴ {fmt(expense.amount)}
 	</span>
 </div>
 

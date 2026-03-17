@@ -20,7 +20,7 @@
 
 	$effect(() => {
 		if (locale !== getLocale()) {
-			setLocale(locale as typeof locales[number]);
+			setLocale(locale as (typeof locales)[number]);
 		}
 	});
 
@@ -102,7 +102,7 @@
 	<div>
 		<div class="settings-section-title">{m.settings_section_categories()}</div>
 		<div class="settings-group">
-			{#each CATEGORIES as cat}
+			{#each CATEGORIES as cat (cat.icon)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div class="settings-row" onclick={() => inputVM.openCatLimit(cat.icon, cat.label)}>
@@ -340,7 +340,7 @@
 		width: 22px;
 		height: 22px;
 		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.80);
+		background: rgba(255, 255, 255, 0.8);
 		transition: all 0.25s ease;
 		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 	}

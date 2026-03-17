@@ -27,41 +27,46 @@ Model          component-name.ts          — типи, чиста логіка,
 import type { ExpensesViewModel } from '$features/expenses/expenses.svelte';
 
 export class AddExpenseSheetViewModel {
-  // $state — мутабельний реактивний стейт
-  amount    = $state(0);
-  note      = $state('');
-  sheetType = $state<'expense' | 'income'>('expense');
-  selectedCategory = $state<string | null>(null);
-  isOpen    = $state(false);
+	// $state — мутабельний реактивний стейт
+	amount = $state(0);
+	note = $state('');
+	sheetType = $state<'expense' | 'income'>('expense');
+	selectedCategory = $state<string | null>(null);
+	isOpen = $state(false);
 
-  // $derived — обчислюється автоматично, readonly
-  readonly canSave = $derived(this.amount > 0);
-  readonly dailyBudget = $derived(/* ... */);
+	// $derived — обчислюється автоматично, readonly
+	readonly canSave = $derived(this.amount > 0);
+	readonly dailyBudget = $derived(/* ... */);
 
-  // Залежності через constructor (DI)
-  constructor(private expensesVM: ExpensesViewModel) {}
+	// Залежності через constructor (DI)
+	constructor(private expensesVM: ExpensesViewModel) {}
 
-  open()  { this.isOpen = true;  this.reset(); }
-  close() { this.isOpen = false; }
+	open() {
+		this.isOpen = true;
+		this.reset();
+	}
+	close() {
+		this.isOpen = false;
+	}
 
-  save() {
-    if (!this.canSave) return;
-    this.expensesVM.add({
-      amount: this.amount,
-      note: this.note,
-      type: this.sheetType,
-      emoji: this.selectedCategory ?? '🍕',
-      // ...
-    });
-    this.close();
-  }
+	save() {
+		if (!this.canSave) return;
+		this.expensesVM.add({
+			amount: this.amount,
+			note: this.note,
+			type: this.sheetType,
+			emoji: this.selectedCategory ?? '🍕'
+			// ...
+		});
+		this.close();
+	}
 
-  private reset() {
-    this.amount = 0;
-    this.note   = '';
-    this.selectedCategory = null;
-    this.sheetType = 'expense';
-  }
+	private reset() {
+		this.amount = 0;
+		this.note = '';
+		this.selectedCategory = null;
+		this.sheetType = 'expense';
+	}
 }
 ```
 
@@ -70,15 +75,13 @@ export class AddExpenseSheetViewModel {
 ```svelte
 <!-- add-expense-sheet.svelte -->
 <script lang="ts">
-  import type { AddExpenseSheetViewModel } from './add-expense-sheet.svelte';
+	import type { AddExpenseSheetViewModel } from './add-expense-sheet.svelte';
 
-  let { vm }: { vm: AddExpenseSheetViewModel } = $props();
+	let { vm }: { vm: AddExpenseSheetViewModel } = $props();
 </script>
 
 <input bind:value={vm.amount} />
-<button disabled={!vm.canSave} onclick={() => vm.save()}>
-  Зберегти
-</button>
+<button disabled={!vm.canSave} onclick={() => vm.save()}> Зберегти </button>
 ```
 
 ### Repository — ізоляція даних
@@ -86,28 +89,26 @@ export class AddExpenseSheetViewModel {
 ```ts
 // expenses.ts (Model)
 export class ExpensesRepository {
-  #expenses: Expense[] = [...SEED_EXPENSES]; // in-memory
-  #nextId = 9;
+	#expenses: Expense[] = [...SEED_EXPENSES]; // in-memory
+	#nextId = 9;
 
-  getAll(): Expense[] {
-    return this.#expenses;
-  }
+	getAll(): Expense[] {
+		return this.#expenses;
+	}
 
-  add(data: Omit<Expense, 'id'>): Expense {
-    const expense = { ...data, id: this.#nextId++ };
-    this.#expenses = [expense, ...this.#expenses];
-    return expense;
-  }
+	add(data: Omit<Expense, 'id'>): Expense {
+		const expense = { ...data, id: this.#nextId++ };
+		this.#expenses = [expense, ...this.#expenses];
+		return expense;
+	}
 
-  update(id: number, patch: Partial<Expense>): void {
-    this.#expenses = this.#expenses.map(e =>
-      e.id === id ? { ...e, ...patch } : e
-    );
-  }
+	update(id: number, patch: Partial<Expense>): void {
+		this.#expenses = this.#expenses.map((e) => (e.id === id ? { ...e, ...patch } : e));
+	}
 
-  remove(id: number): void {
-    this.#expenses = this.#expenses.filter(e => e.id !== id);
-  }
+	remove(id: number): void {
+		this.#expenses = this.#expenses.filter((e) => e.id !== id);
+	}
 }
 ```
 
@@ -234,53 +235,49 @@ src/
 import type { ExpensesRepository } from './expenses.ts';
 
 export class ExpensesViewModel {
-  #repo: ExpensesRepository;
+	#repo: ExpensesRepository;
 
-  expenses = $state<Expense[]>([]);
-  nextId   = $state(9);
+	expenses = $state<Expense[]>([]);
+	nextId = $state(9);
 
-  readonly total = $derived(
-    this.expenses
-      .filter(e => e.type !== 'income')
-      .reduce((s, e) => s + e.amount, 0)
-  );
+	readonly total = $derived(
+		this.expenses.filter((e) => e.type !== 'income').reduce((s, e) => s + e.amount, 0)
+	);
 
-  constructor(repo: ExpensesRepository) {
-    this.#repo = repo;
-    // Завантажити початкові дані з репозиторію
-    const saved = this.#repo.load();
-    this.expenses = saved.expenses ?? [...SEED_EXPENSES];
-    this.nextId   = saved.nextId   ?? 9;
-  }
+	constructor(repo: ExpensesRepository) {
+		this.#repo = repo;
+		// Завантажити початкові дані з репозиторію
+		const saved = this.#repo.load();
+		this.expenses = saved.expenses ?? [...SEED_EXPENSES];
+		this.nextId = saved.nextId ?? 9;
+	}
 
-  add(data: Omit<Expense, 'id'>): Expense {
-    const exp = { ...data, id: this.nextId++ };
-    this.expenses = [exp, ...this.expenses];
-    this.#repo.save(this.#snapshot());
-    return exp;
-  }
+	add(data: Omit<Expense, 'id'>): Expense {
+		const exp = { ...data, id: this.nextId++ };
+		this.expenses = [exp, ...this.expenses];
+		this.#repo.save(this.#snapshot());
+		return exp;
+	}
 
-  update(id: number, patch: Partial<Expense>) {
-    this.expenses = this.expenses.map(e =>
-      e.id === id ? { ...e, ...patch } : e
-    );
-    this.#repo.save(this.#snapshot());
-  }
+	update(id: number, patch: Partial<Expense>) {
+		this.expenses = this.expenses.map((e) => (e.id === id ? { ...e, ...patch } : e));
+		this.#repo.save(this.#snapshot());
+	}
 
-  remove(id: number) {
-    this.expenses = this.expenses.filter(e => e.id !== id);
-    this.#repo.save(this.#snapshot());
-  }
+	remove(id: number) {
+		this.expenses = this.expenses.filter((e) => e.id !== id);
+		this.#repo.save(this.#snapshot());
+	}
 
-  reset() {
-    this.expenses = [...SEED_EXPENSES];
-    this.nextId   = 9;
-    this.#repo.clear();
-  }
+	reset() {
+		this.expenses = [...SEED_EXPENSES];
+		this.nextId = 9;
+		this.#repo.clear();
+	}
 
-  #snapshot() {
-    return { expenses: this.expenses, nextId: this.nextId };
-  }
+	#snapshot() {
+		return { expenses: this.expenses, nextId: this.nextId };
+	}
 }
 
 // Singleton — один інстанс на весь app
@@ -292,32 +289,32 @@ export const expensesVM = new ExpensesViewModel(new ExpensesRepository());
 ```ts
 // features/accounts/accounts.svelte.ts
 export class AccountsViewModel {
-  #repo: AccountsRepository;
+	#repo: AccountsRepository;
 
-  accounts  = $state<Account[]>([]);
-  activeIdx = $state(0);
+	accounts = $state<Account[]>([]);
+	activeIdx = $state(0);
 
-  readonly active = $derived(this.accounts[this.activeIdx]);
+	readonly active = $derived(this.accounts[this.activeIdx]);
 
-  constructor(repo: AccountsRepository) {
-    this.#repo  = repo;
-    this.accounts = this.#repo.load() ?? [...SEED_ACCOUNTS];
-  }
+	constructor(repo: AccountsRepository) {
+		this.#repo = repo;
+		this.accounts = this.#repo.load() ?? [...SEED_ACCOUNTS];
+	}
 
-  setActive(idx: number) { this.activeIdx = idx; }
+	setActive(idx: number) {
+		this.activeIdx = idx;
+	}
 
-  add(data: Omit<Account, 'id'>) {
-    const acc = { ...data, id: 'acc-' + Date.now() };
-    this.accounts = [...this.accounts, acc];
-    this.#repo.save(this.accounts);
-  }
+	add(data: Omit<Account, 'id'>) {
+		const acc = { ...data, id: 'acc-' + Date.now() };
+		this.accounts = [...this.accounts, acc];
+		this.#repo.save(this.accounts);
+	}
 
-  update(id: string, patch: Partial<Account>) {
-    this.accounts = this.accounts.map(a =>
-      a.id === id ? { ...a, ...patch } : a
-    );
-    this.#repo.save(this.accounts);
-  }
+	update(id: string, patch: Partial<Account>) {
+		this.accounts = this.accounts.map((a) => (a.id === id ? { ...a, ...patch } : a));
+		this.#repo.save(this.accounts);
+	}
 }
 
 import { AccountsRepository } from './accounts.ts';
@@ -329,24 +326,28 @@ export const accountsVM = new AccountsViewModel(new AccountsRepository());
 ```ts
 // features/expenses/expenses.ts
 export class ExpensesRepository {
-  readonly #key = 'budget:expenses';
+	readonly #key = 'budget:expenses';
 
-  load(): { expenses: Expense[]; nextId: number } | null {
-    try {
-      const raw = localStorage.getItem(this.#key);
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
-  }
+	load(): { expenses: Expense[]; nextId: number } | null {
+		try {
+			const raw = localStorage.getItem(this.#key);
+			return raw ? JSON.parse(raw) : null;
+		} catch {
+			return null;
+		}
+	}
 
-  save(data: { expenses: Expense[]; nextId: number }): void {
-    try {
-      localStorage.setItem(this.#key, JSON.stringify(data));
-    } catch { /* quota exceeded */ }
-  }
+	save(data: { expenses: Expense[]; nextId: number }): void {
+		try {
+			localStorage.setItem(this.#key, JSON.stringify(data));
+		} catch {
+			/* quota exceeded */
+		}
+	}
 
-  clear(): void {
-    localStorage.removeItem(this.#key);
-  }
+	clear(): void {
+		localStorage.removeItem(this.#key);
+	}
 }
 ```
 
@@ -358,23 +359,21 @@ import { expensesVM } from '$features/expenses/expenses.svelte';
 import { accountsVM } from '$features/accounts/accounts.svelte';
 
 export class AnalyticsViewModel {
-  // $derived реагує на зміни в expensesVM і accountsVM автоматично
-  readonly accountExpenses = $derived(
-    expensesVM.expenses.filter(
-      e => e.accountId === accountsVM.active?.id && e.type !== 'income'
-    )
-  );
+	// $derived реагує на зміни в expensesVM і accountsVM автоматично
+	readonly accountExpenses = $derived(
+		expensesVM.expenses.filter((e) => e.accountId === accountsVM.active?.id && e.type !== 'income')
+	);
 
-  readonly byCategory = $derived(
-    Object.entries(
-      this.accountExpenses.reduce<Record<string, number>>((acc, e) => {
-        acc[e.emoji] = (acc[e.emoji] ?? 0) + e.amount;
-        return acc;
-      }, {})
-    )
-      .map(([emoji, sum]) => ({ emoji, sum }))
-      .sort((a, b) => b.sum - a.sum)
-  );
+	readonly byCategory = $derived(
+		Object.entries(
+			this.accountExpenses.reduce<Record<string, number>>((acc, e) => {
+				acc[e.emoji] = (acc[e.emoji] ?? 0) + e.amount;
+				return acc;
+			}, {})
+		)
+			.map(([emoji, sum]) => ({ emoji, sum }))
+			.sort((a, b) => b.sum - a.sum)
+	);
 }
 ```
 
@@ -383,14 +382,14 @@ export class AnalyticsViewModel {
 ```svelte
 <!-- features/analytics/analytics-screen/analytics-screen.svelte -->
 <script lang="ts">
-  import { AnalyticsViewModel } from '../analytics.svelte';
+	import { AnalyticsViewModel } from '../analytics.svelte';
 
-  // Кожен .svelte сам створює свій VM
-  const vm = new AnalyticsViewModel();
+	// Кожен .svelte сам створює свій VM
+	const vm = new AnalyticsViewModel();
 </script>
 
 {#each vm.byCategory as cat}
-  <div>{cat.emoji} {cat.sum}</div>
+	<div>{cat.emoji} {cat.sum}</div>
 {/each}
 ```
 
@@ -425,8 +424,6 @@ features/
 
 ---
 
-
-
 ---
 
 ## Правила залежностей між features
@@ -441,6 +438,7 @@ features/
 ```
 
 **Напрямок залежностей:**
+
 ```
 routes/+page.svelte
   └── features/*/screen.svelte     (монтує екрани)
@@ -460,31 +458,29 @@ routes/+page.svelte
 import { SCREEN_ORDER, type ScreenId } from '$lib/constants';
 
 export class NavigationViewModel {
-  currentScreen = $state<ScreenId>('home');
-  navVisible    = $state(true);
+	currentScreen = $state<ScreenId>('home');
+	navVisible = $state(true);
 
-  readonly currentIndex = $derived(
-    SCREEN_ORDER.indexOf(this.currentScreen)
-  );
+	readonly currentIndex = $derived(SCREEN_ORDER.indexOf(this.currentScreen));
 
-  goTo(id: ScreenId) {
-    this.currentScreen = id;
-    this.navVisible    = true;
-  }
+	goTo(id: ScreenId) {
+		this.currentScreen = id;
+		this.navVisible = true;
+	}
 
-  goNext() {
-    const next = SCREEN_ORDER[this.currentIndex + 1];
-    if (next) this.goTo(next);
-  }
+	goNext() {
+		const next = SCREEN_ORDER[this.currentIndex + 1];
+		if (next) this.goTo(next);
+	}
 
-  goPrev() {
-    const prev = SCREEN_ORDER[this.currentIndex - 1];
-    if (prev) this.goTo(prev);
-  }
+	goPrev() {
+		const prev = SCREEN_ORDER[this.currentIndex - 1];
+		if (prev) this.goTo(prev);
+	}
 
-  setNavVisible(visible: boolean) {
-    this.navVisible = visible;
-  }
+	setNavVisible(visible: boolean) {
+		this.navVisible = visible;
+	}
 }
 ```
 
@@ -493,39 +489,37 @@ export class NavigationViewModel {
 ```ts
 // features/expenses/expenses.svelte.ts
 export class ExpensesViewModel {
-  #repo: ExpensesRepository;
+	#repo: ExpensesRepository;
 
-  expenses = $state<Expense[]>([]);
+	expenses = $state<Expense[]>([]);
 
-  readonly total = $derived(
-    this.expenses
-      .filter(e => e.type !== 'income')
-      .reduce((s, e) => s + e.amount, 0)
-  );
+	readonly total = $derived(
+		this.expenses.filter((e) => e.type !== 'income').reduce((s, e) => s + e.amount, 0)
+	);
 
-  constructor(repo: ExpensesRepository) {
-    this.#repo = repo;
-    this.expenses = repo.getAll();
-  }
+	constructor(repo: ExpensesRepository) {
+		this.#repo = repo;
+		this.expenses = repo.getAll();
+	}
 
-  forAccount(accountId: string) {
-    return $derived(this.expenses.filter(e => e.accountId === accountId));
-  }
+	forAccount(accountId: string) {
+		return $derived(this.expenses.filter((e) => e.accountId === accountId));
+	}
 
-  add(data: Omit<Expense, 'id'>) {
-    const exp = this.#repo.add({ ...data, date: new Date().toISOString() });
-    this.expenses = [exp, ...this.expenses];
-  }
+	add(data: Omit<Expense, 'id'>) {
+		const exp = this.#repo.add({ ...data, date: new Date().toISOString() });
+		this.expenses = [exp, ...this.expenses];
+	}
 
-  update(id: number, patch: Partial<Expense>) {
-    this.#repo.update(id, patch);
-    this.expenses = this.expenses.map(e => e.id === id ? { ...e, ...patch } : e);
-  }
+	update(id: number, patch: Partial<Expense>) {
+		this.#repo.update(id, patch);
+		this.expenses = this.expenses.map((e) => (e.id === id ? { ...e, ...patch } : e));
+	}
 
-  remove(id: number) {
-    this.#repo.remove(id);
-    this.expenses = this.expenses.filter(e => e.id !== id);
-  }
+	remove(id: number) {
+		this.#repo.remove(id);
+		this.expenses = this.expenses.filter((e) => e.id !== id);
+	}
 }
 ```
 
@@ -534,55 +528,59 @@ export class ExpensesViewModel {
 ```ts
 // features/analytics/analytics.svelte.ts
 export class AnalyticsViewModel {
-  constructor(
-    private expensesVM: ExpensesViewModel,
-    private accountsVM: AccountsViewModel,
-  ) {}
+	constructor(
+		private expensesVM: ExpensesViewModel,
+		private accountsVM: AccountsViewModel
+	) {}
 
-  readonly activeAccount = $derived(
-    this.accountsVM.accounts[this.accountsVM.activeIdx]
-  );
+	readonly activeAccount = $derived(this.accountsVM.accounts[this.accountsVM.activeIdx]);
 
-  readonly accountExpenses = $derived(
-    this.expensesVM.expenses.filter(
-      e => e.accountId === this.activeAccount?.id && e.type !== 'income'
-    )
-  );
+	readonly accountExpenses = $derived(
+		this.expensesVM.expenses.filter(
+			(e) => e.accountId === this.activeAccount?.id && e.type !== 'income'
+		)
+	);
 
-  readonly total = $derived(
-    this.accountExpenses.reduce((s, e) => s + e.amount, 0)
-  );
+	readonly total = $derived(this.accountExpenses.reduce((s, e) => s + e.amount, 0));
 
-  readonly byCategory = $derived(
-    Object.entries(
-      this.accountExpenses.reduce<Record<string, number>>((acc, e) => {
-        acc[e.emoji] = (acc[e.emoji] ?? 0) + e.amount;
-        return acc;
-      }, {})
-    )
-      .map(([emoji, sum]) => ({ emoji, sum }))
-      .sort((a, b) => b.sum - a.sum)
-  );
+	readonly byCategory = $derived(
+		Object.entries(
+			this.accountExpenses.reduce<Record<string, number>>((acc, e) => {
+				acc[e.emoji] = (acc[e.emoji] ?? 0) + e.amount;
+				return acc;
+			}, {})
+		)
+			.map(([emoji, sum]) => ({ emoji, sum }))
+			.sort((a, b) => b.sum - a.sum)
+	);
 
-  readonly weeklyAmounts = $derived(
-    Array.from({ length: 7 }, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      const key = d.toLocaleDateString('uk-UA', { day:'2-digit', month:'2-digit' });
-      return this.accountExpenses
-        .filter(e => e.date && new Date(e.date).toLocaleDateString('uk-UA', { day:'2-digit', month:'2-digit' }) === key)
-        .reduce((s, e) => s + e.amount, 0);
-    })
-  );
+	readonly weeklyAmounts = $derived(
+		Array.from({ length: 7 }, (_, i) => {
+			const d = new Date();
+			d.setDate(d.getDate() - (6 - i));
+			const key = d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' });
+			return this.accountExpenses
+				.filter(
+					(e) =>
+						e.date &&
+						new Date(e.date).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' }) ===
+							key
+				)
+				.reduce((s, e) => s + e.amount, 0);
+		})
+	);
 
-  readonly dailyBudget = $derived((() => {
-    const acc = this.activeAccount;
-    if (!acc) return 0;
-    const now = new Date();
-    const daysLeft = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
-    const remaining = Math.max(0, acc.budget - this.total);
-    return Math.floor(remaining / Math.max(daysLeft, 1));
-  })());
+	readonly dailyBudget = $derived(
+		(() => {
+			const acc = this.activeAccount;
+			if (!acc) return 0;
+			const now = new Date();
+			const daysLeft =
+				new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
+			const remaining = Math.max(0, acc.budget - this.total);
+			return Math.floor(remaining / Math.max(daysLeft, 1));
+		})()
+	);
 }
 ```
 

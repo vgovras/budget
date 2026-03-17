@@ -22,7 +22,7 @@
 				stroke="rgba(255,255,255,0.05)"
 				stroke-width="18"
 			/>
-			{#each slices as slice, i}
+			{#each slices as slice (slice.label)}
 				<circle
 					cx={DONUT_CX}
 					cy={DONUT_CY}
@@ -59,12 +59,9 @@
 	</div>
 
 	<div class="donut-legend">
-		{#each slices.slice(0, 5) as slice}
+		{#each slices.slice(0, 5) as slice (slice.label)}
 			<div class="donut-item">
-				<div
-					class="donut-dot"
-					style="background:{slice.color}"
-				></div>
+				<div class="donut-dot" style="background:{slice.color}"></div>
 				<div style="flex:1;min-width:0">
 					<div style="display:flex;justify-content:space-between;align-items:center">
 						<div class="donut-label">{slice.label}</div>

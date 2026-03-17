@@ -3,10 +3,7 @@
 	import type { Expense } from '$lib/types.js';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let {
-		value = $bindable(''),
-		expenses
-	}: { value: string; expenses: Expense[] } = $props();
+	let { value = $bindable(''), expenses }: { value: string; expenses: Expense[] } = $props();
 
 	const suggestions = $derived(getNoteSuggestions(expenses, value));
 </script>
@@ -21,7 +18,7 @@
 
 {#if suggestions.length > 0 && value}
 	<div class="note-suggestions">
-		{#each suggestions as sug}
+		{#each suggestions as sug (sug)}
 			<button class="note-sug" onclick={() => (value = sug)}>{sug}</button>
 		{/each}
 	</div>

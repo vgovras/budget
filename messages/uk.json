@@ -29,7 +29,8 @@
 	"home_days_until_month_end": "днів до кінця фін. місяця",
 	"home_recent_expenses": "Останні витрати",
 	"home_no_expenses": "Витрат поки немає",
-	"home_no_expenses_hint": "Натисни <strong>+</strong> щоб додати першу витрату",
+	"home_no_expenses_hint_before": "Натисни",
+	"home_no_expenses_hint_after": "щоб додати першу витрату",
 
 	"history_filter_all": "Всі",
 	"history_total": "Загалом",

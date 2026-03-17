@@ -8,7 +8,7 @@
 </script>
 
 <nav class="nav" class:hidden={!vm.navVisible}>
-	{#each vm.tabs as tab, i}
+	{#each vm.tabs as tab, i (tab.id)}
 		{#if i === 2}
 			<button class="add" onclick={onAdd}>
 				<Icon name="plus" size={20} />
@@ -36,7 +36,9 @@
 		backdrop-filter: blur(20px) saturate(120%);
 		-webkit-backdrop-filter: blur(20px) saturate(120%);
 		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+		box-shadow:
+			0 8px 32px rgba(0, 0, 0, 0.3),
+			inset 0 1px 0 rgba(255, 255, 255, 0.06);
 		transition:
 			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
 			opacity 0.4s ease;
@@ -63,7 +65,7 @@
 
 	.tab.active {
 		color: #ffffff;
-		background: rgba(255, 255, 255, 0.10);
+		background: rgba(255, 255, 255, 0.1);
 	}
 
 	.add {
@@ -74,7 +76,7 @@
 		border-radius: 14px;
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		background: rgba(255, 255, 255, 0.08);
-		color: rgba(255, 255, 255, 0.80);
+		color: rgba(255, 255, 255, 0.8);
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}

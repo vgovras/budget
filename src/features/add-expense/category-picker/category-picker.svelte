@@ -10,7 +10,7 @@
 <div>
 	<div class="cat-label">{m.label_category()}</div>
 	<div class="categories">
-		{#each CATEGORIES as cat}
+		{#each CATEGORIES as cat (cat.icon)}
 			<button
 				class="cat-btn"
 				class:selected={selected === cat.icon}
@@ -65,7 +65,7 @@
 	}
 
 	.cat-btn.selected {
-		border-color: rgba(255, 255, 255, 0.20);
+		border-color: rgba(255, 255, 255, 0.2);
 		background: rgba(255, 255, 255, 0.08);
 		color: var(--text-hi);
 		box-shadow: none;

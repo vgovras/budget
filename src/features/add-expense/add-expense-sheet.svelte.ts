@@ -3,6 +3,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { CATEGORIES } from '$lib/constants.js';
 import { getDailyBudget } from '$lib/utils/budget.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
+import { nowISO } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
 
 export class AddExpenseSheetViewModel {
@@ -51,6 +52,7 @@ export class AddExpenseSheetViewModel {
 		const acc = accountsVM.active;
 		if (!acc) return;
 		const amount = this.amount;
+		const isoDate = nowISO();
 
 		if (this.sheetType === 'income') {
 			accountsVM.update(acc.id, { balance: (acc.balance || 0) + amount });
@@ -60,7 +62,7 @@ export class AddExpenseSheetViewModel {
 				note: this.note || m.income_label(),
 				amount,
 				day: 'today',
-				date: new Date().toISOString(),
+				date: isoDate,
 				accountId: acc.id,
 				type: 'income'
 			});
@@ -76,7 +78,7 @@ export class AddExpenseSheetViewModel {
 				note: this.note || cat.label,
 				amount,
 				day: 'today',
-				date: new Date().toISOString(),
+				date: isoDate,
 				accountId: acc.id,
 				type: 'expense'
 			});

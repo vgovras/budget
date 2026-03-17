@@ -7,9 +7,9 @@
 	--bg: #0a0a0c;
 	--card: rgba(255, 255, 255, 0.03);
 	--card-elevated: rgba(255, 255, 255, 0.05);
-	--overlay: rgba(0, 0, 0, 0.60);
+	--overlay: rgba(0, 0, 0, 0.6);
 	--border: rgba(255, 255, 255, 0.06);
-	--border-hi: rgba(255, 255, 255, 0.10);
+	--border-hi: rgba(255, 255, 255, 0.1);
 
 	/* Single accent — cool blue-white */
 	--accent: #dde8f0;

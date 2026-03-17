@@ -11,7 +11,7 @@
 
 	$effect(() => {
 		if (locale !== getLocale()) {
-			setLocale(locale as typeof locales[number]);
+			setLocale(locale as (typeof locales)[number]);
 		}
 	});
 </script>
@@ -87,7 +87,10 @@
 			radial-gradient(circle at 20% 50%, rgba(140, 70, 220, 0.5) 0%, transparent 50%),
 			radial-gradient(circle at 80% 30%, rgba(40, 180, 120, 0.4) 0%, transparent 45%),
 			radial-gradient(circle at 60% 80%, rgba(220, 110, 60, 0.35) 0%, transparent 50%);
-		background-size: 200% 200%, 200% 200%, 200% 200%;
+		background-size:
+			200% 200%,
+			200% 200%,
+			200% 200%;
 		filter: blur(28px);
 		opacity: 0.6;
 		animation: aurora 8s ease-in-out infinite;
@@ -117,7 +120,10 @@
 			radial-gradient(circle at 20% 50%, rgba(140, 70, 220, 0.55) 0%, transparent 50%),
 			radial-gradient(circle at 80% 30%, rgba(40, 180, 120, 0.45) 0%, transparent 45%),
 			radial-gradient(circle at 60% 80%, rgba(220, 110, 60, 0.4) 0%, transparent 50%);
-		background-size: 200% 200%, 200% 200%, 200% 200%;
+		background-size:
+			200% 200%,
+			200% 200%,
+			200% 200%;
 		filter: blur(18px);
 		animation: aurora 8s ease-in-out infinite;
 		z-index: -1;
@@ -130,19 +136,34 @@
 
 	@keyframes aurora {
 		0% {
-			background-position: 0% 50%, 100% 0%, 50% 100%;
+			background-position:
+				0% 50%,
+				100% 0%,
+				50% 100%;
 		}
 		25% {
-			background-position: 100% 20%, 0% 100%, 100% 40%;
+			background-position:
+				100% 20%,
+				0% 100%,
+				100% 40%;
 		}
 		50% {
-			background-position: 50% 100%, 60% 50%, 0% 0%;
+			background-position:
+				50% 100%,
+				60% 50%,
+				0% 0%;
 		}
 		75% {
-			background-position: 10% 0%, 100% 80%, 60% 60%;
+			background-position:
+				10% 0%,
+				100% 80%,
+				60% 60%;
 		}
 		100% {
-			background-position: 0% 50%, 100% 0%, 50% 100%;
+			background-position:
+				0% 50%,
+				100% 0%,
+				50% 100%;
 		}
 	}
 </style>

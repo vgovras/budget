@@ -14,12 +14,8 @@
 	let currentFilter = $state('all');
 
 	const filtered = $derived.by(() => {
-		const base = expensesVM.expenses.filter(
-			(e: Expense) => e.accountId === accountsVM.active?.id
-		);
-		return currentFilter === 'all'
-			? base
-			: base.filter((e: Expense) => e.icon === currentFilter);
+		const base = expensesVM.expenses.filter((e: Expense) => e.accountId === accountsVM.active?.id);
+		return currentFilter === 'all' ? base : base.filter((e: Expense) => e.icon === currentFilter);
 	});
 
 	const grouped = $derived(groupByDate(filtered));
@@ -35,16 +31,21 @@
 </div>
 
 <div class="filters">
-	<button class="filter-pill" class:active={currentFilter === 'all'} onclick={() => setFilter('all')}>
+	<button
+		class="filter-pill"
+		class:active={currentFilter === 'all'}
+		onclick={() => setFilter('all')}
+	>
 		{m.history_filter_all()}
 	</button>
-	{#each CATEGORIES as cat}
+	{#each CATEGORIES as cat (cat.icon)}
 		<button
 			class="filter-pill"
 			class:active={currentFilter === cat.icon}
 			onclick={() => setFilter(cat.icon)}
 		>
-			<Icon name={cat.icon} size={14} /> {cat.label}
+			<Icon name={cat.icon} size={14} />
+			{cat.label}
 		</button>
 	{/each}
 </div>
@@ -126,7 +127,7 @@
 		box-shadow: none;
 	}
 	.filter-pill:hover:not(.active) {
-		border-color: rgba(255, 255, 255, 0.10);
+		border-color: rgba(255, 255, 255, 0.1);
 		background: rgba(255, 255, 255, 0.05);
 	}
 

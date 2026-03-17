@@ -2,10 +2,7 @@
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let {
-		value = $bindable<number>(1),
-		onNext
-	}: { value: number; onNext: () => void } = $props();
+	let { value = $bindable<number>(1), onNext }: { value: number; onNext: () => void } = $props();
 
 	const days = Array.from({ length: 31 }, (_, i) => i + 1);
 </script>
@@ -16,12 +13,8 @@
 	<p class="step-desc">{m.onboarding_payday_desc()}</p>
 
 	<div class="days-grid">
-		{#each days as day}
-			<button
-				class="day-btn"
-				class:active={value === day}
-				onclick={() => (value = day)}
-			>
+		{#each days as day (day)}
+			<button class="day-btn" class:active={value === day} onclick={() => (value = day)}>
 				{day}
 			</button>
 		{/each}

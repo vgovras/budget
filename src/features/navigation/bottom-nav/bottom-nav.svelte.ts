@@ -15,7 +15,6 @@ export class BottomNavViewModel {
 		{ id: 'settings', icon: 'settings' }
 	];
 
-
 	tapAnimation = $state<string | null>(null);
 
 	readonly currentScreen = $derived(navigationVM.currentScreen);

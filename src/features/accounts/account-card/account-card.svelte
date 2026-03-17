@@ -16,7 +16,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="card {account.type}" onclick={onclick}>
+<div class="card {account.type}" {onclick}>
 	<div class="header">
 		<span class="label">{account.label}</span>
 	</div>
@@ -26,7 +26,10 @@
 	</div>
 
 	<div class="sub">
-		{m.account_spent_of()} <span class="hi">{account.currency} {fmt(spent)}</span>{' ' + m.account_of() + ' '}{account.currency} {fmt(account.budget)}
+		{m.account_spent_of()} <span class="hi">{account.currency} {fmt(spent)}</span>{' ' +
+			m.account_of() +
+			' '}{account.currency}
+		{fmt(account.budget)}
 	</div>
 
 	<div class="prog-meta">
@@ -54,7 +57,9 @@
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		backdrop-filter: blur(20px) saturate(120%);
 		-webkit-backdrop-filter: blur(20px) saturate(120%);
-		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+		box-shadow:
+			0 4px 24px rgba(0, 0, 0, 0.3),
+			inset 0 1px 0 rgba(255, 255, 255, 0.06);
 	}
 
 	.header {

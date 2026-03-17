@@ -48,7 +48,11 @@
 			<div class="insight-card days">
 				<span class="insight-icon"><Icon name="calendar" size={24} /></span>
 				<span class="insight-value">{daysUntilSalary}</span>
-				<span class="insight-label">{daysUntilSalary === 0 ? m.home_financial_month_end() : m.home_days_until_month_end()}</span>
+				<span class="insight-label"
+					>{daysUntilSalary === 0
+						? m.home_financial_month_end()
+						: m.home_days_until_month_end()}</span
+				>
 			</div>
 		</div>
 	</div>
@@ -63,12 +67,27 @@
 			<div class="empty-prompt">
 				<div class="empty-icon">
 					<svg viewBox="0 0 48 48" fill="none">
-						<circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="4 4"/>
-						<path d="M24 16v16M16 24h16" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+						<circle
+							cx="24"
+							cy="24"
+							r="20"
+							stroke="rgba(255,255,255,0.15)"
+							stroke-width="1.5"
+							stroke-dasharray="4 4"
+						/>
+						<path
+							d="M24 16v16M16 24h16"
+							stroke="rgba(255,255,255,0.3)"
+							stroke-width="1.5"
+							stroke-linecap="round"
+						/>
 					</svg>
 				</div>
 				<span class="empty-title">{m.home_no_expenses()}</span>
-				<span class="empty-sub">{@html m.home_no_expenses_hint()}</span>
+				<span class="empty-sub"
+					>{m.home_no_expenses_hint_before()} <strong>+</strong>
+					{m.home_no_expenses_hint_after()}</span
+				>
 			</div>
 		</div>
 	{/if}

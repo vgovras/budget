@@ -18,9 +18,7 @@
 	let inputEl: HTMLInputElement;
 	let editing = $state(false);
 
-	const formatted = $derived(
-		value ? value.toLocaleString('uk-UA') : ''
-	);
+	const formatted = $derived(value ? value.toLocaleString('uk-UA') : '');
 
 	function onFocus() {
 		editing = true;

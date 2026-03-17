@@ -8,6 +8,7 @@
 	import StepFinish from './steps/step-finish.svelte';
 
 	const vm = new OnboardingViewModel();
+	const slideIndices = $derived(Array.from({ length: vm.totalSlides }, (_, i) => i));
 
 	let startX = 0;
 	let startY = 0;
@@ -55,7 +56,7 @@
 		ontouchend={onTouchEnd}
 	>
 		<div class="progress-dots">
-			{#each Array(vm.totalSlides) as _, i}
+			{#each slideIndices as i (i)}
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<div

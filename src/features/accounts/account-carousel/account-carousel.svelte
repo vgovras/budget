@@ -16,7 +16,10 @@
 		const count = vm.accounts.length;
 		if (carousel && count > 0 && count !== prevCount) {
 			requestAnimationFrame(() => {
-				carousel.scrollTo({ left: vm.activeIdx * (carousel.offsetWidth + 12), behavior: 'instant' });
+				carousel.scrollTo({
+					left: vm.activeIdx * (carousel.offsetWidth + 12),
+					behavior: 'instant'
+				});
 			});
 		}
 		prevCount = count;
@@ -55,11 +58,15 @@
 
 <div class="accounts-carousel-wrap">
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="accounts-carousel" bind:this={carousel} onscroll={onScroll} ontouchstart={(e) => e.stopPropagation()} ontouchmove={(e) => e.stopPropagation()}>
+	<div
+		class="accounts-carousel"
+		bind:this={carousel}
+		onscroll={onScroll}
+		ontouchstart={(e) => e.stopPropagation()}
+		ontouchmove={(e) => e.stopPropagation()}
+	>
 		{#each vm.accounts as account, i (account.id)}
-			<div
-				style="transform:{cardTransforms[i] ?? 'none'};opacity:{cardOpacities[i] ?? 1}"
-			>
+			<div style="transform:{cardTransforms[i] ?? 'none'};opacity:{cardOpacities[i] ?? 1}">
 				<AccountCard {account} onclick={() => vm.setActive(i)} />
 			</div>
 		{/each}
@@ -75,7 +82,7 @@
 		</div>
 	</div>
 	<div class="carousel-dots">
-		{#each vm.accounts as _, i}
+		{#each vm.accounts as acc, i (acc.id)}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="carousel-dot" class:active={i === vm.activeIdx} onclick={() => scrollTo(i)}></div>

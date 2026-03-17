@@ -2,15 +2,12 @@
 	import type { QuickChip } from './quick-chips.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 
-	let {
-		chips,
-		onSelect
-	}: { chips: QuickChip[]; onSelect: (chip: QuickChip) => void } = $props();
+	let { chips, onSelect }: { chips: QuickChip[]; onSelect: (chip: QuickChip) => void } = $props();
 </script>
 
 {#if chips.length > 0}
 	<div class="quick-repeat">
-		{#each chips as chip}
+		{#each chips as chip (chip.note + chip.amount)}
 			<button class="quick-chip" onclick={() => onSelect(chip)}>
 				<span class="quick-chip-emoji"><Icon name={chip.icon} size={14} /></span>
 				<span class="quick-chip-note">{chip.note}</span>

@@ -45,7 +45,7 @@
 		transform: translate(-50%, -50%);
 		width: calc(100% - 48px);
 		max-width: 320px;
-		background: rgba(14, 14, 18, 0.80);
+		background: rgba(14, 14, 18, 0.8);
 		backdrop-filter: blur(24px) saturate(120%);
 		-webkit-backdrop-filter: blur(24px) saturate(120%);
 		border-radius: 24px;

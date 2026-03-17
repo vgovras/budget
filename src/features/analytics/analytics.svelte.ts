@@ -2,7 +2,7 @@ import type { Expense } from '$lib/types.js';
 import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { CATEGORIES } from '$lib/constants.js';
-import { getDailyBudget } from '$lib/utils/budget.js';
+import { getDailyBudget, getWeeklyAmounts } from '$lib/utils/budget.js';
 
 export class AnalyticsViewModel {
 	readonly accountExpenses = $derived(
@@ -29,23 +29,7 @@ export class AnalyticsViewModel {
 			.sort((a, b) => b.sum - a.sum)
 	);
 
-	readonly weeklyAmounts = $derived(
-		Array.from({ length: 7 }, (_, i) => {
-			const d = new Date();
-			d.setDate(d.getDate() - (6 - i));
-			const key = d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' });
-			return this.accountExpenses
-				.filter(
-					(e: Expense) =>
-						e.date &&
-						new Date(e.date).toLocaleDateString('uk-UA', {
-							day: '2-digit',
-							month: '2-digit'
-						}) === key
-				)
-				.reduce((s: number, e: Expense) => s + e.amount, 0);
-		})
-	);
+	readonly weeklyAmounts = $derived(getWeeklyAmounts(this.accountExpenses));
 
 	readonly dailyBudget = $derived(
 		accountsVM.active ? getDailyBudget(expensesVM.expenses, accountsVM.active) : 0

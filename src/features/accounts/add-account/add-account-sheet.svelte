@@ -31,7 +31,7 @@
 		<div class="field">
 			<span class="field-label">{m.field_label_type()}</span>
 			<div class="type-chips">
-				{#each TYPES as t}
+				{#each TYPES as t (t.value)}
 					<button
 						class="type-chip"
 						class:active={vm.type === t.value}
@@ -125,7 +125,7 @@
 		transition: all 0.2s ease;
 	}
 	.type-chip.active {
-		border-color: rgba(255, 255, 255, 0.20);
+		border-color: rgba(255, 255, 255, 0.2);
 		background: rgba(255, 255, 255, 0.08);
 		color: var(--text-hi);
 	}

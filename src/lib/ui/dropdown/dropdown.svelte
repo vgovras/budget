@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Icon from '$lib/ui/icon/icon.svelte';
-	import type { Snippet } from 'svelte';
 
 	let {
 		value = $bindable<string>(''),
@@ -42,12 +41,8 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="backdrop" onclick={() => (open = false)}></div>
 		<div class="menu" class:menu-top={position === 'top'}>
-			{#each options as opt}
-				<button
-					class="option"
-					class:active={value === opt.value}
-					onclick={() => pick(opt.value)}
-				>
+			{#each options as opt (opt.value)}
+				<button class="option" class:active={value === opt.value} onclick={() => pick(opt.value)}>
 					{#if opt.icon}
 						<span class="option-icon">{opt.icon}</span>
 					{/if}

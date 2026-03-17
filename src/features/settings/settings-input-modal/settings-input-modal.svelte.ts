@@ -1,11 +1,7 @@
 import { settingsVM } from '../settings.svelte.js';
 import * as m from '$lib/paraglide/messages.js';
 
-export type SettingsInputType =
-	| 'budget'
-	| 'salary'
-	| 'payday'
-	| 'cat-limit';
+export type SettingsInputType = 'budget' | 'salary' | 'payday' | 'cat-limit';
 
 interface FieldConfig {
 	title: string;
@@ -16,9 +12,21 @@ interface FieldConfig {
 
 function getFieldMap(): Record<Exclude<SettingsInputType, 'cat-limit'>, FieldConfig> {
 	return {
-		budget: { title: m.settings_monthly_budget_label(), currency: true, subtitle: m.settings_monthly_budget_desc() },
-		salary: { title: m.settings_salary_label(), currency: true, subtitle: m.settings_salary_desc() },
-		payday: { title: m.settings_payday_label(), currency: false, subtitle: m.settings_payday_subtitle() }
+		budget: {
+			title: m.settings_monthly_budget_label(),
+			currency: true,
+			subtitle: m.settings_monthly_budget_desc()
+		},
+		salary: {
+			title: m.settings_salary_label(),
+			currency: true,
+			subtitle: m.settings_salary_desc()
+		},
+		payday: {
+			title: m.settings_payday_label(),
+			currency: false,
+			subtitle: m.settings_payday_subtitle()
+		}
 	};
 }
 

@@ -20,14 +20,11 @@ export class CategoryLimitsViewModel {
 			const spent = expensesVM.expenses
 				.filter(
 					(e: Expense) =>
-						e.accountId === accountsVM.active?.id &&
-						e.type !== 'income' &&
-						e.icon === cat.icon
+						e.accountId === accountsVM.active?.id && e.type !== 'income' && e.icon === cat.icon
 				)
 				.reduce((s: number, e: Expense) => s + e.amount, 0);
 			const pct = limit > 0 ? Math.min(Math.round((spent / limit) * 100), 100) : 0;
-			const color =
-				pct > 90 ? '#ff6060' : pct > 70 ? '#ffb830' : CAT_COLORS[i % CAT_COLORS.length];
+			const color = pct > 90 ? '#ff6060' : pct > 70 ? '#ffb830' : CAT_COLORS[i % CAT_COLORS.length];
 			return { icon: cat.icon, label: cat.label, spent, limit, pct, color };
 		})
 	);

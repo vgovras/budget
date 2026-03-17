@@ -1,5 +1,6 @@
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
+import { prorateForCurrentMonth } from '$lib/utils/budget.js';
 import * as m from '$lib/paraglide/messages.js';
 
 const SAVINGS_STEPS = [5, 10, 20, 25, 50, 75];
@@ -28,18 +29,14 @@ export class OnboardingViewModel {
 				? Math.round((this.salary * this.savingsPercent) / 100)
 				: 0
 	);
-	readonly budget = $derived(
-		this.salary ? this.salary - this.savingsAmount : 0
-	);
+	readonly budget = $derived(this.salary ? this.salary - this.savingsAmount : 0);
 
 	readonly canProceed = $derived(
 		this.currentSlide !== 1 || (this.salary !== null && this.salary > 0)
 	);
 
 	readonly canGoBack = $derived(this.currentSlide > 0);
-	readonly canGoForward = $derived(
-		this.currentSlide < this.maxReachedSlide
-	);
+	readonly canGoForward = $derived(this.currentSlide < this.maxReachedSlide);
 
 	next() {
 		if (!this.canProceed) return;
@@ -81,11 +78,7 @@ export class OnboardingViewModel {
 		const sal = this.salary ?? 0;
 		const budget = this.budget > 0 ? this.budget : sal > 0 ? sal : 10000;
 
-		// Prorate budget for remaining days in current month
-		const now = new Date();
-		const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-		const daysLeft = daysInMonth - now.getDate() + 1;
-		const proratedBudget = Math.round(budget * (daysLeft / daysInMonth));
+		const { proratedBudget } = prorateForCurrentMonth(budget);
 
 		settingsVM.updateBudget(budget);
 		if (sal > 0) settingsVM.updateSalary(sal);
