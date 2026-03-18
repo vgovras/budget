@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+/* System fallback for ₴ (U+20B4) — DM Sans lacks this glyph */
+@font-face {
+	font-family: 'Currency Fallback';
+	src: local('Arial'), local('Roboto'), local('Helvetica Neue'), local('sans-serif');
+	unicode-range: U+20B4;
+}
+
 /* ============================================================
    DESIGN TOKENS
    ============================================================ */
@@ -54,8 +61,8 @@
 	--glass-blur: 20px;
 	--glass-saturate: 120%;
 
-	--font: 'DM Sans', system-ui, sans-serif;
-	--font-mono: 'DM Sans', monospace;
+	--font: 'DM Sans', 'Currency Fallback', system-ui, sans-serif;
+	--font-mono: 'DM Sans', 'Currency Fallback', monospace;
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }

@@ -130,14 +130,14 @@
 		color: rgba(255,255,255,0.2); font-weight: 500; margin-bottom: 10px;
 	}
 	.slide-title {
-		font-size: 28px; font-weight: 500; color: #fff; letter-spacing: -0.8px;
+		font-size: 32px; font-weight: 500; color: #fff; letter-spacing: -0.8px;
 		line-height: 1.15; margin-bottom: 10px;
 	}
 	.slide-title :global(em) {
 		font-style: normal; color: rgba(255,255,255,0.38); font-weight: 300;
 	}
 	.slide-desc {
-		font-size: 14px; color: rgba(255,255,255,0.38); font-weight: 300; line-height: 1.6;
+		font-size: 15px; color: rgba(255,255,255,0.38); font-weight: 300; line-height: 1.6;
 	}
 
 	.bottom { padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }

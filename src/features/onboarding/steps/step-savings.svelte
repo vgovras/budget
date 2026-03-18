@@ -139,7 +139,7 @@
 		color: rgba(255,255,255,0.2); font-weight: 500; margin-bottom: 8px;
 	}
 	.slide-title {
-		font-size: 28px; font-weight: 500; color: #fff; letter-spacing: -0.8px;
+		font-size: 32px; font-weight: 500; color: #fff; letter-spacing: -0.8px;
 		line-height: 1.15;
 	}
 	.slide-title :global(em) {
