@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/ui/button/button.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
 	import { getLocale, setLocale, locales } from '$lib/paraglide/runtime.js';
 	import { LANG_OPTIONS } from '$lib/utils/locale.js';
@@ -49,7 +50,7 @@
 	</div>
 
 	<div class="bottom">
-		<button class="btn-primary" onclick={onNext}>{m.onboarding_start()} →</button>
+		<Button variant="primary" size="lg" class="text-[15px] rounded-[18px]" onclick={onNext}>{m.onboarding_start()} →</Button>
 		<div class="lang-row">
 			<Dropdown bind:value={locale} options={LANG_OPTIONS} position="top" />
 		</div>
@@ -101,11 +102,6 @@
 	}
 
 	.bottom { padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-	.btn-primary {
-		width: 100%; padding: 16px; border-radius: 18px; border: none; cursor: pointer;
-		font-family: var(--font); font-size: 15px; font-weight: 500;
-		background: rgba(255,255,255,0.95); color: #08080f;
-	}
 	.lang-row {
 		display: flex;
 		justify-content: center;

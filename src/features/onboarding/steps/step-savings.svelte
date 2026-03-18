@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/ui/button/button.svelte';
 	import { fmt } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
 
@@ -90,7 +91,7 @@
 	</div>
 
 	<div class="bottom">
-		<button class="btn-primary" onclick={onNext}>{m.onboarding_next()} →</button>
+		<Button variant="primary" size="lg" class="text-[15px] rounded-[18px]" onclick={onNext}>{m.onboarding_next()} →</Button>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<div class="skip-link" onclick={onSkip}>{m.onboarding_skip()}</div>
@@ -214,11 +215,6 @@
 	}
 
 	.bottom { padding: 12px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-	.btn-primary {
-		width: 100%; padding: 16px; border-radius: 18px; border: none; cursor: pointer;
-		font-family: var(--font); font-size: 15px; font-weight: 500;
-		background: rgba(255,255,255,0.95); color: #08080f;
-	}
 	.skip-link {
 		text-align: center; font-size: 12px; color: rgba(255,255,255,0.2);
 		cursor: pointer; padding-top: 4px; font-weight: 300;

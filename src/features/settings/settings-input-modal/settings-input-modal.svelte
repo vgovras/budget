@@ -1,5 +1,6 @@
 <script lang="ts">
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
+	import Button from '$lib/ui/button/button.svelte';
 	import type { SettingsInputModalViewModel } from './settings-input-modal.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
@@ -32,7 +33,7 @@
 	{#if vm.config.subtitle}
 		<div class="settings-input-sub">{vm.config.subtitle}</div>
 	{/if}
-	<button class="btn-settings-save" onclick={() => vm.save()}>{m.button_save()}</button>
+	<Button variant="default" size="lg" onclick={() => vm.save()}>{m.button_save()}</Button>
 </BottomSheet>
 
 <style>
@@ -81,20 +82,4 @@
 		text-align: center;
 	}
 
-	.btn-settings-save {
-		width: 100%;
-		padding: 14px;
-		border-radius: var(--r-md);
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-hi);
-		font-size: 16px;
-		font-weight: 600;
-		cursor: pointer;
-		font-family: var(--font);
-		transition: all 0.2s ease;
-	}
-	.btn-settings-save:hover {
-		background: rgba(255, 255, 255, 0.12);
-	}
 </style>

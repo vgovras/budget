@@ -1,5 +1,6 @@
 <script lang="ts">
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
+	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import type { AddExpenseSheetViewModel } from './add-expense-sheet.svelte.js';
 	import QuickChips from './quick-chips/quick-chips.svelte';
@@ -89,10 +90,10 @@
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 
-			<button class="btn-save" disabled={!vm.canSave} onclick={() => vm.save()}>
+			<Button variant="accent" size="lg" class="gap-2" disabled={!vm.canSave} onclick={() => vm.save()}>
 				<Icon name="arrow-left-right" size={18} />
 				{m.button_transfer()}
-			</button>
+			</Button>
 		{:else}
 			<!-- Expense / Income content -->
 			<QuickChips chips={vm.quickChips} currency={accountsVM.active?.currency ?? settingsVM.currency} onSelect={(chip) => vm.quickFill(chip)} />
@@ -111,9 +112,9 @@
 				<div class="daily-hint">{m.daily_hint_available_today()} {accountsVM.active?.currency ?? settingsVM.currency}{fmt(vm.dailyBudget)}</div>
 			{/if}
 
-			<button class="btn-save" disabled={!vm.canSave} onclick={() => vm.save()}>
+			<Button variant="accent" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
 				{vm.sheetType === 'expense' ? m.button_save() : m.button_add_income()}
-			</button>
+			</Button>
 		{/if}
 	</div>
 </BottomSheet>
@@ -216,36 +217,6 @@
 		font-family: var(--font-mono);
 		color: var(--text-lo);
 		margin-top: -6px;
-	}
-
-	.btn-save {
-		width: 100%;
-		padding: 17px;
-		border-radius: var(--r-md);
-		border: 1px solid rgba(80, 130, 255, 0.25);
-		background: rgba(80, 130, 255, 0.08);
-		color: rgba(80, 130, 255, 0.7);
-		font-size: 17px;
-		font-weight: 500;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		position: relative;
-		overflow: hidden;
-		transition: all 0.22s ease;
-		font-family: var(--font);
-		cursor: pointer;
-	}
-
-	.btn-save:disabled {
-		opacity: 0.22;
-		cursor: not-allowed;
-		border-color: rgba(255, 255, 255, 0.07);
-	}
-
-	.btn-save:not(:disabled):hover {
-		background: rgba(80, 130, 255, 0.14);
-		border-color: rgba(80, 130, 255, 0.3);
 	}
 
 	.field {

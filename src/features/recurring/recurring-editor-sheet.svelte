@@ -1,5 +1,6 @@
 <script lang="ts">
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
+	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
@@ -100,9 +101,9 @@
 			/>
 		</div>
 
-		<button class="btn-save" disabled={!vm.canSave} onclick={() => vm.save()}>
+		<Button variant="soft" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
 			{m.button_save()}
-		</button>
+		</Button>
 	</div>
 </BottomSheet>
 
@@ -220,31 +221,4 @@
 		border-color: rgba(221, 232, 240, 0.28);
 	}
 
-	.btn-save {
-		width: 100%;
-		padding: 17px;
-		border-radius: var(--r-md);
-		border: 1px solid rgba(221, 232, 240, 0.25);
-		background: rgba(221, 232, 240, 0.09);
-		color: #ffffff;
-		font-size: 17px;
-		font-weight: 600;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: all 0.22s ease;
-		font-family: var(--font);
-		cursor: pointer;
-		box-shadow:
-			inset 0 1px 0 rgba(221, 232, 240, 0.35),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-			0 0 24px rgba(221, 232, 240, 0.12),
-			0 6px 20px rgba(0, 0, 0, 0.35);
-	}
-	.btn-save:disabled {
-		opacity: 0.22;
-		cursor: not-allowed;
-		box-shadow: none;
-		border-color: var(--border);
-	}
 </style>

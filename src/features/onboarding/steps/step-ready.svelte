@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/ui/button/button.svelte';
 	import { scale } from 'svelte/transition';
 	import { fmt } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -62,8 +63,8 @@
 	</div>
 
 	<div class="bottom">
-		<button class="btn-final" onclick={onFinish}>{m.onboarding_open_app()}</button>
-		<button class="btn-secondary" onclick={onBack}>← {m.onboarding_back()}</button>
+		<Button variant="gradient" size="lg" class="text-[15px] rounded-[18px]" onclick={onFinish}>{m.onboarding_open_app()}</Button>
+		<Button variant="outline" size="lg" class="text-sm font-normal rounded-[18px]" onclick={onBack}>← {m.onboarding_back()}</Button>
 	</div>
 </div>
 
@@ -143,19 +144,4 @@
 
 	.bottom { padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
 
-	.btn-final {
-		width: 100%; padding: 16px; border-radius: 18px; border: none; cursor: pointer;
-		font-family: var(--font); font-size: 15px; font-weight: 500;
-		background: linear-gradient(135deg, rgba(60,100,255,0.8), rgba(120,60,220,0.8));
-		color: #fff;
-		box-shadow: 0 8px 24px rgba(60,100,255,0.25);
-	}
-
-	.btn-secondary {
-		width: 100%; padding: 14px; border-radius: 18px; cursor: pointer;
-		font-family: var(--font); font-size: 14px; font-weight: 400;
-		background: transparent; border: 1px solid rgba(255,255,255,0.1);
-		color: rgba(255,255,255,0.45);
-	}
-	.btn-secondary:hover { border-color: rgba(255,255,255,0.2); }
 </style>

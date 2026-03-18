@@ -2,6 +2,7 @@
 	import { HomeScreenViewModel } from './home-screen.svelte.js';
 	import DonutChart from '$features/analytics/donut-chart/donut-chart.svelte';
 	import ExpenseRow from '$features/expenses/expense-row/expense-row.svelte';
+	import Button from '$lib/ui/button/button.svelte';
 	import Card from '$lib/ui/card/card.svelte';
 	import WeeklyBars from '$features/analytics/weekly-bars/weekly-bars.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
@@ -116,7 +117,7 @@
 			</div>
 			<div class="empty-title">{m.home_no_expenses_empty_title()}</div>
 			<div class="empty-sub">{m.home_no_expenses_empty_desc()}</div>
-			<button class="empty-btn" onclick={() => onAdd?.()}>+ {m.home_add_first()}</button>
+			<Button variant="accent" size="sm" class="mt-1 px-5 py-2.5 rounded-xl" onclick={() => onAdd?.()}>+ {m.home_add_first()}</Button>
 		</Card>
 
 		<Card class="tips-card">
@@ -253,12 +254,6 @@
 	.empty-sub {
 		font-size: 12px; color: rgba(255,255,255,0.25); font-weight: 300;
 		text-align: center; line-height: 1.5; max-width: 200px;
-	}
-	.empty-btn {
-		margin-top: 4px; padding: 10px 20px; border-radius: 12px;
-		border: 1px solid rgba(80,130,255,0.2); cursor: pointer;
-		background: rgba(80,130,255,0.12); color: rgba(100,160,255,0.85);
-		font-size: 13px; font-weight: 500; font-family: var(--font);
 	}
 
 	/* Tips card */

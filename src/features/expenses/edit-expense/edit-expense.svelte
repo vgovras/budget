@@ -1,5 +1,6 @@
 <script lang="ts">
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
+	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import type { EditExpenseViewModel } from './edit-expense.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -8,8 +9,10 @@
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
-	<div class="sheet-body">
-		<div class="edit-title">{vm.title}</div>
+	<div class="flex flex-col gap-4">
+		<div class="text-[11px] font-medium tracking-[1.4px] uppercase text-[rgba(255,255,255,0.25)] text-center">
+			{vm.title}
+		</div>
 
 		<div class="amount-field">
 			<MoneyInput bind:value={vm.amount} size="lg" autofocus={vm.isOpen} />
@@ -17,29 +20,18 @@
 
 		<input class="note-field" type="text" placeholder={m.placeholder_note()} bind:value={vm.note} />
 
-		<div class="edit-actions">
-			<button class="edit-btn danger" onclick={() => vm.delete()}>{m.button_delete()}</button>
-			<button class="edit-btn save" onclick={() => vm.save()}>{m.button_save()}</button>
+		<div class="flex gap-2.5">
+			<Button variant="destructive" size="md" class="flex-1" onclick={() => vm.delete()}>
+				{m.button_delete()}
+			</Button>
+			<Button variant="accent" size="md" class="flex-1" onclick={() => vm.save()}>
+				{m.button_save()}
+			</Button>
 		</div>
 	</div>
 </BottomSheet>
 
 <style>
-	.sheet-body {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.edit-title {
-		font-size: 11px;
-		font-weight: 500;
-		letter-spacing: 1.4px;
-		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.25);
-		text-align: center;
-	}
-
 	.amount-field {
 		padding: 16px 18px;
 		background: rgba(255, 255, 255, 0.03);
@@ -68,44 +60,5 @@
 	.note-field:focus {
 		border-color: rgba(255, 255, 255, 0.16);
 		outline: none;
-	}
-
-	.edit-actions {
-		display: flex;
-		gap: 10px;
-	}
-
-	.edit-btn {
-		flex: 1;
-		padding: 14px;
-		border-radius: var(--r-md);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--text-hi);
-		font-size: 15px;
-		font-weight: 500;
-		cursor: pointer;
-		font-family: var(--font);
-		transition: all 0.15s ease;
-	}
-	.edit-btn:hover {
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.edit-btn.danger {
-		color: rgba(255, 100, 100, 0.75);
-		border-color: rgba(255, 100, 100, 0.2);
-	}
-	.edit-btn.danger:hover {
-		background: rgba(255, 100, 100, 0.08);
-	}
-
-	.edit-btn.save {
-		background: rgba(80, 130, 255, 0.08);
-		border-color: rgba(80, 130, 255, 0.25);
-		color: rgba(80, 130, 255, 0.7);
-	}
-	.edit-btn.save:hover {
-		background: rgba(80, 130, 255, 0.14);
 	}
 </style>
