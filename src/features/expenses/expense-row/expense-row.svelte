@@ -21,9 +21,16 @@
 		{#if expense.note}
 			<div class="exp-note">{expense.note}</div>
 		{/if}
+		{#if expense.tags && expense.tags.length > 0}
+			<div class="exp-tags">
+				{#each expense.tags as tag (tag)}
+					<span class="exp-tag">{tag}</span>
+				{/each}
+			</div>
+		{/if}
 	</div>
-	<span class="exp-amount" class:income={expense.type === 'income'}>
-		{expense.type === 'income' ? '+' : '−'}₴ {fmt(expense.amount)}
+	<span class="exp-amount" class:income={expense.type === 'income'} class:transfer={expense.type === 'transfer'}>
+		{expense.type === 'income' ? '+' : expense.type === 'transfer' ? '↔' : '−'}₴ {fmt(expense.amount)}
 	</span>
 </div>
 
@@ -81,6 +88,24 @@
 	}
 	.exp-amount.income {
 		color: var(--income);
+	}
+	.exp-amount.transfer {
+		color: var(--accent);
+	}
+
+	.exp-tags {
+		display: flex;
+		gap: 4px;
+		flex-wrap: wrap;
+		margin-top: 3px;
+	}
+	.exp-tag {
+		padding: 1px 6px;
+		border-radius: 4px;
+		background: var(--accent-bg);
+		color: var(--accent-dim);
+		font-size: 10px;
+		font-weight: 500;
 	}
 
 	.new-entry {

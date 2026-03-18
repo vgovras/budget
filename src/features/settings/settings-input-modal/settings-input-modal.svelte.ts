@@ -2,7 +2,7 @@ import { settingsVM } from '../settings.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import * as m from '$lib/paraglide/messages.js';
 
-export type SettingsInputType = 'budget' | 'salary' | 'payday' | 'cat-limit';
+export type SettingsInputType = 'budget' | 'salary' | 'payday';
 
 interface FieldConfig {
 	title: string;
@@ -11,7 +11,7 @@ interface FieldConfig {
 	isText?: boolean;
 }
 
-function getFieldMap(): Record<Exclude<SettingsInputType, 'cat-limit'>, FieldConfig> {
+function getFieldMap(): Record<SettingsInputType, FieldConfig> {
 	return {
 		budget: {
 			title: m.settings_monthly_budget_label(),
@@ -35,16 +35,10 @@ export class SettingsInputModalViewModel {
 	isOpen = $state(false);
 	fieldType = $state<SettingsInputType>('budget');
 	value = $state('');
-	catIcon = $state('');
-	catLabel = $state('');
 
-	readonly config = $derived<FieldConfig>(
-		this.fieldType === 'cat-limit'
-			? { title: this.catLabel, currency: true, subtitle: m.settings_cat_limit_subtitle() }
-			: getFieldMap()[this.fieldType]
-	);
+	readonly config = $derived<FieldConfig>(getFieldMap()[this.fieldType]);
 
-	open(type: Exclude<SettingsInputType, 'cat-limit'>) {
+	open(type: SettingsInputType) {
 		this.fieldType = type;
 		this.isOpen = true;
 
@@ -59,14 +53,6 @@ export class SettingsInputModalViewModel {
 				this.value = String(settingsVM.payday);
 				break;
 		}
-	}
-
-	openCatLimit(icon: string, label: string) {
-		this.fieldType = 'cat-limit';
-		this.catIcon = icon;
-		this.catLabel = label;
-		this.value = settingsVM.catLimits[icon] ? String(settingsVM.catLimits[icon]) : '';
-		this.isOpen = true;
 	}
 
 	close() {
@@ -87,9 +73,6 @@ export class SettingsInputModalViewModel {
 				break;
 			case 'payday':
 				settingsVM.updatePayday(Math.max(1, Math.min(31, Math.round(num))));
-				break;
-			case 'cat-limit':
-				settingsVM.setCatLimit(this.catIcon, num);
 				break;
 		}
 		this.close();

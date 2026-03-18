@@ -1,10 +1,14 @@
 import type { Expense, Account } from '$lib/types.js';
 import { getDateKey } from './format.js';
 
+export function isSpending(e: Expense): boolean {
+	return e.type === 'expense';
+}
+
 export function getAccStats(expenses: Expense[], accId: string): number {
 	let spent = 0;
 	for (const e of expenses) {
-		if (e.accountId === accId && e.type !== 'income') spent += e.amount;
+		if (e.accountId === accId && isSpending(e)) spent += e.amount;
 	}
 	return spent;
 }
@@ -15,7 +19,7 @@ export function getDailyBudget(expenses: Expense[], account: Account, budgetOver
 	const now = new Date();
 	const daysLeft = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
 	const totalSpent = expenses
-		.filter((e) => e.accountId === account.id && e.type !== 'income')
+		.filter((e) => e.accountId === account.id && isSpending(e))
 		.reduce((s, e) => s + e.amount, 0);
 	const remaining = Math.max(0, budget - totalSpent);
 	return Math.floor(remaining / Math.max(daysLeft, 1));
@@ -103,7 +107,7 @@ export function getTodaySpent(expenses: Expense[], accId: string): number {
 	return expenses
 		.filter(
 			(e) =>
-				e.accountId === accId && e.type !== 'income' && e.date && getDateKey(e.date) === 'today'
+				e.accountId === accId && isSpending(e) && e.date && getDateKey(e.date) === 'today'
 		)
 		.reduce((s, e) => s + e.amount, 0);
 }

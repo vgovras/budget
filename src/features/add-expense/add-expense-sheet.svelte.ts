@@ -1,7 +1,7 @@
 import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
-import { CATEGORIES } from '$lib/constants.js';
+import { categoriesVM } from '$features/categories/categories.svelte.js';
 import { getDailyBudget } from '$lib/utils/budget.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
 import { nowISO } from '$lib/utils/format.js';
@@ -13,6 +13,22 @@ export class AddExpenseSheetViewModel {
 	note = $state('');
 	sheetType = $state<'expense' | 'income'>('expense');
 	selectedCategory = $state<string | null>(null);
+	tagInput = $state('');
+	tags = $state<string[]>([]);
+
+	readonly allTags = $derived(
+		[...new Set(expensesVM.expenses.flatMap((e) => e.tags ?? []))].sort()
+	);
+
+	readonly tagSuggestions = $derived(
+		this.tagInput.trim()
+			? this.allTags.filter(
+					(t) =>
+						t.toLowerCase().includes(this.tagInput.trim().toLowerCase()) &&
+						!this.tags.includes(t)
+				)
+			: []
+	);
 
 	readonly canSave = $derived(this.amount !== null && this.amount > 0);
 
@@ -28,6 +44,20 @@ export class AddExpenseSheetViewModel {
 		this.note = '';
 		this.selectedCategory = null;
 		this.sheetType = 'expense';
+		this.tagInput = '';
+		this.tags = [];
+	}
+
+	addTag(tag: string) {
+		const t = tag.trim();
+		if (t && !this.tags.includes(t)) {
+			this.tags = [...this.tags, t];
+		}
+		this.tagInput = '';
+	}
+
+	removeTag(tag: string) {
+		this.tags = this.tags.filter((t) => t !== tag);
 	}
 
 	close() {
@@ -56,19 +86,26 @@ export class AddExpenseSheetViewModel {
 		const isoDate = nowISO();
 
 		if (this.sheetType === 'income') {
-			accountsVM.update(acc.id, { balance: acc.balance + amount });
+			const cat = categoriesVM.getByIcon(this.selectedCategory ?? '');
+			const commission = cat?.commission ?? 0;
+			const netAmount = commission > 0 ? Math.round(amount * (1 - commission / 100)) : amount;
+			accountsVM.update(acc.id, { balance: acc.balance + netAmount });
 			expensesVM.add({
-				icon: 'wallet',
-				label: m.income_label(),
+				icon: cat?.icon ?? 'wallet',
+				label: cat?.label ?? m.income_label(),
 				note: this.note || m.income_label(),
 				amount,
 				day: 'today',
 				date: isoDate,
 				accountId: acc.id,
-				type: 'income'
+				type: 'income',
+				commission: commission > 0 ? commission : undefined,
+				netAmount: commission > 0 ? netAmount : undefined,
+				tags: this.tags.length > 0 ? this.tags : undefined
 			});
 		} else {
-			const cat = CATEGORIES.find((c) => c.icon === this.selectedCategory) || CATEGORIES[0];
+			const cats = categoriesVM.categories;
+			const cat = cats.find((c) => c.icon === this.selectedCategory) || cats[0];
 			accountsVM.update(acc.id, { balance: acc.balance - amount });
 			expensesVM.add({
 				icon: cat.icon,
@@ -78,7 +115,8 @@ export class AddExpenseSheetViewModel {
 				day: 'today',
 				date: isoDate,
 				accountId: acc.id,
-				type: 'expense'
+				type: 'expense',
+				tags: this.tags.length > 0 ? this.tags : undefined
 			});
 		}
 

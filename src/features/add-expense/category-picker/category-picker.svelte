@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CATEGORIES } from '$lib/constants.js';
+	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
@@ -10,7 +10,7 @@
 <div>
 	<div class="cat-label">{m.label_category()}</div>
 	<div class="categories">
-		{#each CATEGORIES as cat (cat.icon)}
+		{#each categoriesVM.categories as cat (cat.icon)}
 			<button
 				class="cat-btn"
 				class:selected={selected === cat.icon}

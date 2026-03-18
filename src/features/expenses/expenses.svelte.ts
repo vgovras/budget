@@ -8,7 +8,7 @@ export class ExpensesViewModel {
 	nextId = $state(1);
 
 	readonly total = $derived(
-		this.expenses.filter((e) => e.type !== 'income').reduce((s, e) => s + e.amount, 0)
+		this.expenses.filter((e) => e.type === 'expense').reduce((s, e) => s + e.amount, 0)
 	);
 
 	constructor(repo: ExpensesRepository) {

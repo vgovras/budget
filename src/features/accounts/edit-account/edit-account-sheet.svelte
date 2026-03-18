@@ -1,84 +1,56 @@
 <script lang="ts">
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
-	import type { AddAccountSheetViewModel } from './add-account-sheet.svelte.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
-	import { CURRENCIES } from '$lib/constants.js';
+	import type { EditAccountSheetViewModel } from './edit-account-sheet.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { vm }: { vm: AddAccountSheetViewModel } = $props();
-
-	const TYPES = [
-		{ value: 'savings', label: m.add_account_type_savings(), icon: 'landmark' },
-		{ value: 'cash', label: m.add_account_type_cash(), icon: 'banknote' },
-		{ value: 'card', label: m.add_account_type_card(), icon: 'credit-card' }
-	];
+	let { vm, onDelete }: { vm: EditAccountSheetViewModel; onDelete?: (id: string, name: string) => void } = $props();
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
 	<div class="sheet-body">
-		<h3 class="sheet-title">{m.add_account_title()}</h3>
+		<h3 class="sheet-title">{m.edit_account_title()}</h3>
 
 		<div class="field">
 			<span class="field-label">{m.field_label_name()}</span>
 			<input
 				class="field-input"
 				type="text"
-				placeholder={m.placeholder_account_name()}
 				bind:value={vm.name}
 			/>
 		</div>
 
 		<div class="field">
-			<span class="field-label">{m.field_label_type()}</span>
-			<div class="type-chips">
-				{#each TYPES as t (t.value)}
-					<button
-						class="type-chip"
-						class:active={vm.type === t.value}
-						onclick={() => (vm.type = t.value)}
-					>
-						<Icon name={t.icon} size={18} />
-						<span>{t.label}</span>
-					</button>
-				{/each}
-			</div>
-		</div>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_currency()}</span>
-			<div class="type-chips">
-				{#each CURRENCIES as cur (cur)}
-					<button
-						class="type-chip currency-chip"
-						class:active={vm.currency === cur}
-						onclick={() => (vm.currency = cur)}
-					>
-						{cur}
-					</button>
-				{/each}
-			</div>
-		</div>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_budget_balance()}</span>
+			<span class="field-label">{m.account_balance()}</span>
 			<div class="amount-field">
-				<MoneyInput bind:value={vm.budget} size="lg" />
+				<MoneyInput bind:value={vm.balance} currency={vm.account?.currency ?? '₴'} size="lg" />
 			</div>
 		</div>
 
-		{#if vm.type === 'savings'}
+		<div class="field">
+			<span class="field-label">{m.account_budget_label()}</span>
+			<div class="amount-field">
+				<MoneyInput bind:value={vm.budget} currency={vm.account?.currency ?? '₴'} size="lg" />
+			</div>
+		</div>
+
+		{#if vm.account?.type === 'savings'}
 			<div class="field">
 				<span class="field-label">{m.goal_amount_label()}</span>
 				<div class="amount-field">
-					<MoneyInput bind:value={vm.goalAmount} currency={vm.currency} placeholder="0" />
+					<MoneyInput bind:value={vm.goalAmount} currency={vm.account?.currency ?? '₴'} />
 				</div>
-				<span class="field-hint">{m.goal_amount_hint()}</span>
 			</div>
 		{/if}
 
 		<button class="btn-save" disabled={!vm.canSave} onclick={() => vm.save()}>
-			{m.button_create()}
+			{m.button_save()}
+		</button>
+
+		<button class="btn-delete" onclick={() => { vm.close(); onDelete?.(vm.accountId, vm.name); }}>
+			<Icon name="trash" size={16} />
+			{m.button_delete()}
 		</button>
 	</div>
 </BottomSheet>
@@ -122,44 +94,8 @@
 		outline: none;
 		transition: border-color 0.2s ease;
 	}
-	.field-input::placeholder {
-		color: var(--text-lo);
-	}
 	.field-input:focus {
 		border-color: rgba(221, 232, 240, 0.28);
-	}
-
-	.type-chips {
-		display: flex;
-		gap: 8px;
-	}
-
-	.type-chip {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 4px;
-		padding: 12px 8px;
-		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--text-lo);
-		font-size: 13px;
-		font-family: var(--font);
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-	.currency-chip {
-		flex: 0;
-		min-width: 48px;
-		padding: 10px 14px;
-		font-size: 16px;
-	}
-	.type-chip.active {
-		border-color: rgba(255, 255, 255, 0.2);
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-hi);
 	}
 
 	.amount-field {
@@ -182,12 +118,9 @@
 		color: #ffffff;
 		font-size: 17px;
 		font-weight: 600;
-		letter-spacing: 0.01em;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		position: relative;
-		overflow: hidden;
 		transition: all 0.22s ease;
 		font-family: var(--font);
 		cursor: pointer;
@@ -203,14 +136,25 @@
 		box-shadow: none;
 		border-color: var(--border);
 	}
-	.btn-save:not(:disabled):hover {
-		background: rgba(221, 232, 240, 0.14);
-		border-color: rgba(221, 232, 240, 0.4);
-	}
 
-	.field-hint {
-		font-size: 11px;
-		color: var(--text-lo);
-		padding-left: 2px;
+	.btn-delete {
+		width: 100%;
+		padding: 14px;
+		border-radius: var(--r-md);
+		border: 1px solid var(--danger-border);
+		background: var(--danger-bg);
+		color: var(--danger);
+		font-size: 15px;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		transition: all 0.2s ease;
+		font-family: var(--font);
+		cursor: pointer;
+	}
+	.btn-delete:hover {
+		background: rgba(255, 100, 100, 0.12);
 	}
 </style>

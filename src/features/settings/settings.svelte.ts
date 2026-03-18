@@ -11,7 +11,6 @@ export class SettingsViewModel {
 	currency = $state(DEFAULT_SETTINGS.currency);
 	notifications = $state(DEFAULT_SETTINGS.notifications);
 	warning = $state(DEFAULT_SETTINGS.warning);
-	catLimits = $state<Record<string, number>>({});
 	onboardingDone = $state(false);
 	lastPayday = $state('');
 	loaded = $state(false);
@@ -33,7 +32,6 @@ export class SettingsViewModel {
 			this.currency = saved.currency;
 			this.notifications = saved.notifications;
 			this.warning = saved.warning;
-			this.catLimits = saved.catLimits ?? {};
 			this.onboardingDone = saved.onboardingDone ?? false;
 			this.lastPayday = saved.lastPayday ?? '';
 		}
@@ -65,11 +63,6 @@ export class SettingsViewModel {
 		this.#save();
 	}
 
-	setCatLimit(icon: string, limit: number) {
-		this.catLimits = { ...this.catLimits, [icon]: limit };
-		this.#save();
-	}
-
 	updateLastPayday(date: string) {
 		this.lastPayday = date;
 		this.#save();
@@ -87,7 +80,6 @@ export class SettingsViewModel {
 		this.currency = DEFAULT_SETTINGS.currency;
 		this.notifications = DEFAULT_SETTINGS.notifications;
 		this.warning = DEFAULT_SETTINGS.warning;
-		this.catLimits = {};
 		this.onboardingDone = false;
 		this.lastPayday = '';
 		this.#repo.clear();
@@ -105,7 +97,6 @@ export class SettingsViewModel {
 			currency: this.currency,
 			notifications: this.notifications,
 			warning: this.warning,
-			catLimits: this.catLimits,
 			onboardingDone: this.onboardingDone,
 			lastPayday: this.lastPayday
 		};

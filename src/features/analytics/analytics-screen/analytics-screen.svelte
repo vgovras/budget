@@ -4,12 +4,12 @@
 	import { expensesVM } from '$features/expenses/expenses.svelte.js';
 	import { getAccStats } from '$lib/utils/budget.js';
 	import DonutChart from '../donut-chart/donut-chart.svelte';
-	import WeeklyBars from '../weekly-bars/weekly-bars.svelte';
-	import CategoryLimits from '../category-limits/category-limits.svelte';
 	import { fmt } from '$lib/utils/format.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
 	import * as m from '$lib/paraglide/messages.js';
+
+	let { onAddAccount, onEditAccount }: { onAddAccount?: () => void; onEditAccount?: (id: string) => void } = $props();
 
 	const vm = new AnalyticsViewModel();
 
@@ -25,13 +25,12 @@
 </div>
 
 <div class="content" use:scrollNav>
-	<div class="daily-budget-card">
-		<div class="daily-budget-emoji"><Icon name="piggy-bank" size={24} /></div>
-		<div class="daily-budget-info">
-			<div class="daily-budget-label">{m.analytics_daily_budget()}</div>
-			<div class="daily-budget-val" class:danger={vm.dailyBudget <= 0}>₴ {fmt(vm.dailyBudget)}</div>
+	{#if vm.byAccount.length > 0}
+		<div class="analytics-card">
+			<div class="analytics-title">{m.analytics_balance_distribution()}</div>
+			<DonutChart byCategory={vm.byAccount} total={vm.totalBalance} />
 		</div>
-	</div>
+	{/if}
 
 	<div class="analytics-card accounts-card">
 		<div class="accounts-header">
@@ -41,43 +40,46 @@
 		{#each accountsVM.accounts as acc, i (acc.id)}
 			{@const spent = getAccStats(expensesVM.expenses, acc.id)}
 			{@const pct = acc.budget > 0 ? Math.min(Math.round((spent / acc.budget) * 100), 100) : 0}
+			{@const goalPct = acc.goalAmount && acc.goalAmount > 0 ? Math.min(Math.round((acc.balance / acc.goalAmount) * 100), 100) : 0}
 			{#if i > 0}
 				<div class="acc-divider"></div>
 			{/if}
-			<div class="acc-row">
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="acc-row" onclick={() => onEditAccount?.(acc.id)}>
 				<div class="acc-icon">
 					<Icon name={typeIcon[acc.type] ?? 'wallet'} size={18} />
 				</div>
 				<div class="acc-info">
 					<div class="acc-name">{acc.name}</div>
-					{#if acc.budget > 0}
+					{#if acc.goalAmount && acc.goalAmount > 0}
+						<div class="acc-budget-line">{m.goal_progress()}: {acc.currency} {fmt(acc.balance)} / {acc.currency} {fmt(acc.goalAmount)} ({goalPct}%)</div>
+					{:else if acc.budget > 0}
 						<div class="acc-budget-line">{acc.currency} {fmt(spent)} / {acc.currency} {fmt(acc.budget)}</div>
 					{/if}
 				</div>
 				<div class="acc-balance">{acc.currency} {fmt(acc.balance)}</div>
 			</div>
-			{#if acc.budget > 0}
+			{#if acc.goalAmount && acc.goalAmount > 0}
+				<div class="acc-prog-track">
+					<div class="acc-prog-fill goal-fill" style="width:{goalPct}%"></div>
+				</div>
+			{:else if acc.budget > 0}
 				<div class="acc-prog-track">
 					<div class="acc-prog-fill" style="width:{pct}%"></div>
 				</div>
 			{/if}
 		{/each}
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div class="add-acc-row" onclick={() => onAddAccount?.()}>
+			<div class="add-acc-icon">
+				<Icon name="plus" size={16} />
+			</div>
+			<span class="add-acc-label">{m.button_add_account()}</span>
+		</div>
 	</div>
 
-	<div class="analytics-card">
-		<div class="analytics-title">{m.analytics_expenses_by_category()}</div>
-		<DonutChart byCategory={vm.byCategory} total={vm.total} />
-	</div>
-
-	<div class="analytics-card">
-		<div class="analytics-title">{m.analytics_expenses_by_week()}</div>
-		<WeeklyBars weeklyAmounts={vm.weeklyAmounts} />
-	</div>
-
-	<div class="analytics-card">
-		<div class="analytics-title">{m.analytics_category_limits()}</div>
-		<CategoryLimits />
-	</div>
 </div>
 
 <style>
@@ -129,41 +131,6 @@
 		text-transform: uppercase;
 		color: rgba(255, 255, 255, 0.25);
 		margin-bottom: 16px;
-	}
-
-	.daily-budget-card {
-		background: #09090e;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		border-radius: 20px;
-		padding: 14px 16px;
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-	.daily-budget-emoji {
-		display: flex;
-		align-items: center;
-	}
-	.daily-budget-info {
-		flex: 1;
-	}
-	.daily-budget-label {
-		font-size: 11px;
-		font-weight: 300;
-		color: rgba(255, 255, 255, 0.25);
-		text-transform: uppercase;
-		letter-spacing: 1.4px;
-		margin-bottom: 2px;
-	}
-	.daily-budget-val {
-		font-size: 22px;
-		font-weight: 300;
-		font-family: var(--font-mono);
-		color: var(--text-hi);
-		letter-spacing: -0.03em;
-	}
-	.daily-budget-val.danger {
-		color: var(--danger);
 	}
 
 	/* Accounts card */
@@ -236,5 +203,36 @@
 		border-radius: 99px;
 		background: rgba(80, 130, 255, 0.5);
 		transition: width 0.8s var(--ease-out);
+	}
+	.acc-prog-fill.goal-fill {
+		background: var(--income-dim);
+	}
+
+	.add-acc-row {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 14px 20px;
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+	.add-acc-row:hover {
+		background: rgba(255, 255, 255, 0.03);
+	}
+	.add-acc-icon {
+		width: 34px;
+		height: 34px;
+		border-radius: 10px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--accent-bg);
+		border: 1px solid var(--accent-border);
+		color: var(--accent);
+	}
+	.add-acc-label {
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--accent);
 	}
 </style>

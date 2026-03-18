@@ -3,6 +3,7 @@
 	import DonutChart from '$features/analytics/donut-chart/donut-chart.svelte';
 	import ExpenseRow from '$features/expenses/expense-row/expense-row.svelte';
 	import Card from '$lib/ui/card/card.svelte';
+	import WeeklyBars from '$features/analytics/weekly-bars/weekly-bars.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { navigationVM } from '$features/navigation/navigation.svelte.js';
 	import { fmt, getDateLabel } from '$lib/utils/format.js';
@@ -34,8 +35,36 @@
 		</div>
 	</div>
 
+	<!-- Stat Cards — завжди -->
+	<div class="stat-row">
+		<Card class="stat-card">
+			<div class="stat-icon-row">
+				<div class="s-icon"><Icon name="bar-chart" size={13} /></div>
+				<div class="stat-badge">{m.home_daily_remaining()}</div>
+			</div>
+			<div class="stat-val" class:stat-danger={vm.dailyRemaining <= 0}><span class="curr">{vm.currency}</span>{fmt(vm.dailyRemaining)}</div>
+			<div class="stat-sub">{m.home_daily_remaining_sub()}</div>
+		</Card>
+		<Card class="stat-card">
+			<div class="stat-icon-row">
+				<div class="s-icon"><Icon name="target" size={13} /></div>
+				<div class="stat-badge">{m.home_monthly_remaining()}</div>
+			</div>
+			<div class="stat-val" class:stat-danger={vm.monthlyRemaining <= 0}><span class="curr">{vm.currency}</span>{fmt(vm.monthlyRemaining)}</div>
+			<div class="stat-sub">{m.home_monthly_remaining_sub()}</div>
+		</Card>
+		<Card class="stat-card">
+			<div class="stat-icon-row">
+				<div class="s-icon"><Icon name="calendar" size={13} /></div>
+				<div class="stat-badge">{m.home_days_until_end_label()}</div>
+			</div>
+			<div class="stat-val">{vm.daysUntilEnd} <span class="days-unit">{m.home_days_short()}</span></div>
+			<div class="stat-sub">{m.home_end_of_month()} {vm.daysEndDate}</div>
+		</Card>
+	</div>
+
+	<!-- Donut -->
 	{#if vm.hasExpenses}
-		<!-- Donut Card -->
 		<Card variant="led" class="card-padding">
 			<div class="card-top">
 				<div>
@@ -50,28 +79,16 @@
 			</div>
 			<DonutChart byCategory={vm.byCategory} total={vm.spentAmount} />
 		</Card>
+	{/if}
 
-		<!-- Stat Cards -->
-		<div class="stat-row">
-			<Card class="stat-card">
-				<div class="stat-icon-row">
-					<div class="s-icon"><Icon name="bar-chart" size={13} /></div>
-					<div class="stat-badge">{m.home_daily_limit()}</div>
-				</div>
-				<div class="stat-val"><span class="curr">{vm.currency}</span>{fmt(vm.dailyBudget)}</div>
-				<div class="stat-sub">{m.home_at_current_pace()}</div>
-			</Card>
-			<Card class="stat-card">
-				<div class="stat-icon-row">
-					<div class="s-icon"><Icon name="calendar" size={13} /></div>
-					<div class="stat-badge">{m.home_days_until_end_label()}</div>
-				</div>
-				<div class="stat-val">{vm.daysUntilEnd} <span class="days-unit">{m.home_days_short()}</span></div>
-				<div class="stat-sub">{m.home_end_of_month()} {vm.daysEndDate}</div>
-			</Card>
-		</div>
+	<!-- Weekly Bars — завжди -->
+	<Card class="card-padding">
+		<div class="card-label" style="margin-bottom:12px">{m.analytics_expenses_by_week()}</div>
+		<WeeklyBars weeklyAmounts={vm.weeklyAmounts} />
+	</Card>
 
-		<!-- Recent Expenses -->
+	<!-- Recent Expenses -->
+	{#if vm.hasExpenses}
 		<div class="sec-hdr">
 			<span class="sec-title">{m.home_recent_expenses()}</span>
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -87,37 +104,10 @@
 				{/each}
 			{/each}
 		</Card>
-	{:else}
-		<!-- Budget Progress Card -->
-		<Card variant="led" class="card-padding">
-			<div class="card-top">
-				<div>
-					<div class="card-label">{m.home_spent_label()}</div>
-					<div class="card-sub">{vm.monthLabel}</div>
-				</div>
-			</div>
-			<div class="budget-nums">
-				<span class="budget-curr">{vm.currency}</span>
-				<span class="budget-val">{fmt(vm.spentAmount)}</span>
-				<span class="budget-of">{m.account_of()}</span>
-				<span class="budget-total">{vm.currency} {fmt(vm.totalBudget)}</span>
-			</div>
-			<div class="prog-meta">
-				<span>{vm.currency} {fmt(vm.spentAmount)} {m.home_spent_label().toLowerCase()}</span>
-				<span>{vm.spentPercent}% · {vm.daysUntilEnd} {m.home_days_short()}</span>
-			</div>
-			<div class="prog-track">
-				<div class="prog-fill" style="width:{Math.min(vm.spentPercent, 100)}%">
-					{#if vm.spentPercent > 0}<div class="prog-dot"></div>{/if}
-				</div>
-			</div>
-		</Card>
+	{/if}
 
-		<!-- Empty Expenses -->
-		<div class="sec-hdr">
-			<span class="sec-title">{m.home_recent_expenses()}</span>
-			<span class="sec-link">{m.home_view_all()} →</span>
-		</div>
+	<!-- Empty + Tips — внизу якщо немає витрат -->
+	{#if !vm.hasExpenses}
 		<Card class="empty-card">
 			<div class="empty-icon">
 				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -129,7 +119,6 @@
 			<button class="empty-btn" onclick={() => onAdd?.()}>+ {m.home_add_first()}</button>
 		</Card>
 
-		<!-- Tips -->
 		<Card class="tips-card">
 			<div class="tip-dot"></div>
 			<div>
@@ -236,6 +225,7 @@
 	.stat-val .curr { font-size: 12px; font-weight: 300; opacity: 0.38; }
 	.days-unit { font-size: 12px; font-weight: 300; opacity: 0.35; }
 	.stat-sub { font-size: 10px; color: rgba(255,255,255,0.22); font-weight: 300; margin-top: 2px; }
+	.stat-danger { color: var(--danger); }
 
 	/* Section header */
 	.sec-hdr { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
@@ -248,27 +238,6 @@
 		color: rgba(255,255,255,0.18); padding: 12px 14px 7px;
 	}
 	.exp-divider { height: 1px; background: rgba(255,255,255,0.04); margin: 0 14px; }
-
-	/* Budget progress (empty state) */
-	.budget-nums { display: flex; align-items: baseline; gap: 6px; margin-bottom: 14px; }
-	.budget-curr { font-size: 16px; font-weight: 300; opacity: 0.4; color: #fff; }
-	.budget-val { font-size: 28px; font-weight: 500; color: #fff; letter-spacing: -1px; }
-	.budget-of { font-size: 13px; color: rgba(255,255,255,0.3); font-weight: 300; }
-	.budget-total { font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 400; }
-	.prog-meta {
-		display: flex; justify-content: space-between;
-		font-size: 11px; color: rgba(255,255,255,0.22); margin-bottom: 7px;
-	}
-	.prog-track { width: 100%; height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px; }
-	.prog-fill {
-		height: 100%; border-radius: 2px; position: relative;
-		background: rgba(80,130,255,0.65); transition: width 1s ease;
-	}
-	.prog-dot {
-		position: absolute; right: -4px; top: 50%; transform: translateY(-50%);
-		width: 9px; height: 9px; border-radius: 50%;
-		background: rgba(120,170,255,0.9); box-shadow: 0 0 6px rgba(100,150,255,0.5);
-	}
 
 	/* Empty expenses card */
 	:global(.empty-card) {

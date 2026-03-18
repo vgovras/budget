@@ -5,8 +5,13 @@
 	import type { ConfirmDialogViewModel } from '$lib/ui/confirm-dialog/confirm-dialog.svelte.js';
 	import { expensesVM } from '$features/expenses/expenses.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
+	import { categoriesVM } from '$features/categories/categories.svelte.js';
+	import CategoryEditorSheet from '$features/categories/category-editor/category-editor-sheet.svelte';
+	import { CategoryEditorSheetViewModel } from '$features/categories/category-editor/category-editor-sheet.svelte.js';
+	import { recurringVM } from '$features/recurring/recurring.svelte.js';
+	import RecurringEditorSheet from '$features/recurring/recurring-editor-sheet.svelte';
+	import { RecurringEditorSheetViewModel } from '$features/recurring/recurring-editor-sheet.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
-	import { CATEGORIES } from '$lib/constants.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
@@ -25,6 +30,20 @@
 	});
 
 	const inputVM = new SettingsInputModalViewModel();
+	const catEditorVM = new CategoryEditorSheetViewModel();
+	const recEditorVM = new RecurringEditorSheetViewModel();
+
+	function deleteCategory(id: string, label: string) {
+		confirmVM.show({
+			title: m.button_delete(),
+			message: label,
+			okLabel: m.button_delete(),
+			okStyle: 'danger',
+			onConfirm() {
+				categoriesVM.remove(id);
+			}
+		});
+	}
 
 	function resetAll() {
 		confirmVM.show({
@@ -36,6 +55,8 @@
 				settingsVM.resetAll();
 				expensesVM.resetAll();
 				accountsVM.resetAll();
+				categoriesVM.resetAll();
+				recurringVM.resetAll();
 			}
 		});
 	}
@@ -102,26 +123,85 @@
 	<div>
 		<div class="settings-section-title">{m.settings_section_categories()}</div>
 		<div class="settings-group">
-			{#each CATEGORIES as cat (cat.icon)}
+			{#each categoriesVM.categories as cat (cat.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div class="settings-row" onclick={() => inputVM.openCatLimit(cat.icon, cat.label)}>
-					<div class="settings-row-icon"><Icon name={cat.icon} size={18} /></div>
-					<div class="settings-row-info">
+				<div class="settings-row">
+					<div class="settings-row-icon" style:background={cat.bg} style:border-color={cat.border}>
+						<Icon name={cat.icon} size={18} />
+					</div>
+					<div class="settings-row-info" onclick={() => catEditorVM.openEdit(cat.id)}>
 						<div class="settings-row-label">{cat.label}</div>
+						{#if cat.commission}
+							<div class="settings-row-value">{m.category_commission_label()}: {cat.commission}%</div>
+						{/if}
 					</div>
 					<div class="settings-row-right">
-						<span class="settings-val-badge">
-							{settingsVM.catLimits[cat.icon]
-								? `₴ ${fmt(settingsVM.catLimits[cat.icon])}`
-								: m.analytics_no_limit()}
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-edit-btn" onclick={() => catEditorVM.openEdit(cat.id)}>
+							<Icon name="edit" size={16} />
 						</span>
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-							><polyline points="9 18 15 12 9 6" /></svg
-						>
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-delete-btn" onclick={() => deleteCategory(cat.id, cat.label)}>
+							<Icon name="trash" size={16} />
+						</span>
 					</div>
 				</div>
 			{/each}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="settings-row add-cat-row" onclick={() => catEditorVM.open()}>
+				<div class="settings-row-icon"><Icon name="plus" size={18} /></div>
+				<div class="settings-row-info">
+					<div class="settings-row-label" style="color:var(--accent)">{m.category_add_button()}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Регулярні платежі -->
+	<div>
+		<div class="settings-section-title">{m.recurring_section_title()}</div>
+		<div class="settings-group">
+			{#each recurringVM.items as item (item.id)}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="settings-row" onclick={() => recEditorVM.openEdit(item.id)}>
+					<div class="settings-row-icon">
+						<Icon name={item.icon} size={18} />
+					</div>
+					<div class="settings-row-info">
+						<div class="settings-row-label">{item.label}</div>
+						<div class="settings-row-value">
+							{item.type === 'income' ? '+' : '−'}₴{fmt(item.amount)} · {item.frequency === 'daily' ? m.recurring_daily() : item.frequency === 'weekly' ? m.recurring_weekly() : m.recurring_monthly()}
+						</div>
+					</div>
+					<div class="settings-row-right">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-edit-btn" onclick={() => recurringVM.toggle(item.id)}>
+							<div class="toggle" class:on={item.enabled}>
+								<div class="toggle-handle"></div>
+							</div>
+						</span>
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-delete-btn" onclick={() => recurringVM.remove(item.id)}>
+							<Icon name="trash" size={16} />
+						</span>
+					</div>
+				</div>
+			{/each}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="settings-row add-cat-row" onclick={() => recEditorVM.open()}>
+				<div class="settings-row-icon"><Icon name="plus" size={18} /></div>
+				<div class="settings-row-info">
+					<div class="settings-row-label" style="color:var(--accent)">{m.recurring_add_button()}</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -188,6 +268,8 @@
 </div>
 
 <SettingsInputModal vm={inputVM} />
+<CategoryEditorSheet vm={catEditorVM} />
+<RecurringEditorSheet vm={recEditorVM} />
 
 <style>
 	.top-bar {
@@ -351,5 +433,29 @@
 
 	.danger-text {
 		color: var(--danger);
+	}
+
+	.cat-edit-btn,
+	.cat-delete-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+	.cat-edit-btn:hover {
+		background: rgba(255, 255, 255, 0.06);
+	}
+	.cat-delete-btn {
+		color: var(--danger);
+	}
+	.cat-delete-btn:hover {
+		background: var(--danger-bg);
+	}
+	.add-cat-row {
+		cursor: pointer;
 	}
 </style>

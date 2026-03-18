@@ -2,7 +2,7 @@
 	import type { Expense } from '$lib/types.js';
 	import { expensesVM } from '$features/expenses/expenses.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
-	import { CATEGORIES } from '$lib/constants.js';
+	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import { groupByDate, getDateLabel, fmt } from '$lib/utils/format.js';
 	import ExpenseRow from '$features/expenses/expense-row/expense-row.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
@@ -12,10 +12,23 @@
 	let { onEdit }: { onEdit?: (id: number) => void } = $props();
 
 	let currentFilter = $state('all');
+	let searchQuery = $state('');
 
 	const filtered = $derived.by(() => {
-		const base = expensesVM.expenses.filter((e: Expense) => e.accountId === accountsVM.active?.id);
-		return currentFilter === 'all' ? base : base.filter((e: Expense) => e.icon === currentFilter);
+		let base = expensesVM.expenses.filter((e: Expense) => e.accountId === accountsVM.active?.id);
+		if (currentFilter !== 'all') {
+			base = base.filter((e: Expense) => e.icon === currentFilter);
+		}
+		if (searchQuery.trim()) {
+			const q = searchQuery.trim().toLowerCase();
+			base = base.filter(
+				(e: Expense) =>
+					e.label.toLowerCase().includes(q) ||
+					e.note.toLowerCase().includes(q) ||
+					(e.tags ?? []).some((t) => t.toLowerCase().includes(q))
+			);
+		}
+		return base;
 	});
 
 	const grouped = $derived(groupByDate(filtered));
@@ -30,6 +43,23 @@
 	<span class="top-bar-title">{m.screen_title_history()}</span>
 </div>
 
+<div class="search-bar">
+	<Icon name="list" size={16} />
+	<input
+		class="search-input"
+		type="text"
+		placeholder={m.history_search_placeholder()}
+		bind:value={searchQuery}
+	/>
+	{#if searchQuery}
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<span class="search-clear" onclick={() => (searchQuery = '')}>
+			<Icon name="x" size={14} />
+		</span>
+	{/if}
+</div>
+
 <div class="filters">
 	<button
 		class="filter-pill"
@@ -38,7 +68,7 @@
 	>
 		{m.history_filter_all()}
 	</button>
-	{#each CATEGORIES as cat (cat.icon)}
+	{#each categoriesVM.categories as cat (cat.icon)}
 		<button
 			class="filter-pill"
 			class:active={currentFilter === cat.icon}
@@ -84,6 +114,40 @@
 		font-size: 20px;
 		font-weight: 500;
 		color: rgba(255, 255, 255, 0.85);
+	}
+
+	.search-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 14px;
+		margin: 0 16px 8px;
+		border-radius: 14px;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: #09090e;
+		color: var(--text-lo);
+		max-width: 568px;
+		margin-left: auto;
+		margin-right: auto;
+		width: calc(100% - 32px);
+	}
+	.search-input {
+		flex: 1;
+		background: none;
+		border: none;
+		outline: none;
+		font-size: 14px;
+		color: var(--text-hi);
+		font-family: var(--font);
+	}
+	.search-input::placeholder {
+		color: var(--text-lo);
+	}
+	.search-clear {
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		color: var(--text-lo);
 	}
 
 	.filters {

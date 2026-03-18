@@ -13,19 +13,29 @@
 	import { ConfirmDialogViewModel } from '$lib/ui/confirm-dialog/confirm-dialog.svelte.js';
 	import AddAccountSheet from '$features/accounts/add-account/add-account-sheet.svelte';
 	import { AddAccountSheetViewModel } from '$features/accounts/add-account/add-account-sheet.svelte.js';
+	import EditAccountSheet from '$features/accounts/edit-account/edit-account-sheet.svelte';
+	import { EditAccountSheetViewModel } from '$features/accounts/edit-account/edit-account-sheet.svelte.js';
+	import TransferSheet from '$features/transfer/transfer-sheet.svelte';
+	import { TransferSheetViewModel } from '$features/transfer/transfer-sheet.svelte.js';
 	import Onboarding from '$features/onboarding/onboarding.svelte';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
+	import * as m from '$lib/paraglide/messages.js';
 
 	const addExpenseVM = new AddExpenseSheetViewModel();
 	const addAccountVM = new AddAccountSheetViewModel();
+	const editAccountVM = new EditAccountSheetViewModel();
 	const editExpenseVM = new EditExpenseViewModel();
+	const transferVM = new TransferSheetViewModel();
 	const confirmVM = new ConfirmDialogViewModel();
 </script>
 
 <div class="phone">
 	<ScreenTrack>
 		<div class="screen">
-			<AnalyticsScreen />
+			<AnalyticsScreen
+				onAddAccount={() => addAccountVM.open()}
+				onEditAccount={(id) => editAccountVM.open(id)}
+			/>
 		</div>
 		<div class="screen">
 			<HomeScreen
@@ -43,8 +53,18 @@
 
 	<BottomNav onAdd={() => addExpenseVM.open()} />
 
-	<AddExpenseSheet vm={addExpenseVM} />
+	<AddExpenseSheet vm={addExpenseVM} onTransfer={() => transferVM.open()} />
 	<AddAccountSheet vm={addAccountVM} />
+	<EditAccountSheet vm={editAccountVM} onDelete={(id, name) => {
+		confirmVM.show({
+			title: m.button_delete(),
+			message: name,
+			okLabel: m.button_delete(),
+			okStyle: 'danger',
+			onConfirm() { editAccountVM.delete(); }
+		});
+	}} />
+	<TransferSheet vm={transferVM} />
 	<EditExpense vm={editExpenseVM} />
 	<ConfirmDialog vm={confirmVM} />
 

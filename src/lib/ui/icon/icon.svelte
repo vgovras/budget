@@ -43,7 +43,26 @@
 		sparkles: icons.Sparkles,
 		check: icons.Check,
 		'chevron-down': icons.ChevronDown,
-		globe: icons.Globe
+		globe: icons.Globe,
+		'shopping-bag': icons.ShoppingBag,
+		coffee: icons.Coffee,
+		gift: icons.Gift,
+		book: icons.Book,
+		plane: icons.Plane,
+		bus: icons.Bus,
+		smartphone: icons.Smartphone,
+		music: icons.Music,
+		dumbbell: icons.Dumbbell,
+		baby: icons.Baby,
+		dog: icons.Dog,
+		scissors: icons.Scissors,
+		briefcase: icons.Briefcase,
+		'graduation-cap': icons.GraduationCap,
+		wrench: icons.Wrench,
+		shirt: icons.Shirt,
+		fuel: icons.Fuel,
+		pill: icons.Pill,
+		'arrow-left-right': icons.ArrowLeftRight
 	};
 
 	const IconComponent = $derived(iconMap[name]);

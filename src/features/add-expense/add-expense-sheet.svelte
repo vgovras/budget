@@ -9,7 +9,7 @@
 	import { fmt } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { vm }: { vm: AddExpenseSheetViewModel } = $props();
+	let { vm, onTransfer }: { vm: AddExpenseSheetViewModel; onTransfer?: () => void } = $props();
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
@@ -29,6 +29,12 @@
 			>
 				{m.tab_income()}
 			</button>
+			<button
+				class="sheet-tab transfer-tab"
+				onclick={() => { vm.close(); onTransfer?.(); }}
+			>
+				{m.transfer_title()}
+			</button>
 		</div>
 
 		<QuickChips chips={vm.quickChips} onSelect={(chip) => vm.quickFill(chip)} />
@@ -42,6 +48,40 @@
 		{/if}
 
 		<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
+
+		<!-- Tags -->
+		<div class="tags-section">
+			<div class="tags-row">
+				{#each vm.tags as tag (tag)}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<span class="tag-chip" onclick={() => vm.removeTag(tag)}>
+						{tag} ×
+					</span>
+				{/each}
+				<input
+					class="tag-input"
+					type="text"
+					placeholder={m.tag_placeholder()}
+					bind:value={vm.tagInput}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' && vm.tagInput.trim()) {
+							e.preventDefault();
+							vm.addTag(vm.tagInput);
+						}
+					}}
+				/>
+			</div>
+			{#if vm.tagSuggestions.length > 0}
+				<div class="tag-suggestions">
+					{#each vm.tagSuggestions.slice(0, 5) as sug (sug)}
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="tag-sug" onclick={() => vm.addTag(sug)}>{sug}</span>
+					{/each}
+				</div>
+			{/if}
+		</div>
 
 		{#if vm.dailyBudget > 0 && vm.sheetType === 'expense'}
 			<div class="daily-hint">{m.daily_hint_available_today()} ₴{fmt(vm.dailyBudget)}</div>
@@ -140,5 +180,58 @@
 	.btn-save:not(:disabled):hover {
 		background: rgba(80, 130, 255, 0.14);
 		border-color: rgba(80, 130, 255, 0.3);
+	}
+
+	.tags-section {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.tags-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		align-items: center;
+	}
+	.tag-chip {
+		padding: 4px 10px;
+		border-radius: 8px;
+		background: var(--accent-bg);
+		border: 1px solid var(--accent-border);
+		color: var(--accent);
+		font-size: 12px;
+		font-weight: 500;
+		cursor: pointer;
+	}
+	.tag-input {
+		flex: 1;
+		min-width: 80px;
+		background: none;
+		border: none;
+		outline: none;
+		font-size: 13px;
+		color: var(--text-hi);
+		font-family: var(--font);
+		padding: 4px 0;
+	}
+	.tag-input::placeholder {
+		color: var(--text-lo);
+	}
+	.tag-suggestions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.tag-sug {
+		padding: 3px 8px;
+		border-radius: 6px;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		color: var(--text-mid);
+		font-size: 11px;
+		cursor: pointer;
+	}
+	.tag-sug:hover {
+		background: rgba(255, 255, 255, 0.08);
 	}
 </style>
