@@ -66,7 +66,7 @@
 		ontouchmove={(e) => e.stopPropagation()}
 	>
 		{#each vm.accounts as account, i (account.id)}
-			<div style="transform:{cardTransforms[i] ?? 'none'};opacity:{cardOpacities[i] ?? 1}">
+			<div class="carousel-item" style="transform:{cardTransforms[i] ?? 'none'};opacity:{cardOpacities[i] ?? 1}">
 				<AccountCard {account} onclick={() => vm.setActive(i)} />
 			</div>
 		{/each}
@@ -106,12 +106,18 @@
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
-		padding: 0 16px 0;
+		padding: 0 16px 24px;
 		gap: 12px;
 		perspective: 1000px;
 	}
 	.accounts-carousel::-webkit-scrollbar {
 		display: none;
+	}
+
+	.carousel-item {
+		flex-shrink: 0;
+		width: calc(100vw - 48px);
+		min-width: 280px;
 	}
 
 	.account-card.add-card {
@@ -120,34 +126,33 @@
 		flex-shrink: 0;
 		width: calc(100vw - 48px);
 		min-width: 280px;
-		background: rgba(24, 24, 30, 0.9);
-		border: 1px dashed rgba(255, 255, 255, 0.14);
-		border-radius: var(--r-xl);
+		background: #09090e;
+		border: 1px dashed rgba(255, 255, 255, 0.1);
+		border-radius: 24px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		gap: 12px;
 		min-height: 160px;
-		box-shadow: none;
 		transition: all 0.2s ease;
 		cursor: pointer;
 	}
 	.account-card.add-card:hover {
-		background: rgba(255, 255, 255, 0.06);
-		border-color: rgba(0, 220, 255, 0.25);
+		background: rgba(255, 255, 255, 0.04);
+		border-color: rgba(80, 130, 255, 0.25);
 	}
 
 	.add-card-icon {
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: rgba(255, 255, 255, 0.05);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--text-lo);
+		color: rgba(255, 255, 255, 0.25);
 	}
 	.add-card-icon svg {
 		width: 22px;
@@ -172,15 +177,14 @@
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.18);
+		background: rgba(255, 255, 255, 0.15);
 		transition: all 0.25s ease;
 		cursor: pointer;
 	}
 
 	.carousel-dot.active {
-		background: rgba(255, 255, 255, 0.8);
+		background: rgba(255, 255, 255, 0.6);
 		width: 18px;
 		border-radius: 99px;
-		box-shadow: none;
 	}
 </style>

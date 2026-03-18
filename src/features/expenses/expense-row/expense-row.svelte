@@ -22,7 +22,7 @@
 			<div class="exp-note">{expense.note}</div>
 		{/if}
 	</div>
-	<span class="exp-amount">
+	<span class="exp-amount" class:income={expense.type === 'income'}>
 		{expense.type === 'income' ? '+' : '−'}₴ {fmt(expense.amount)}
 	</span>
 </div>
@@ -42,16 +42,17 @@
 	}
 
 	.exp-icon {
-		width: 44px;
-		height: 44px;
-		border-radius: 14px;
+		width: 38px;
+		height: 38px;
+		border-radius: 12px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
 		position: relative;
 		background: rgba(255, 255, 255, 0.05);
-		box-shadow: none;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		color: rgba(255, 255, 255, 0.45);
 	}
 
 	.exp-info {
@@ -59,27 +60,27 @@
 		min-width: 0;
 	}
 	.exp-name {
-		font-size: 17px;
+		font-size: 15px;
 		font-weight: 500;
 		margin-bottom: 3px;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		color: var(--text-hi);
+		color: rgba(255, 255, 255, 0.85);
 	}
 	.exp-note {
 		font-size: 13px;
-		color: var(--text-mid);
-		font-family: var(--font-mono);
-		letter-spacing: 0.01em;
+		font-weight: 300;
+		color: rgba(255, 255, 255, 0.25);
 	}
 	.exp-amount {
-		font-family: var(--font-mono);
 		font-size: 15px;
 		font-weight: 500;
-		color: var(--text-mid);
+		color: rgba(255, 100, 100, 0.75);
 		flex-shrink: 0;
-		letter-spacing: -0.02em;
+	}
+	.exp-amount.income {
+		color: var(--income);
 	}
 
 	.new-entry {

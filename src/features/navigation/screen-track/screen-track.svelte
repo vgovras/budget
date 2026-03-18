@@ -106,7 +106,9 @@
 	.screen-track {
 		display: flex;
 		width: 100%;
-		height: 100%;
+		flex: 1;
+		min-height: 0;
+		touch-action: pan-y;
 		transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 		will-change: transform;
 	}

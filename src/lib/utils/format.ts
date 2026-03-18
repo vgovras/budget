@@ -28,6 +28,10 @@ export function groupByDate(list: Expense[]): Record<string, Expense[]> {
 	return groups;
 }
 
+export function fmtMoney(amount: number, currency: string): string {
+	return `${currency} ${fmt(amount)}`;
+}
+
 export function nowISO(): string {
 	return new Date().toISOString();
 }

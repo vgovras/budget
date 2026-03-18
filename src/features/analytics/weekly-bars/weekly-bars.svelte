@@ -39,13 +39,13 @@
 	.week-bar {
 		width: 100%;
 		border-radius: 4px 4px 0 0;
-		background: rgba(255, 255, 255, 0.12);
+		background: rgba(80, 130, 255, 0.12);
 		min-height: 4px;
 		transition: height 0.6s var(--ease-out);
 	}
 	.week-bar.current {
-		background: rgba(255, 255, 255, 0.3);
-		box-shadow: none;
+		background: rgba(80, 130, 255, 0.35);
+		box-shadow: 0 0 8px var(--accent-glow);
 	}
 	.week-label {
 		font-size: 10px;

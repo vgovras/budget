@@ -41,7 +41,9 @@
 		landmark: icons.Landmark,
 		banknote: icons.Banknote,
 		sparkles: icons.Sparkles,
-		check: icons.Check
+		check: icons.Check,
+		'chevron-down': icons.ChevronDown,
+		globe: icons.Globe
 	};
 
 	const IconComponent = $derived(iconMap[name]);

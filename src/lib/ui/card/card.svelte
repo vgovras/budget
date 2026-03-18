@@ -18,57 +18,44 @@
 
 <style>
 	.card {
-		background: rgba(22, 22, 28, 0.92);
-		contain: layout paint style;
+		background: #09090e;
 		border-radius: var(--r-lg);
 		position: relative;
-		border: 1px solid transparent;
-		background-clip: padding-box;
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.14),
-			inset 1px 0 0 rgba(255, 255, 255, 0.07),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-			0 4px 24px rgba(0, 0, 0, 0.35),
-			0 1px 0 rgba(255, 255, 255, 0.04);
-	}
-	.card::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		border-radius: var(--r-lg);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		pointer-events: none;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		flex-shrink: 0;
 	}
 
 	.card-led {
-		background: rgba(18, 18, 24, 0.95);
+		background: #09090e;
 		border-radius: var(--r-xl);
 		position: relative;
-		box-shadow:
-			inset 0 1px 0 rgba(221, 232, 240, 0.28),
-			inset 1px 0 0 rgba(221, 232, 240, 0.1),
-			inset -1px 0 0 rgba(221, 232, 240, 0.04),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.3),
-			0 0 0 1px rgba(221, 232, 240, 0.14),
-			0 0 40px rgba(221, 232, 240, 0.06),
-			0 16px 48px rgba(0, 0, 0, 0.55);
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		overflow: hidden;
+		flex-shrink: 0;
 	}
 	.card-led::before {
 		content: '';
 		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 50%;
-		border-radius: var(--r-xl) var(--r-xl) 0 0;
-		background: linear-gradient(
-			180deg,
-			rgba(255, 255, 255, 0.055) 0%,
-			rgba(255, 255, 255, 0.01) 60%,
-			transparent 100%
-		);
+		top: -20px;
+		left: -20px;
+		width: 200px;
+		height: 200px;
+		background: radial-gradient(ellipse, rgba(60, 100, 220, 0.18), transparent 70%);
 		pointer-events: none;
 		z-index: 0;
+		animation: glow-pulse 4s ease-in-out infinite;
+	}
+	.card-led::after {
+		content: '';
+		position: absolute;
+		bottom: -20px;
+		right: -20px;
+		width: 160px;
+		height: 140px;
+		background: radial-gradient(ellipse, rgba(120, 50, 180, 0.13), transparent 70%);
+		pointer-events: none;
+		z-index: 0;
+		animation: glow-pulse 4s ease-in-out infinite 2s;
 	}
 	.card-led > :global(*) {
 		position: relative;

@@ -9,14 +9,17 @@ export class OnboardingViewModel {
 	currentSlide = $state(0);
 	maxReachedSlide = $state(0);
 	direction = $state<1 | -1>(1);
+	visible = $state(true);
+
 	salary = $state<number | null>(null);
 	payday = $state(1);
 	savingsIdx = $state<number | null>(2); // default 20%
 	customSavings = $state<number | null>(null);
-	visible = $state(true);
 
 	readonly totalSlides = 5;
 	readonly isLastSlide = $derived(this.currentSlide === this.totalSlides - 1);
+	readonly canGoBack = $derived(this.currentSlide > 0);
+	readonly canGoForward = $derived(this.currentSlide < this.maxReachedSlide);
 
 	readonly savingsSteps = SAVINGS_STEPS;
 	readonly savingsPercent = $derived(
@@ -35,9 +38,6 @@ export class OnboardingViewModel {
 		this.currentSlide !== 1 || (this.salary !== null && this.salary > 0)
 	);
 
-	readonly canGoBack = $derived(this.currentSlide > 0);
-	readonly canGoForward = $derived(this.currentSlide < this.maxReachedSlide);
-
 	next() {
 		if (!this.canProceed) return;
 		if (this.currentSlide < this.totalSlides - 1) {
@@ -46,9 +46,6 @@ export class OnboardingViewModel {
 			if (this.currentSlide > this.maxReachedSlide) {
 				this.maxReachedSlide = this.currentSlide;
 			}
-		}
-		if (this.isLastSlide) {
-			this.#applyAndFinish();
 		}
 	}
 
@@ -64,6 +61,16 @@ export class OnboardingViewModel {
 		this.currentSlide = idx;
 	}
 
+	skip() {
+		this.direction = 1;
+		this.maxReachedSlide = this.totalSlides - 1;
+		this.currentSlide = this.totalSlides - 1;
+	}
+
+	finish() {
+		this.#applyAndFinish();
+	}
+
 	setSavingsIdx(idx: number) {
 		this.savingsIdx = idx;
 		this.customSavings = null;
@@ -75,7 +82,7 @@ export class OnboardingViewModel {
 	}
 
 	#applyAndFinish() {
-		const sal = this.salary ?? 0;
+		const sal = this.salary ?? 10000;
 		const budget = this.budget > 0 ? this.budget : sal > 0 ? sal : 10000;
 
 		const { proratedBudget } = prorateForCurrentMonth(budget);
@@ -87,17 +94,18 @@ export class OnboardingViewModel {
 		accountsVM.add({
 			type: 'main',
 			name: m.default_account_name(),
-			balance: proratedBudget,
+			balance: sal,
 			budget: proratedBudget,
 			spent: 0,
 			currency: settingsVM.currency,
 			label: m.account_label_monthly_budget()
 		});
 
+		settingsVM.updateLastPayday(new Date().toISOString());
 		settingsVM.completeOnboarding();
 
 		setTimeout(() => {
 			this.visible = false;
-		}, 2000);
+		}, 400);
 	}
 }

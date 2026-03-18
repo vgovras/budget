@@ -25,16 +25,16 @@
 <div class="phone">
 	<ScreenTrack>
 		<div class="screen">
-			<HistoryScreen onEdit={(id: number) => editExpenseVM.open(id)} />
+			<AnalyticsScreen />
 		</div>
 		<div class="screen">
 			<HomeScreen
 				onEdit={(id: number) => editExpenseVM.open(id)}
-				onAddAccount={() => addAccountVM.open()}
+				onAdd={() => addExpenseVM.open()}
 			/>
 		</div>
 		<div class="screen">
-			<AnalyticsScreen />
+			<HistoryScreen onEdit={(id: number) => editExpenseVM.open(id)} />
 		</div>
 		<div class="screen">
 			<SettingsScreen {confirmVM} />
@@ -76,12 +76,12 @@
 		background:
 			radial-gradient(
 				ellipse 600px 400px at 30% 20%,
-				rgba(255, 255, 255, 0.02) 0%,
+				rgba(60, 100, 220, 0.03) 0%,
 				transparent 100%
 			),
 			radial-gradient(
 				ellipse 500px 500px at 70% 80%,
-				rgba(255, 255, 255, 0.015) 0%,
+				rgba(120, 50, 180, 0.02) 0%,
 				transparent 100%
 			);
 	}
@@ -90,9 +90,11 @@
 		flex-shrink: 0;
 		width: 100%;
 		height: 100%;
+		min-height: 0;
 		display: flex;
 		flex-direction: column;
 		position: relative;
 		z-index: 1;
+		overflow: hidden;
 	}
 </style>

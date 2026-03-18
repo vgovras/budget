@@ -30,6 +30,7 @@ export interface Settings {
 	warning: boolean;
 	catLimits: Record<string, number>;
 	onboardingDone: boolean;
+	lastPayday: string;
 }
 
 export interface Category {

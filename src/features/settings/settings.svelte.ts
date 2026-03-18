@@ -13,6 +13,7 @@ export class SettingsViewModel {
 	warning = $state(DEFAULT_SETTINGS.warning);
 	catLimits = $state<Record<string, number>>({});
 	onboardingDone = $state(false);
+	lastPayday = $state('');
 	loaded = $state(false);
 
 	constructor(repo: SettingsRepository) {
@@ -34,6 +35,7 @@ export class SettingsViewModel {
 			this.warning = saved.warning;
 			this.catLimits = saved.catLimits ?? {};
 			this.onboardingDone = saved.onboardingDone ?? false;
+			this.lastPayday = saved.lastPayday ?? '';
 		}
 		this.loaded = true;
 	}
@@ -68,6 +70,11 @@ export class SettingsViewModel {
 		this.#save();
 	}
 
+	updateLastPayday(date: string) {
+		this.lastPayday = date;
+		this.#save();
+	}
+
 	completeOnboarding() {
 		this.onboardingDone = true;
 		this.#save();
@@ -82,6 +89,7 @@ export class SettingsViewModel {
 		this.warning = DEFAULT_SETTINGS.warning;
 		this.catLimits = {};
 		this.onboardingDone = false;
+		this.lastPayday = '';
 		this.#repo.clear();
 	}
 
@@ -98,7 +106,8 @@ export class SettingsViewModel {
 			notifications: this.notifications,
 			warning: this.warning,
 			catLimits: this.catLimits,
-			onboardingDone: this.onboardingDone
+			onboardingDone: this.onboardingDone,
+			lastPayday: this.lastPayday
 		};
 	}
 }

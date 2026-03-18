@@ -42,7 +42,7 @@
 				text-anchor="middle"
 				font-size="10"
 				fill="rgba(255,255,255,0.35)"
-				font-family="Geist Mono"
+				font-family="DM Sans"
 				letter-spacing="1">{m.analytics_donut_total()}</text
 			>
 			<text
@@ -50,8 +50,8 @@
 				y="86"
 				text-anchor="middle"
 				font-size="18"
-				fill="white"
-				font-family="Geist Mono"
+				fill="rgba(255,255,255,0.85)"
+				font-family="DM Sans"
 				font-weight="300"
 				letter-spacing="-1">{totalLabel}</text
 			>
@@ -78,21 +78,22 @@
 	.donut-wrap {
 		display: flex;
 		align-items: center;
-		gap: 20px;
+		gap: 16px;
 	}
 	.donut-svg-wrap {
 		flex-shrink: 0;
 		position: relative;
-		width: 148px;
-		height: 148px;
+		width: 120px;
+		height: 120px;
 	}
 	.donut-svg {
-		width: 148px;
-		height: 148px;
-		filter: none;
+		width: 100%;
+		height: 100%;
+		filter: drop-shadow(0 0 6px rgba(80, 130, 255, 0.08));
 	}
 	.donut-legend {
 		flex: 1;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		gap: 10px;

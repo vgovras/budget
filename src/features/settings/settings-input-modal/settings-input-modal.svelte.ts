@@ -1,4 +1,5 @@
 import { settingsVM } from '../settings.svelte.js';
+import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import * as m from '$lib/paraglide/messages.js';
 
 export type SettingsInputType = 'budget' | 'salary' | 'payday' | 'cat-limit';
@@ -77,6 +78,9 @@ export class SettingsInputModalViewModel {
 		switch (this.fieldType) {
 			case 'budget':
 				settingsVM.updateBudget(num);
+				if (accountsVM.active) {
+					accountsVM.update(accountsVM.active.id, { budget: num });
+				}
 				break;
 			case 'salary':
 				settingsVM.updateSalary(num);

@@ -31,14 +31,9 @@
 		align-items: center;
 		gap: 4px;
 		padding: 8px 12px;
-		border-radius: 99px;
-		background: rgba(255, 255, 255, 0.04);
-		backdrop-filter: blur(20px) saturate(120%);
-		-webkit-backdrop-filter: blur(20px) saturate(120%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow:
-			0 8px 32px rgba(0, 0, 0, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.06);
+		border-radius: 28px;
+		background: #09090e;
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		transition:
 			transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
 			opacity 0.4s ease;
@@ -58,14 +53,15 @@
 		border: none;
 		background: none;
 		border-radius: 50%;
-		color: rgba(255, 255, 255, 0.35);
+		color: rgba(255, 255, 255, 0.25);
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
 	.tab.active {
-		color: #ffffff;
-		background: rgba(255, 255, 255, 0.1);
+		color: rgba(255, 255, 255, 0.8);
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
 	.add {
@@ -74,9 +70,9 @@
 		display: grid;
 		place-items: center;
 		border-radius: 14px;
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.08);
-		color: rgba(255, 255, 255, 0.8);
+		border: 1px solid rgba(80, 130, 255, 0.25);
+		background: rgba(80, 130, 255, 0.15);
+		color: rgba(120, 170, 255, 0.8);
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
@@ -84,4 +80,5 @@
 	.add:active {
 		transform: scale(0.93);
 	}
+
 </style>

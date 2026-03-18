@@ -33,12 +33,11 @@
 	}
 
 	.card {
-		background: rgba(255, 255, 255, 0.03);
-		border-radius: var(--r-lg);
+		background: #09090e;
+		border-radius: 20px;
 		position: relative;
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		overflow: hidden;
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 	}
 
 	.expenses-card {
@@ -46,17 +45,17 @@
 	}
 
 	.day-label {
-		font-size: 12px;
+		font-size: 11px;
 		font-weight: 500;
-		color: var(--text-lo);
-		letter-spacing: 0.06em;
+		color: rgba(255, 255, 255, 0.2);
+		letter-spacing: 1.4px;
 		text-transform: uppercase;
 		padding: 16px 16px 8px;
 	}
 
 	.exp-divider {
 		height: 1px;
-		background: var(--border);
+		background: rgba(255, 255, 255, 0.04);
 		margin: 0 16px;
 	}
 </style>

@@ -9,14 +9,15 @@ export function getAccStats(expenses: Expense[], accId: string): number {
 	return spent;
 }
 
-export function getDailyBudget(expenses: Expense[], account: Account): number {
+export function getDailyBudget(expenses: Expense[], account: Account, budgetOverride?: number): number {
 	if (!account) return 0;
+	const budget = budgetOverride ?? account.budget;
 	const now = new Date();
 	const daysLeft = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
 	const totalSpent = expenses
 		.filter((e) => e.accountId === account.id && e.type !== 'income')
 		.reduce((s, e) => s + e.amount, 0);
-	const remaining = Math.max(0, account.budget - totalSpent);
+	const remaining = Math.max(0, budget - totalSpent);
 	return Math.floor(remaining / Math.max(daysLeft, 1));
 }
 
@@ -57,6 +58,45 @@ export function prorateForCurrentMonth(budget: number): {
 		proratedBudget: Math.round(budget * (daysLeft / daysInMonth)),
 		daysLeft
 	};
+}
+
+/**
+ * Checks if salary should be credited based on payday and last credit date.
+ * Returns shouldCredit=true if current date >= this month's payday
+ * and the last credit was before this month's payday.
+ */
+export function checkPayday(
+	payday: number,
+	lastPayday: string
+): { shouldCredit: boolean; newPaydayDate: string } {
+	const now = new Date();
+	const year = now.getFullYear();
+	const month = now.getMonth();
+
+	// Clamp payday to actual days in current month
+	const daysInMonth = new Date(year, month + 1, 0).getDate();
+	const clampedPayday = Math.min(payday, daysInMonth);
+
+	const paydayThisMonth = new Date(year, month, clampedPayday);
+	paydayThisMonth.setHours(0, 0, 0, 0);
+
+	const today = new Date(year, month, now.getDate());
+	today.setHours(0, 0, 0, 0);
+
+	if (today < paydayThisMonth) {
+		return { shouldCredit: false, newPaydayDate: '' };
+	}
+
+	// Check if already credited for this payday
+	if (lastPayday) {
+		const lastDate = new Date(lastPayday);
+		lastDate.setHours(0, 0, 0, 0);
+		if (lastDate >= paydayThisMonth) {
+			return { shouldCredit: false, newPaydayDate: '' };
+		}
+	}
+
+	return { shouldCredit: true, newPaydayDate: paydayThisMonth.toISOString() };
 }
 
 export function getTodaySpent(expenses: Expense[], accId: string): number {

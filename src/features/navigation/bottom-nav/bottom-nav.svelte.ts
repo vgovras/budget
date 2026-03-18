@@ -9,9 +9,9 @@ export interface NavTab {
 
 export class BottomNavViewModel {
 	readonly tabs: NavTab[] = [
-		{ id: 'history', icon: 'list' },
+		{ id: 'analytics', icon: 'wallet' },
 		{ id: 'home', icon: 'home' },
-		{ id: 'analytics', icon: 'bar-chart' },
+		{ id: 'history', icon: 'list' },
 		{ id: 'settings', icon: 'settings' }
 	];
 

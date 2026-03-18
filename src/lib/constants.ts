@@ -61,7 +61,7 @@ export const CAT_GLOWS = [
 	'rgba(144,64,255,0.6)'
 ];
 
-export const SCREEN_ORDER: ScreenId[] = ['history', 'home', 'analytics', 'settings'];
+export const SCREEN_ORDER: ScreenId[] = ['analytics', 'home', 'history', 'settings'];
 
 export const DEFAULT_SETTINGS: Settings = {
 	budget: 0,
@@ -71,5 +71,6 @@ export const DEFAULT_SETTINGS: Settings = {
 	notifications: false,
 	warning: true,
 	catLimits: {},
-	onboardingDone: false
+	onboardingDone: false,
+	lastPayday: ''
 };

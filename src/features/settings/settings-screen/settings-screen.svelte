@@ -202,9 +202,8 @@
 	}
 	.top-bar-title {
 		font-size: 20px;
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		color: var(--text-hi);
+		font-weight: 500;
+		color: rgba(255, 255, 255, 0.85);
 	}
 
 	.content {
@@ -225,21 +224,19 @@
 	}
 
 	.settings-section-title {
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: 0.08em;
+		font-size: 11px;
+		font-weight: 500;
+		letter-spacing: 1.4px;
 		text-transform: uppercase;
-		color: var(--text-lo);
+		color: rgba(255, 255, 255, 0.25);
 		padding: 0 4px 8px;
 	}
 
 	.settings-group {
-		background: rgba(255, 255, 255, 0.03);
-		border-radius: var(--r-lg);
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: #09090e;
+		border-radius: 20px;
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		position: relative;
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-		overflow: hidden;
 	}
 
 	.settings-row {
@@ -268,14 +265,16 @@
 	}
 
 	.settings-row-icon {
-		width: 36px;
-		height: 36px;
+		width: 34px;
+		height: 34px;
 		border-radius: 10px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
 		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		color: rgba(255, 255, 255, 0.4);
 	}
 
 	.settings-row-info {
@@ -283,7 +282,7 @@
 		min-width: 0;
 	}
 	.settings-row-label {
-		font-size: 17px;
+		font-size: 14px;
 		font-weight: 400;
 		color: var(--text-hi);
 	}
@@ -328,9 +327,9 @@
 		box-shadow: none;
 	}
 	.toggle.on {
-		background: rgba(255, 255, 255, 0.16);
-		border-color: rgba(255, 255, 255, 0.14);
-		box-shadow: none;
+		background: var(--accent-bg);
+		border-color: var(--accent-border);
+		box-shadow: 0 0 8px var(--accent-glow);
 	}
 
 	.toggle-handle {
@@ -346,11 +345,11 @@
 	}
 	.toggle.on .toggle-handle {
 		left: 22px;
-		background: #ffffff;
+		background: var(--accent);
 		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 	}
 
 	.danger-text {
-		color: rgba(255, 80, 80, 0.85);
+		color: var(--danger);
 	}
 </style>

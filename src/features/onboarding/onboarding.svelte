@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { fly, fade } from 'svelte/transition';
 	import { OnboardingViewModel } from './onboarding.svelte.js';
-	import StepWelcome from './steps/step-welcome.svelte';
+	import StepIntro from './steps/step-intro.svelte';
 	import StepSalary from './steps/step-salary.svelte';
 	import StepPayday from './steps/step-payday.svelte';
 	import StepSavings from './steps/step-savings.svelte';
-	import StepFinish from './steps/step-finish.svelte';
+	import StepReady from './steps/step-ready.svelte';
 
 	const vm = new OnboardingViewModel();
-	const slideIndices = $derived(Array.from({ length: vm.totalSlides }, (_, i) => i));
+	const segments = $derived(Array.from({ length: vm.totalSlides }, (_, i) => i));
 
 	let startX = 0;
 	let startY = 0;
@@ -55,16 +55,12 @@
 		ontouchmove={onTouchMove}
 		ontouchend={onTouchEnd}
 	>
-		<div class="progress-dots">
-			{#each slideIndices as i (i)}
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<div class="progress-bar">
+			{#each segments as i (i)}
 				<div
-					class="dot"
-					class:active={i === vm.currentSlide}
+					class="seg"
 					class:done={i < vm.currentSlide}
-					class:reachable={i <= vm.maxReachedSlide && i !== vm.currentSlide}
-					onclick={() => vm.goToSlide(i)}
+					class:active={i === vm.currentSlide}
 				></div>
 			{/each}
 		</div>
@@ -77,23 +73,24 @@
 					out:fly={{ x: vm.direction * -80, duration: 250 }}
 				>
 					{#if vm.currentSlide === 0}
-						<StepWelcome onNext={() => vm.next()} />
+						<StepIntro onNext={() => vm.next()} onSkip={() => vm.skip()} />
 					{:else if vm.currentSlide === 1}
-						<StepSalary bind:value={vm.salary} onNext={() => vm.next()} />
+						<StepSalary bind:value={vm.salary} onNext={() => vm.next()} onSkip={() => vm.skip()} />
 					{:else if vm.currentSlide === 2}
-						<StepPayday bind:value={vm.payday} onNext={() => vm.next()} />
+						<StepPayday bind:value={vm.payday} onNext={() => vm.next()} onSkip={() => vm.skip()} />
 					{:else if vm.currentSlide === 3}
 						<StepSavings
 							salary={vm.salary ?? 0}
 							steps={vm.savingsSteps}
 							activeIdx={vm.savingsIdx}
 							savingsAmount={vm.savingsAmount}
+							budget={vm.budget}
 							onSelectIdx={(i) => vm.setSavingsIdx(i)}
-							onCustom={(v) => vm.setCustomSavings(v)}
 							onNext={() => vm.next()}
+							onSkip={() => vm.skip()}
 						/>
 					{:else if vm.currentSlide === 4}
-						<StepFinish />
+						<StepReady budget={vm.budget > 0 ? vm.budget : 10000} onFinish={() => vm.finish()} onBack={() => vm.prev()} />
 					{/if}
 				</div>
 			{/key}
@@ -111,31 +108,25 @@
 		flex-direction: column;
 	}
 
-	.progress-dots {
+	.progress-bar {
 		display: flex;
-		justify-content: center;
-		gap: 8px;
-		padding: 20px 0 0;
+		gap: 5px;
+		padding: 14px 24px 0;
 		flex-shrink: 0;
 	}
 
-	.dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.15);
-		transition: all 0.3s ease;
+	.seg {
+		flex: 1;
+		height: 2px;
+		border-radius: 1px;
+		background: rgba(255, 255, 255, 0.1);
+		transition: background 0.4s ease;
 	}
-	.dot.active {
-		background: rgba(255, 255, 255, 0.8);
-		width: 24px;
-		border-radius: 99px;
+	.seg.done {
+		background: rgba(255, 255, 255, 0.7);
 	}
-	.dot.done {
-		background: rgba(255, 255, 255, 0.4);
-	}
-	.dot.reachable {
-		cursor: pointer;
+	.seg.active {
+		background: rgba(255, 255, 255, 0.45);
 	}
 
 	.slides {

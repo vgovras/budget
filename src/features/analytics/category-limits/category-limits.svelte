@@ -15,13 +15,13 @@
 		<div class="cat-limit-row">
 			<div class="cat-limit-header">
 				<span class="cat-limit-name"><Icon name={row.icon} size={16} /> {row.label}</span>
-				<span class="cat-limit-nums">
+				<span class="cat-limit-nums" class:over-limit={row.limit > 0 && row.pct > 100}>
 					₴{fmt(row.spent)}{row.limit ? ` / ₴${fmt(row.limit)}` : ` · ${m.analytics_no_limit()}`}
 				</span>
 			</div>
 			{#if row.limit > 0}
 				<div class="cat-limit-track">
-					<div class="cat-limit-fill" style="width:{row.pct}%;background:{row.color}"></div>
+					<div class="cat-limit-fill" style="width:{Math.min(row.pct, 100)}%;background:{row.pct > 100 ? 'var(--danger)' : row.pct > 80 ? 'var(--warning)' : row.color}"></div>
 				</div>
 			{/if}
 		</div>
@@ -59,6 +59,9 @@
 		font-size: 12px;
 		font-family: var(--font-mono);
 		color: var(--text-lo);
+	}
+	.cat-limit-nums.over-limit {
+		color: var(--danger-dim);
 	}
 	.cat-limit-track {
 		height: 4px;

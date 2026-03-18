@@ -23,7 +23,7 @@
 				{m.tab_expense()}
 			</button>
 			<button
-				class="sheet-tab"
+				class="sheet-tab income-tab"
 				class:active={vm.sheetType === 'income'}
 				onclick={() => vm.setType('income')}
 			>
@@ -63,7 +63,7 @@
 	.sheet-tabs {
 		display: flex;
 		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		border-radius: 12px;
 		padding: 3px;
 		gap: 3px;
@@ -87,11 +87,15 @@
 		background: rgba(255, 255, 255, 0.08);
 		color: var(--text-hi);
 	}
+	.sheet-tab.income-tab.active {
+		background: var(--income-bg);
+		color: var(--income);
+	}
 
 	.amount-field {
 		padding: 16px 18px;
 		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		border-radius: var(--r-md);
 		transition: all 0.2s ease;
 	}
@@ -112,12 +116,11 @@
 		width: 100%;
 		padding: 17px;
 		border-radius: var(--r-md);
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.06);
-		color: #ffffff;
+		border: 1px solid rgba(80, 130, 255, 0.25);
+		background: rgba(80, 130, 255, 0.08);
+		color: rgba(80, 130, 255, 0.7);
 		font-size: 17px;
-		font-weight: 600;
-		letter-spacing: 0.01em;
+		font-weight: 500;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -126,20 +129,16 @@
 		transition: all 0.22s ease;
 		font-family: var(--font);
 		cursor: pointer;
-		box-shadow:
-			0 8px 32px rgba(255, 255, 255, 0.03),
-			inset 0 1px 0 rgba(255, 255, 255, 0.1);
 	}
 
 	.btn-save:disabled {
 		opacity: 0.22;
 		cursor: not-allowed;
-		box-shadow: none;
-		border-color: var(--border);
+		border-color: rgba(255, 255, 255, 0.07);
 	}
 
 	.btn-save:not(:disabled):hover {
-		background: rgba(255, 255, 255, 0.1);
-		border-color: rgba(255, 255, 255, 0.2);
+		background: rgba(80, 130, 255, 0.14);
+		border-color: rgba(80, 130, 255, 0.3);
 	}
 </style>

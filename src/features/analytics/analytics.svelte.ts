@@ -1,6 +1,7 @@
 import type { Expense } from '$lib/types.js';
 import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
+import { settingsVM } from '$features/settings/settings.svelte.js';
 import { CATEGORIES } from '$lib/constants.js';
 import { getDailyBudget, getWeeklyAmounts } from '$lib/utils/budget.js';
 
@@ -32,8 +33,12 @@ export class AnalyticsViewModel {
 	readonly weeklyAmounts = $derived(getWeeklyAmounts(this.accountExpenses));
 
 	readonly dailyBudget = $derived(
-		accountsVM.active ? getDailyBudget(expensesVM.expenses, accountsVM.active) : 0
+		accountsVM.active ? getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget) : 0
 	);
 
 	readonly isEmpty = $derived(this.accountExpenses.length === 0);
+
+	readonly totalBalance = $derived(
+		accountsVM.accounts.reduce((s: number, a) => s + a.balance, 0)
+	);
 }

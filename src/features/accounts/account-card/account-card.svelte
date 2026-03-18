@@ -2,16 +2,17 @@
 	import type { Account } from '$lib/types.js';
 	import { fmt } from '$lib/utils/format.js';
 	import { expensesVM } from '$features/expenses/expenses.svelte.js';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import { getAccStats } from '$lib/utils/budget.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { account, onclick }: { account: Account; onclick?: () => void } = $props();
 
+	const budget = $derived(settingsVM.budget);
 	const spent = $derived(getAccStats(expensesVM.expenses, account.id));
 	const pct = $derived(
-		account.budget > 0 ? Math.min(Math.round((spent / account.budget) * 100), 100) : 0
+		budget > 0 ? Math.min(Math.round((spent / budget) * 100), 100) : 0
 	);
-	const remaining = $derived(Math.max(0, account.budget - spent));
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -21,24 +22,19 @@
 		<span class="label">{account.label}</span>
 	</div>
 
-	<div class="balance">
-		<span class="cur">{account.currency}</span>{fmt(remaining)}
+	<div class="amount">
+		<span class="cur">{account.currency}</span>{fmt(budget)}
 	</div>
 
-	<div class="sub">
-		{m.account_spent_of()} <span class="hi">{account.currency} {fmt(spent)}</span>{' ' +
-			m.account_of() +
-			' '}{account.currency}
-		{fmt(account.budget)}
-	</div>
-
-	<div class="prog-meta">
-		<span>{account.currency} {fmt(spent)}</span>
-		<span class="pct">{pct}%</span>
-	</div>
-	<div class="prog-track">
-		<div class="prog-fill" style="width:{pct}%"></div>
-	</div>
+	{#if budget > 0}
+		<div class="budget-line">
+			<span class="budget-nums">{m.account_spent_of()} {account.currency} {fmt(spent)} {m.account_of()} {account.currency} {fmt(account.balance)}</span>
+			<span class="budget-pct">{pct}%</span>
+		</div>
+		<div class="prog-track">
+			<div class="prog-fill" style="width:{pct}%"></div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -46,91 +42,108 @@
 		scroll-snap-align: center;
 		scroll-snap-stop: always;
 		flex-shrink: 0;
-		width: calc(100vw - 48px);
+		width: 100%;
 		min-width: 280px;
-		border-radius: var(--r-xl);
+		box-sizing: border-box;
+		overflow: hidden;
+		border-radius: 24px;
 		padding: 28px 24px 24px;
 		position: relative;
 		cursor: pointer;
 		transition: transform 0.3s var(--ease-out);
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		backdrop-filter: blur(20px) saturate(120%);
-		-webkit-backdrop-filter: blur(20px) saturate(120%);
-		box-shadow:
-			0 4px 24px rgba(0, 0, 0, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.06);
+		background: #09090e;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+	}
+
+	.card::before {
+		content: '';
+		position: absolute;
+		top: -20px;
+		left: -20px;
+		width: 200px;
+		height: 200px;
+		background: radial-gradient(ellipse, rgba(60, 100, 220, 0.18), transparent 70%);
+		pointer-events: none;
+		animation: glow-pulse 4s ease-in-out infinite;
+	}
+	.card::after {
+		content: '';
+		position: absolute;
+		bottom: -20px;
+		right: -20px;
+		width: 160px;
+		height: 140px;
+		background: radial-gradient(ellipse, rgba(120, 50, 180, 0.13), transparent 70%);
+		pointer-events: none;
+		animation: glow-pulse 4s ease-in-out infinite 2s;
 	}
 
 	.header {
+		position: relative;
+		z-index: 1;
 		margin-bottom: 18px;
 	}
 
 	.label {
-		font-size: 12px;
+		font-size: 11px;
 		font-weight: 500;
-		letter-spacing: 0.06em;
+		letter-spacing: 1.4px;
 		text-transform: uppercase;
-		color: var(--text-lo);
+		color: rgba(255, 255, 255, 0.25);
 	}
 
-	.balance {
-		font-family: var(--font-mono);
-		font-size: 48px;
+	.amount {
+		position: relative;
+		z-index: 1;
+		font-size: 50px;
 		font-weight: 300;
-		letter-spacing: -0.03em;
+		letter-spacing: -2px;
 		line-height: 1;
-		color: var(--text-hi);
+		color: rgba(255, 255, 255, 0.85);
 	}
 
 	.cur {
-		font-size: 18px;
+		font-size: 26px;
 		font-weight: 300;
-		color: var(--text-lo);
+		opacity: 0.45;
 		margin-right: 3px;
 		vertical-align: 10px;
 	}
 
-	.sub {
-		margin-top: 10px;
-		font-size: 14px;
-		font-family: var(--font-mono);
-		font-weight: 300;
-		color: var(--text-mid);
-	}
-	.sub :global(.hi) {
-		color: var(--text-hi);
-		font-weight: 400;
-	}
-
-	.prog-meta {
+	.budget-line {
+		position: relative;
+		z-index: 1;
 		display: flex;
-		justify-content: space-between;
-		font-size: 11px;
-		font-family: var(--font-mono);
-		color: var(--text-mid);
-		margin-top: 22px;
+		align-items: center;
+		gap: 8px;
+		margin-top: 20px;
 		margin-bottom: 10px;
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.25);
+		font-weight: 300;
 	}
-	.pct {
-		color: var(--text-hi);
+	.budget-nums {
+		flex: 1;
+	}
+	.budget-pct {
 		font-weight: 500;
+		color: rgba(255, 255, 255, 0.5);
 	}
 
 	.prog-track {
-		height: 4px;
-		border-radius: 99px;
-		background: rgba(255, 255, 255, 0.04);
-		overflow: visible;
 		position: relative;
+		z-index: 1;
+		height: 3px;
+		border-radius: 99px;
+		background: rgba(255, 255, 255, 0.07);
+		overflow: visible;
 	}
 	.prog-fill {
 		height: 100%;
 		border-radius: 99px;
 		position: relative;
 		transition: width 0.8s var(--ease-out);
-		background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.6));
-		box-shadow: none;
+		background: rgba(80, 130, 255, 0.7);
 	}
 	.prog-fill::after {
 		content: '';
@@ -138,10 +151,10 @@
 		right: -3px;
 		top: 50%;
 		transform: translateY(-50%);
-		width: 10px;
-		height: 10px;
+		width: 8px;
+		height: 8px;
 		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.7);
-		box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+		background: rgba(100, 150, 255, 0.8);
+		box-shadow: 0 0 6px rgba(100, 150, 255, 0.6);
 	}
 </style>

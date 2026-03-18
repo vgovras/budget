@@ -7,8 +7,7 @@ export class EditExpenseViewModel {
 	amount = $state(0);
 	note = $state('');
 	title = $state('');
-
-	readonly isOpen = $derived(this.editingId !== null);
+	isOpen = $state(false);
 
 	open(id: number) {
 		const exp = expensesVM.expenses.find((e) => e.id === id);
@@ -17,9 +16,11 @@ export class EditExpenseViewModel {
 		this.amount = exp.amount;
 		this.note = exp.note;
 		this.title = exp.label;
+		this.isOpen = true;
 	}
 
 	close() {
+		this.isOpen = false;
 		this.editingId = null;
 	}
 
@@ -30,11 +31,11 @@ export class EditExpenseViewModel {
 
 		const diff = this.amount - exp.amount;
 		const acc = accountsVM.accounts.find((a: Account) => a.id === exp.accountId);
-		if (acc && exp.type !== 'income') {
-			accountsVM.update(acc.id, {
-				spent: Math.max(0, (acc.spent || 0) + diff),
-				balance: Math.max(0, (acc.balance || 0) - diff)
-			});
+		if (acc) {
+			// expense: більше витратив → баланс менший
+			// income: більше отримав → баланс більший
+			const balanceDiff = exp.type === 'income' ? diff : -diff;
+			accountsVM.update(acc.id, { balance: acc.balance + balanceDiff });
 		}
 
 		expensesVM.update(this.editingId, {
@@ -49,11 +50,10 @@ export class EditExpenseViewModel {
 		const exp = expensesVM.expenses.find((e) => e.id === this.editingId);
 		if (exp) {
 			const acc = accountsVM.accounts.find((a: Account) => a.id === exp.accountId);
-			if (acc && exp.type !== 'income') {
-				accountsVM.update(acc.id, {
-					spent: Math.max(0, (acc.spent || 0) - exp.amount),
-					balance: (acc.balance || 0) + exp.amount
-				});
+			if (acc) {
+				// Повернути баланс: expense → +amount, income → -amount
+				const balanceDiff = exp.type === 'income' ? -exp.amount : exp.amount;
+				accountsVM.update(acc.id, { balance: acc.balance + balanceDiff });
 			}
 			expensesVM.remove(this.editingId);
 		}

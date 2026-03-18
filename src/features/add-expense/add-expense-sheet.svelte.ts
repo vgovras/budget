@@ -1,5 +1,6 @@
 import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
+import { settingsVM } from '$features/settings/settings.svelte.js';
 import { CATEGORIES } from '$lib/constants.js';
 import { getDailyBudget } from '$lib/utils/budget.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
@@ -16,7 +17,7 @@ export class AddExpenseSheetViewModel {
 	readonly canSave = $derived(this.amount !== null && this.amount > 0);
 
 	readonly dailyBudget = $derived(
-		accountsVM.active ? getDailyBudget(expensesVM.expenses, accountsVM.active) : 0
+		accountsVM.active ? getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget) : 0
 	);
 
 	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, 3));
@@ -55,7 +56,7 @@ export class AddExpenseSheetViewModel {
 		const isoDate = nowISO();
 
 		if (this.sheetType === 'income') {
-			accountsVM.update(acc.id, { balance: (acc.balance || 0) + amount });
+			accountsVM.update(acc.id, { balance: acc.balance + amount });
 			expensesVM.add({
 				icon: 'wallet',
 				label: m.income_label(),
@@ -68,10 +69,7 @@ export class AddExpenseSheetViewModel {
 			});
 		} else {
 			const cat = CATEGORIES.find((c) => c.icon === this.selectedCategory) || CATEGORIES[0];
-			accountsVM.update(acc.id, {
-				spent: (acc.spent || 0) + amount,
-				balance: Math.max(0, (acc.balance || 0) - amount)
-			});
+			accountsVM.update(acc.id, { balance: acc.balance - amount });
 			expensesVM.add({
 				icon: cat.icon,
 				label: cat.label,

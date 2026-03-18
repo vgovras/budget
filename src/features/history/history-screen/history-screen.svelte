@@ -82,9 +82,8 @@
 	}
 	.top-bar-title {
 		font-size: 20px;
-		font-weight: 700;
-		letter-spacing: -0.03em;
-		color: var(--text-hi);
+		font-weight: 500;
+		color: rgba(255, 255, 255, 0.85);
 	}
 
 	.filters {
@@ -108,9 +107,9 @@
 		gap: 4px;
 		padding: 6px 14px;
 		border-radius: 99px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.03);
-		color: var(--text-mid);
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: #09090e;
+		color: rgba(255, 255, 255, 0.35);
 		font-size: 13px;
 		font-weight: 500;
 		white-space: nowrap;
@@ -118,13 +117,11 @@
 		transition: all 0.2s ease;
 		cursor: pointer;
 		font-family: var(--font);
-		box-shadow: none;
 	}
 	.filter-pill.active {
-		border-color: rgba(255, 255, 255, 0.18);
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-hi);
-		box-shadow: none;
+		border-color: rgba(80, 130, 255, 0.25);
+		background: rgba(80, 130, 255, 0.08);
+		color: rgba(80, 130, 255, 0.7);
 	}
 	.filter-pill:hover:not(.active) {
 		border-color: rgba(255, 255, 255, 0.1);
@@ -155,10 +152,9 @@
 		padding: 4px 2px;
 	}
 	.month-total-label {
-		font-size: 17px;
-		font-weight: 600;
-		letter-spacing: -0.02em;
-		color: var(--text-hi);
+		font-size: 15px;
+		font-weight: 500;
+		color: rgba(255, 255, 255, 0.85);
 	}
 	.month-total-amount {
 		font-family: var(--font-mono);
@@ -168,26 +164,25 @@
 	}
 
 	.card {
-		background: rgba(255, 255, 255, 0.03);
-		border-radius: var(--r-lg);
+		background: #09090e;
+		border-radius: 20px;
 		position: relative;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		overflow: visible;
 	}
 
 	.day-label {
-		font-size: 12px;
+		font-size: 11px;
 		font-weight: 500;
-		color: var(--text-lo);
-		letter-spacing: 0.06em;
+		color: rgba(255, 255, 255, 0.2);
+		letter-spacing: 1.4px;
 		text-transform: uppercase;
 		padding: 16px 16px 8px;
 	}
 
 	.exp-divider {
 		height: 1px;
-		background: var(--border);
+		background: rgba(255, 255, 255, 0.04);
 		margin: 0 16px;
 	}
 </style>

@@ -45,11 +45,9 @@
 		transform: translate(-50%, -50%);
 		width: calc(100% - 48px);
 		max-width: 320px;
-		background: rgba(14, 14, 18, 0.8);
-		backdrop-filter: blur(24px) saturate(120%);
-		-webkit-backdrop-filter: blur(24px) saturate(120%);
+		background: #09090e;
 		border-radius: 24px;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		padding: 24px 20px 16px;
 		display: flex;
 		flex-direction: column;
@@ -97,11 +95,11 @@
 		background: rgba(255, 255, 255, 0.07);
 	}
 	:global(.confirm-btn.danger) {
-		background: rgba(255, 80, 80, 0.08);
-		border-color: rgba(255, 80, 80, 0.15);
-		color: rgba(255, 100, 100, 0.85);
+		background: var(--danger-bg);
+		border-color: var(--danger-border);
+		color: var(--danger);
 	}
 	:global(.confirm-btn.danger:hover) {
-		background: rgba(255, 70, 70, 0.2);
+		background: rgba(255, 107, 107, 0.16);
 	}
 </style>
