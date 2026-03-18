@@ -77,7 +77,7 @@
 					<button class="ptab" class:active={vm.activePeriod === 'year'} onclick={() => vm.setPeriod('year')}>{m.home_period_year()}</button>
 				</div>
 			</div>
-			<DonutChart byCategory={vm.byCategory} total={vm.spentAmount} />
+			<DonutChart byCategory={vm.byCategory} total={vm.spentAmount} currency={vm.currency} />
 		</Card>
 	{/if}
 

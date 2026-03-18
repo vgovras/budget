@@ -12,6 +12,7 @@ export class OnboardingViewModel {
 	visible = $state(true);
 
 	salary = $state<number | null>(null);
+	currency = $state(settingsVM.currency);
 	payday = $state(1);
 	savingsIdx = $state<number | null>(2); // default 20%
 	customSavings = $state<number | null>(null);
@@ -87,6 +88,7 @@ export class OnboardingViewModel {
 
 		const { proratedBudget } = prorateForCurrentMonth(budget);
 
+		settingsVM.currency = this.currency;
 		settingsVM.updateBudget(budget);
 		if (sal > 0) settingsVM.updateSalary(sal);
 		settingsVM.updatePayday(this.payday);
@@ -97,7 +99,7 @@ export class OnboardingViewModel {
 			balance: sal,
 			budget: proratedBudget,
 			spent: 0,
-			currency: settingsVM.currency,
+			currency: this.currency,
 			label: m.account_label_monthly_budget()
 		});
 

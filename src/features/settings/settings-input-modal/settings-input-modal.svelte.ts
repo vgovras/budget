@@ -37,6 +37,7 @@ export class SettingsInputModalViewModel {
 	value = $state('');
 
 	readonly config = $derived<FieldConfig>(getFieldMap()[this.fieldType]);
+	readonly currencySymbol = $derived(settingsVM.currency);
 
 	open(type: SettingsInputType) {
 		this.fieldType = type;

@@ -1,16 +1,18 @@
 <script lang="ts">
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import { fmt } from '$lib/utils/format.js';
+	import { CURRENCIES, CURRENCY_CODES } from '$lib/constants.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let {
 		value = $bindable<number | null>(null),
+		currency = $bindable<string>('₴'),
 		onNext,
 		onSkip
-	}: { value: number | null; onNext: () => void; onSkip: () => void } = $props();
+	}: { value: number | null; currency: string; onNext: () => void; onSkip: () => void } = $props();
 
 	const canNext = $derived(value !== null && value > 0);
-	const displayAmount = $derived(value && value > 0 ? `₴${fmt(value)}` : '₴0');
+	const displayAmount = $derived(value && value > 0 ? `${currency}${fmt(value)}` : `${currency}0`);
 </script>
 
 <div class="slide">
@@ -35,11 +37,22 @@
 	<div class="text-block">
 		<div class="slide-num">02 / 05</div>
 		<h2 class="slide-title">{@html m.onboarding_salary_title()}</h2>
-		<p class="slide-desc">{m.onboarding_salary_desc()}</p>
+		<p class="slide-desc">{m.onboarding_salary_desc_new()}</p>
 	</div>
 
 	<div class="input-area">
-		<MoneyInput bind:value size="lg" placeholder="30 000" autofocus />
+		<div class="currency-chips">
+			{#each CURRENCIES as cur (cur)}
+				<button
+					class="cur-chip"
+					class:active={currency === cur}
+					onclick={() => (currency = cur)}
+				>
+					{cur} {CURRENCY_CODES[cur]}
+				</button>
+			{/each}
+		</div>
+		<MoneyInput bind:value {currency} size="lg" placeholder="30 000" autofocus />
 	</div>
 
 	<div class="bottom">
@@ -92,6 +105,32 @@
 
 	.input-area {
 		padding: 20px 28px 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.currency-chips {
+		display: flex;
+		gap: 6px;
+		flex-wrap: wrap;
+	}
+	.cur-chip {
+		padding: 7px 12px;
+		border-radius: 10px;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.04);
+		color: rgba(255, 255, 255, 0.3);
+		font-size: 13px;
+		font-weight: 500;
+		font-family: var(--font);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+	.cur-chip.active {
+		border-color: rgba(255, 255, 255, 0.2);
+		background: rgba(255, 255, 255, 0.08);
+		color: var(--text-hi);
 	}
 
 	.bottom { padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }

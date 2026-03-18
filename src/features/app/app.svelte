@@ -15,8 +15,6 @@
 	import { AddAccountSheetViewModel } from '$features/accounts/add-account/add-account-sheet.svelte.js';
 	import EditAccountSheet from '$features/accounts/edit-account/edit-account-sheet.svelte';
 	import { EditAccountSheetViewModel } from '$features/accounts/edit-account/edit-account-sheet.svelte.js';
-	import TransferSheet from '$features/transfer/transfer-sheet.svelte';
-	import { TransferSheetViewModel } from '$features/transfer/transfer-sheet.svelte.js';
 	import Onboarding from '$features/onboarding/onboarding.svelte';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -25,7 +23,6 @@
 	const addAccountVM = new AddAccountSheetViewModel();
 	const editAccountVM = new EditAccountSheetViewModel();
 	const editExpenseVM = new EditExpenseViewModel();
-	const transferVM = new TransferSheetViewModel();
 	const confirmVM = new ConfirmDialogViewModel();
 </script>
 
@@ -53,7 +50,7 @@
 
 	<BottomNav onAdd={() => addExpenseVM.open()} />
 
-	<AddExpenseSheet vm={addExpenseVM} onTransfer={() => transferVM.open()} />
+	<AddExpenseSheet vm={addExpenseVM} />
 	<AddAccountSheet vm={addAccountVM} />
 	<EditAccountSheet vm={editAccountVM} onDelete={(id, name) => {
 		confirmVM.show({
@@ -64,7 +61,6 @@
 			onConfirm() { editAccountVM.delete(); }
 		});
 	}} />
-	<TransferSheet vm={transferVM} />
 	<EditExpense vm={editExpenseVM} />
 	<ConfirmDialog vm={confirmVM} />
 

@@ -12,7 +12,6 @@ export interface Expense {
 	netAmount?: number;
 	toAccountId?: string;
 	exchangeRate?: number;
-	tags?: string[];
 }
 
 export interface Account {
@@ -37,6 +36,8 @@ export interface Settings {
 	warning: boolean;
 	onboardingDone: boolean;
 	lastPayday: string;
+	fiatViewEnabled: boolean;
+	fiatCurrency: string;
 }
 
 export interface Category {

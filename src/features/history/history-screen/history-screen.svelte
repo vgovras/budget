@@ -2,6 +2,7 @@
 	import type { Expense } from '$lib/types.js';
 	import { expensesVM } from '$features/expenses/expenses.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import { groupByDate, getDateLabel, fmt } from '$lib/utils/format.js';
 	import ExpenseRow from '$features/expenses/expense-row/expense-row.svelte';
@@ -24,8 +25,7 @@
 			base = base.filter(
 				(e: Expense) =>
 					e.label.toLowerCase().includes(q) ||
-					e.note.toLowerCase().includes(q) ||
-					(e.tags ?? []).some((t) => t.toLowerCase().includes(q))
+					e.note.toLowerCase().includes(q)
 			);
 		}
 		return base;
@@ -83,7 +83,7 @@
 <div class="content" use:scrollNav>
 	<div class="month-total">
 		<span class="month-total-label">{m.history_total()}</span>
-		<span class="month-total-amount">₴ {fmt(total)}</span>
+		<span class="month-total-amount">{accountsVM.active?.currency ?? settingsVM.currency} {fmt(total)}</span>
 	</div>
 
 	{#each Object.entries(grouped) as [dateKey, items] (dateKey)}

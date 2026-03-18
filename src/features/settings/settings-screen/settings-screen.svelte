@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
 	import { settingsVM } from '../settings.svelte.js';
 	import SettingsInputModal from '../settings-input-modal/settings-input-modal.svelte';
 	import { SettingsInputModalViewModel } from '../settings-input-modal/settings-input-modal.svelte.js';
@@ -18,10 +19,12 @@
 	import * as m from '$lib/paraglide/messages.js';
 	import { getLocale, setLocale, locales } from '$lib/paraglide/runtime.js';
 	import { LANG_OPTIONS } from '$lib/utils/locale.js';
+	import { CURRENCIES, CURRENCY_LABELS } from '$lib/constants.js';
 
 	let { confirmVM }: { confirmVM: ConfirmDialogViewModel } = $props();
 
 	let locale = $state(getLocale());
+	let fiatDropdown = $state(settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : 'off');
 
 	$effect(() => {
 		if (locale !== getLocale()) {
@@ -29,20 +32,26 @@
 		}
 	});
 
+	$effect(() => {
+		if (fiatDropdown === 'off') {
+			if (settingsVM.fiatViewEnabled) {
+				settingsVM.fiatViewEnabled = false;
+				settingsVM.setFiatCurrency(settingsVM.currency);
+			}
+		} else {
+			if (!settingsVM.fiatViewEnabled || settingsVM.fiatCurrency !== fiatDropdown) {
+				settingsVM.fiatViewEnabled = true;
+				settingsVM.setFiatCurrency(fiatDropdown);
+			}
+		}
+	});
+
 	const inputVM = new SettingsInputModalViewModel();
 	const catEditorVM = new CategoryEditorSheetViewModel();
 	const recEditorVM = new RecurringEditorSheetViewModel();
 
-	function deleteCategory(id: string, label: string) {
-		confirmVM.show({
-			title: m.button_delete(),
-			message: label,
-			okLabel: m.button_delete(),
-			okStyle: 'danger',
-			onConfirm() {
-				categoriesVM.remove(id);
-			}
-		});
+	function deleteCategory(id: string) {
+		categoriesVM.remove(id);
 	}
 
 	function resetAll() {
@@ -80,7 +89,7 @@
 					<div class="settings-row-value">{m.settings_monthly_budget_desc()}</div>
 				</div>
 				<div class="settings-row-right">
-					<span class="settings-val-badge">₴ {fmt(settingsVM.budget)}</span>
+					<span class="settings-val-badge">{settingsVM.currency} {fmt(settingsVM.budget)}</span>
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 						><polyline points="9 18 15 12 9 6" /></svg
 					>
@@ -95,7 +104,7 @@
 					<div class="settings-row-value">{m.settings_salary_desc()}</div>
 				</div>
 				<div class="settings-row-right">
-					<span class="settings-val-badge">₴ {fmt(settingsVM.salary)}</span>
+					<span class="settings-val-badge">{settingsVM.currency} {fmt(settingsVM.salary)}</span>
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 						><polyline points="9 18 15 12 9 6" /></svg
 					>
@@ -126,7 +135,7 @@
 			{#each categoriesVM.categories as cat (cat.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div class="settings-row">
+				<div class="settings-row" out:fade={{ duration: 200 }}>
 					<div class="settings-row-icon" style:background={cat.bg} style:border-color={cat.border}>
 						<Icon name={cat.icon} size={18} />
 					</div>
@@ -144,7 +153,7 @@
 						</span>
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-delete-btn" onclick={() => deleteCategory(cat.id, cat.label)}>
+						<span class="cat-delete-btn" onclick={() => deleteCategory(cat.id)}>
 							<Icon name="trash" size={16} />
 						</span>
 					</div>
@@ -175,7 +184,7 @@
 					<div class="settings-row-info">
 						<div class="settings-row-label">{item.label}</div>
 						<div class="settings-row-value">
-							{item.type === 'income' ? '+' : '−'}₴{fmt(item.amount)} · {item.frequency === 'daily' ? m.recurring_daily() : item.frequency === 'weekly' ? m.recurring_weekly() : m.recurring_monthly()}
+							{item.type === 'income' ? '+' : '−'}{settingsVM.currency}{fmt(item.amount)} · {item.frequency === 'daily' ? m.recurring_daily() : item.frequency === 'weekly' ? m.recurring_weekly() : m.recurring_monthly()}
 						</div>
 					</div>
 					<div class="settings-row-right">
@@ -245,6 +254,23 @@
 					<div class="toggle" class:on={settingsVM.warning}>
 						<div class="toggle-handle"></div>
 					</div>
+				</div>
+			</div>
+			<div class="settings-row fiat-row">
+				<div class="settings-row-icon"><Icon name="banknote" size={18} /></div>
+				<div class="settings-row-info">
+					<div class="settings-row-label">{m.settings_fiat_view_label()}</div>
+					<div class="settings-row-value">{m.settings_fiat_view_desc()}</div>
+				</div>
+				<div class="settings-row-right">
+					<Dropdown
+						bind:value={fiatDropdown}
+						options={[
+							{ value: 'off', label: m.settings_fiat_view_off() },
+							...CURRENCIES.map((c) => ({ value: c, label: CURRENCY_LABELS[c] ?? c }))
+						]}
+						position="top"
+					/>
 				</div>
 			</div>
 		</div>
@@ -457,5 +483,9 @@
 	}
 	.add-cat-row {
 		cursor: pointer;
+	}
+
+	.fiat-row {
+		cursor: default;
 	}
 </style>

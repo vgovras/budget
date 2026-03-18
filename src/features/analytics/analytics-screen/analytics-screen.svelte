@@ -5,6 +5,8 @@
 	import { getAccStats } from '$lib/utils/budget.js';
 	import DonutChart from '../donut-chart/donut-chart.svelte';
 	import { fmt } from '$lib/utils/format.js';
+	import { convert } from '$lib/utils/currency.js';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -25,17 +27,19 @@
 </div>
 
 <div class="content" use:scrollNav>
-	{#if vm.byAccount.length > 0}
+	{#if vm.byAccount.length > 0 && vm.showTotal}
 		<div class="analytics-card">
 			<div class="analytics-title">{m.analytics_balance_distribution()}</div>
-			<DonutChart byCategory={vm.byAccount} total={vm.totalBalance} />
+			<DonutChart byCategory={vm.byAccount} total={vm.totalBalance} currency={vm.baseCurrency} />
 		</div>
 	{/if}
 
 	<div class="analytics-card accounts-card">
 		<div class="accounts-header">
 			<span class="analytics-title" style="margin-bottom:0">{m.analytics_my_accounts()}</span>
-			<span class="accounts-total">{accountsVM.accounts[0]?.currency ?? '₴'} {fmt(vm.totalBalance)}</span>
+			{#if vm.showTotal}
+				<span class="accounts-total">{vm.baseCurrency} {fmt(vm.totalBalance)}</span>
+			{/if}
 		</div>
 		{#each accountsVM.accounts as acc, i (acc.id)}
 			{@const spent = getAccStats(expensesVM.expenses, acc.id)}
@@ -53,18 +57,25 @@
 				<div class="acc-info">
 					<div class="acc-name">{acc.name}</div>
 					{#if acc.goalAmount && acc.goalAmount > 0}
-						<div class="acc-budget-line">{m.goal_progress()}: {acc.currency} {fmt(acc.balance)} / {acc.currency} {fmt(acc.goalAmount)} ({goalPct}%)</div>
-					{:else if acc.budget > 0}
+						<div class="acc-budget-line">{acc.currency} {fmt(acc.balance)} / {acc.currency} {fmt(acc.goalAmount)} ({goalPct}%)</div>
+					{:else if acc.budget > 0 && spent > 0}
 						<div class="acc-budget-line">{acc.currency} {fmt(spent)} / {acc.currency} {fmt(acc.budget)}</div>
 					{/if}
 				</div>
-				<div class="acc-balance">{acc.currency} {fmt(acc.balance)}</div>
+				<div class="acc-balance-wrap">
+					{#if vm.isFiat && acc.currency !== settingsVM.fiatCurrency}
+						<div class="acc-balance">{settingsVM.fiatCurrency} {fmt(convert(acc.balance, acc.currency, settingsVM.fiatCurrency))}</div>
+						<div class="acc-balance-original">{acc.currency} {fmt(acc.balance)}</div>
+					{:else}
+						<div class="acc-balance">{acc.currency} {fmt(acc.balance)}</div>
+					{/if}
+				</div>
 			</div>
 			{#if acc.goalAmount && acc.goalAmount > 0}
 				<div class="acc-prog-track">
 					<div class="acc-prog-fill goal-fill" style="width:{goalPct}%"></div>
 				</div>
-			{:else if acc.budget > 0}
+			{:else if acc.budget > 0 && spent > 0}
 				<div class="acc-prog-track">
 					<div class="acc-prog-fill" style="width:{pct}%"></div>
 				</div>
@@ -186,11 +197,20 @@
 		color: rgba(255, 255, 255, 0.25);
 		margin-top: 2px;
 	}
+	.acc-balance-wrap {
+		flex-shrink: 0;
+		text-align: right;
+	}
 	.acc-balance {
 		font-size: 15px;
 		font-weight: 500;
 		color: rgba(255, 255, 255, 0.85);
-		flex-shrink: 0;
+	}
+	.acc-balance-original {
+		font-size: 12px;
+		font-weight: 300;
+		color: rgba(255, 255, 255, 0.25);
+		margin-top: 2px;
 	}
 	.acc-prog-track {
 		height: 2px;

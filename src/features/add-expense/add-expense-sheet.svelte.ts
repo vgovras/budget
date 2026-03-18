@@ -11,26 +11,28 @@ export class AddExpenseSheetViewModel {
 	isOpen = $state(false);
 	amount = $state<number | null>(null);
 	note = $state('');
-	sheetType = $state<'expense' | 'income'>('expense');
+	sheetType = $state<'expense' | 'income' | 'transfer'>('expense');
 	selectedCategory = $state<string | null>(null);
-	tagInput = $state('');
-	tags = $state<string[]>([]);
-
-	readonly allTags = $derived(
-		[...new Set(expensesVM.expenses.flatMap((e) => e.tags ?? []))].sort()
+	toAccountId = $state('');
+	exchangeRate = $state(1);
+	readonly toAccount = $derived(
+		accountsVM.accounts.find((a) => a.id === this.toAccountId)
 	);
 
-	readonly tagSuggestions = $derived(
-		this.tagInput.trim()
-			? this.allTags.filter(
-					(t) =>
-						t.toLowerCase().includes(this.tagInput.trim().toLowerCase()) &&
-						!this.tags.includes(t)
-				)
-			: []
+	readonly isCrossCurrency = $derived(
+		this.sheetType === 'transfer' && accountsVM.active && this.toAccount
+			? accountsVM.active.currency !== this.toAccount.currency
+			: false
 	);
 
-	readonly canSave = $derived(this.amount !== null && this.amount > 0);
+	readonly convertedAmount = $derived(
+		this.amount && this.exchangeRate ? Math.round(this.amount * this.exchangeRate) : 0
+	);
+
+	readonly canSave = $derived(
+		this.amount !== null && this.amount > 0 &&
+		(this.sheetType !== 'transfer' || (this.toAccountId !== '' && this.toAccountId !== accountsVM.active?.id))
+	);
 
 	readonly dailyBudget = $derived(
 		accountsVM.active ? getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget) : 0
@@ -44,27 +46,15 @@ export class AddExpenseSheetViewModel {
 		this.note = '';
 		this.selectedCategory = null;
 		this.sheetType = 'expense';
-		this.tagInput = '';
-		this.tags = [];
-	}
-
-	addTag(tag: string) {
-		const t = tag.trim();
-		if (t && !this.tags.includes(t)) {
-			this.tags = [...this.tags, t];
-		}
-		this.tagInput = '';
-	}
-
-	removeTag(tag: string) {
-		this.tags = this.tags.filter((t) => t !== tag);
+		this.toAccountId = '';
+		this.exchangeRate = 1;
 	}
 
 	close() {
 		this.isOpen = false;
 	}
 
-	setType(type: 'expense' | 'income') {
+	setType(type: 'expense' | 'income' | 'transfer') {
 		this.sheetType = type;
 	}
 
@@ -85,6 +75,28 @@ export class AddExpenseSheetViewModel {
 		const amount = this.amount;
 		const isoDate = nowISO();
 
+		if (this.sheetType === 'transfer') {
+			const to = this.toAccount;
+			if (!to) return;
+			const credited = this.isCrossCurrency ? this.convertedAmount : amount;
+			accountsVM.update(acc.id, { balance: acc.balance - amount });
+			accountsVM.update(to.id, { balance: to.balance + credited });
+			expensesVM.add({
+				icon: 'arrow-left-right',
+				label: `${acc.name} → ${to.name}`,
+				note: this.note || `${acc.name} → ${to.name}`,
+				amount,
+				day: 'today',
+				date: isoDate,
+				accountId: acc.id,
+				type: 'transfer',
+				toAccountId: to.id,
+				exchangeRate: this.isCrossCurrency ? this.exchangeRate : undefined
+			});
+			this.close();
+			return;
+		}
+
 		if (this.sheetType === 'income') {
 			const cat = categoriesVM.getByIcon(this.selectedCategory ?? '');
 			const commission = cat?.commission ?? 0;
@@ -101,7 +113,7 @@ export class AddExpenseSheetViewModel {
 				type: 'income',
 				commission: commission > 0 ? commission : undefined,
 				netAmount: commission > 0 ? netAmount : undefined,
-				tags: this.tags.length > 0 ? this.tags : undefined
+
 			});
 		} else {
 			const cats = categoriesVM.categories;
@@ -116,7 +128,7 @@ export class AddExpenseSheetViewModel {
 				date: isoDate,
 				accountId: acc.id,
 				type: 'expense',
-				tags: this.tags.length > 0 ? this.tags : undefined
+
 			});
 		}
 

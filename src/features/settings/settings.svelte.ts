@@ -13,6 +13,8 @@ export class SettingsViewModel {
 	warning = $state(DEFAULT_SETTINGS.warning);
 	onboardingDone = $state(false);
 	lastPayday = $state('');
+	fiatViewEnabled = $state(false);
+	fiatCurrency = $state(DEFAULT_SETTINGS.fiatCurrency);
 	loaded = $state(false);
 
 	constructor(repo: SettingsRepository) {
@@ -34,6 +36,8 @@ export class SettingsViewModel {
 			this.warning = saved.warning;
 			this.onboardingDone = saved.onboardingDone ?? false;
 			this.lastPayday = saved.lastPayday ?? '';
+			this.fiatViewEnabled = saved.fiatViewEnabled ?? false;
+			this.fiatCurrency = (saved as any).fiatCurrency ?? saved.currency ?? DEFAULT_SETTINGS.fiatCurrency;
 		}
 		this.loaded = true;
 	}
@@ -63,6 +67,16 @@ export class SettingsViewModel {
 		this.#save();
 	}
 
+	toggleFiatView() {
+		this.fiatViewEnabled = !this.fiatViewEnabled;
+		this.#save();
+	}
+
+	setFiatCurrency(currency: string) {
+		this.fiatCurrency = currency;
+		this.#save();
+	}
+
 	updateLastPayday(date: string) {
 		this.lastPayday = date;
 		this.#save();
@@ -82,6 +96,8 @@ export class SettingsViewModel {
 		this.warning = DEFAULT_SETTINGS.warning;
 		this.onboardingDone = false;
 		this.lastPayday = '';
+		this.fiatViewEnabled = false;
+		this.fiatCurrency = DEFAULT_SETTINGS.fiatCurrency;
 		this.#repo.clear();
 	}
 
@@ -98,7 +114,9 @@ export class SettingsViewModel {
 			notifications: this.notifications,
 			warning: this.warning,
 			onboardingDone: this.onboardingDone,
-			lastPayday: this.lastPayday
+			lastPayday: this.lastPayday,
+			fiatViewEnabled: this.fiatViewEnabled,
+			fiatCurrency: this.fiatCurrency
 		};
 	}
 }

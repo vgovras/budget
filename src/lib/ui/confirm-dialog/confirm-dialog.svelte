@@ -1,86 +1,62 @@
 <script lang="ts">
-	import { AlertDialog } from 'bits-ui';
+	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
 	import type { ConfirmDialogViewModel } from './confirm-dialog.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm }: { vm: ConfirmDialogViewModel } = $props();
 </script>
 
-<AlertDialog.Root bind:open={vm.isOpen}>
-	<AlertDialog.Portal>
-		<AlertDialog.Overlay class="confirm-overlay" />
-		<AlertDialog.Content class="confirm-card">
-			<AlertDialog.Title class="confirm-title">{vm.title}</AlertDialog.Title>
-			<AlertDialog.Description class="confirm-msg">{vm.message}</AlertDialog.Description>
-			<div class="confirm-btns">
-				<AlertDialog.Cancel class="confirm-btn" onclick={() => vm.cancel()}>
-					{m.button_cancel()}
-				</AlertDialog.Cancel>
-				<AlertDialog.Action
-					class="confirm-btn {vm.okStyle === 'danger' ? 'danger' : ''}"
-					onclick={() => vm.confirm()}
-				>
-					{vm.okLabel}
-				</AlertDialog.Action>
-			</div>
-		</AlertDialog.Content>
-	</AlertDialog.Portal>
-</AlertDialog.Root>
+<BottomSheet bind:open={vm.isOpen}>
+	<div class="confirm-body">
+		<div class="confirm-title">{vm.title}</div>
+		{#if vm.message}
+			<div class="confirm-msg">{vm.message}</div>
+		{/if}
+		<div class="confirm-btns">
+			<button class="confirm-btn" onclick={() => vm.cancel()}>
+				{m.button_cancel()}
+			</button>
+			<button
+				class="confirm-btn {vm.okStyle === 'danger' ? 'danger' : 'primary'}"
+				onclick={() => vm.confirm()}
+			>
+				{vm.okLabel}
+			</button>
+		</div>
+	</div>
+</BottomSheet>
 
 <style>
-	:global(.confirm-overlay) {
-		position: fixed;
-		inset: 0;
-		z-index: 40;
-		background: rgba(0, 0, 0, 0.65);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	:global(.confirm-card) {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: calc(100% - 48px);
-		max-width: 320px;
-		background: #09090e;
-		border-radius: 24px;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		padding: 24px 20px 16px;
+	.confirm-body {
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
-		z-index: 41;
-		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+		gap: 12px;
+		text-align: center;
 	}
 
-	:global(.confirm-title) {
-		font-size: 17px;
+	.confirm-title {
+		font-size: 18px;
 		font-weight: 600;
 		letter-spacing: -0.02em;
-		text-align: center;
 		color: var(--text-hi);
 	}
 
-	:global(.confirm-msg) {
+	.confirm-msg {
 		font-size: 14px;
 		color: var(--text-mid);
-		text-align: center;
 		line-height: 1.5;
-		padding: 0 4px;
+		padding: 0 8px;
 	}
 
 	.confirm-btns {
 		display: flex;
 		gap: 8px;
-		margin-top: 8px;
+		margin-top: 4px;
 	}
 
-	:global(.confirm-btn) {
+	.confirm-btn {
 		flex: 1;
-		padding: 13px;
+		padding: 15px;
 		border-radius: var(--r-md);
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		background: rgba(255, 255, 255, 0.04);
@@ -91,15 +67,23 @@
 		font-family: var(--font);
 		transition: all 0.15s ease;
 	}
-	:global(.confirm-btn:hover) {
+	.confirm-btn:hover {
 		background: rgba(255, 255, 255, 0.07);
 	}
-	:global(.confirm-btn.danger) {
+	.confirm-btn.danger {
 		background: var(--danger-bg);
 		border-color: var(--danger-border);
 		color: var(--danger);
 	}
-	:global(.confirm-btn.danger:hover) {
+	.confirm-btn.danger:hover {
 		background: rgba(255, 107, 107, 0.16);
+	}
+	.confirm-btn.primary {
+		background: rgba(221, 232, 240, 0.09);
+		border-color: rgba(221, 232, 240, 0.25);
+		color: #fff;
+	}
+	.confirm-btn.primary:hover {
+		background: rgba(221, 232, 240, 0.14);
 	}
 </style>

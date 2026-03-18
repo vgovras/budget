@@ -14,6 +14,8 @@
 			<button
 				class="cat-btn"
 				class:selected={selected === cat.icon}
+				style:background={selected === cat.icon ? cat.bg : ''}
+				style:border-color={selected === cat.icon ? cat.border : ''}
 				onclick={() => onSelect(cat.icon)}
 			>
 				<Icon name={cat.icon} size={22} />

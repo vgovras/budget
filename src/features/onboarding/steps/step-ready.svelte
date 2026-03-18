@@ -5,12 +5,13 @@
 
 	let {
 		budget,
+		currency = '₴',
 		onFinish,
 		onBack
-	}: { budget: number; onFinish: () => void; onBack: () => void } = $props();
+	}: { budget: number; currency?: string; onFinish: () => void; onBack: () => void } = $props();
 
 	const daysLeft = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate() + 1;
-	const budgetLabel = $derived(budget >= 1000 ? `₴${(budget / 1000).toFixed(0)}k` : `₴${fmt(budget)}`);
+	const budgetLabel = $derived(budget >= 1000 ? `${currency}${(budget / 1000).toFixed(0)}k` : `${currency}${fmt(budget)}`);
 </script>
 
 <div class="slide">

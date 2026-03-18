@@ -99,7 +99,6 @@
 	"tab_income": "+ Income",
 	"daily_hint_available_today": "available today:",
 	"income_label": "Income",
-	"tag_placeholder": "Add tag...",
 	"label_category": "Category",
 
 	"transfer_title": "Transfer",
@@ -107,6 +106,7 @@
 	"transfer_to": "To account",
 	"transfer_amount": "Amount",
 	"transfer_exchange_rate": "Exchange rate",
+	"transfer_needs_two_accounts": "You need at least 2 accounts",
 	"button_transfer": "Transfer",
 
 	"recurring_add_title": "New recurring transaction",
@@ -132,8 +132,9 @@
 	"onboarding_slide3_desc": "Food, transport, shopping — see where money goes and where to save.",
 	"onboarding_slide4_title": "All set,<br><em>let's go!</em>",
 	"onboarding_slide4_desc": "Your budget is ready. Add your first expense and track your finances daily.",
-	"onboarding_salary_title": "How much<br><em>do you</em> earn?",
+	"onboarding_salary_title": "Your<br><em>monthly</em> income",
 	"onboarding_salary_desc": "How much do you earn per month?",
+	"onboarding_salary_desc_new": "Choose your currency and enter the amount — we'll calculate your budget",
 	"onboarding_payday_title": "Your<br><em>payday</em>",
 	"onboarding_payday_desc": "What day of the month do you get paid?",
 	"onboarding_savings_title": "How much<br><em>to save?</em>",
@@ -174,6 +175,9 @@
 	"home_tip_text": "Track expenses daily — it reduces unnecessary spending by 15–20% in the first month.",
 	"home_days_short": "d",
 
+	"settings_fiat_view_label": "Single currency",
+	"settings_fiat_view_desc": "Convert everything to base currency",
+	"settings_fiat_view_off": "Off",
 	"settings_language_label": "Language",
 	"settings_language_desc": "Interface language"
 }

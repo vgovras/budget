@@ -3,7 +3,7 @@
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import type { AddAccountSheetViewModel } from './add-account-sheet.svelte.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
-	import { CURRENCIES } from '$lib/constants.js';
+	import { CURRENCIES, CURRENCY_CODES } from '$lib/constants.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm }: { vm: AddAccountSheetViewModel } = $props();
@@ -54,7 +54,7 @@
 						class:active={vm.currency === cur}
 						onclick={() => (vm.currency = cur)}
 					>
-						{cur}
+						{cur} {CURRENCY_CODES[cur] ?? ''}
 					</button>
 				{/each}
 			</div>

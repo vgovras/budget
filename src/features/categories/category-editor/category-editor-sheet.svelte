@@ -140,6 +140,12 @@
 		display: grid;
 		grid-template-columns: repeat(6, 1fr);
 		gap: 8px;
+		max-height: 160px;
+		overflow-y: auto;
+		scrollbar-width: none;
+	}
+	.icon-grid::-webkit-scrollbar {
+		display: none;
 	}
 
 	.icon-btn {

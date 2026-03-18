@@ -3,6 +3,7 @@
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import type { EditAccountSheetViewModel } from './edit-account-sheet.svelte.js';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm, onDelete }: { vm: EditAccountSheetViewModel; onDelete?: (id: string, name: string) => void } = $props();
@@ -24,14 +25,14 @@
 		<div class="field">
 			<span class="field-label">{m.account_balance()}</span>
 			<div class="amount-field">
-				<MoneyInput bind:value={vm.balance} currency={vm.account?.currency ?? '₴'} size="lg" />
+				<MoneyInput bind:value={vm.balance} currency={vm.account?.currency ?? settingsVM.currency} size="lg" />
 			</div>
 		</div>
 
 		<div class="field">
 			<span class="field-label">{m.account_budget_label()}</span>
 			<div class="amount-field">
-				<MoneyInput bind:value={vm.budget} currency={vm.account?.currency ?? '₴'} size="lg" />
+				<MoneyInput bind:value={vm.budget} currency={vm.account?.currency ?? settingsVM.currency} size="lg" />
 			</div>
 		</div>
 
@@ -39,7 +40,7 @@
 			<div class="field">
 				<span class="field-label">{m.goal_amount_label()}</span>
 				<div class="amount-field">
-					<MoneyInput bind:value={vm.goalAmount} currency={vm.account?.currency ?? '₴'} />
+					<MoneyInput bind:value={vm.goalAmount} currency={vm.account?.currency ?? settingsVM.currency} />
 				</div>
 			</div>
 		{/if}

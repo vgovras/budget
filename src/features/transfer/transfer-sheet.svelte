@@ -5,6 +5,7 @@
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import type { TransferSheetViewModel } from './transfer-sheet.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
 
@@ -37,7 +38,7 @@
 			<div class="amount-field">
 				<MoneyInput
 					bind:value={vm.amount}
-					currency={vm.fromAccount?.currency ?? '₴'}
+					currency={vm.fromAccount?.currency ?? settingsVM.currency}
 					size="lg"
 				/>
 			</div>

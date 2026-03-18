@@ -10,7 +10,7 @@
 	<div class="settings-input-title">{vm.config.title}</div>
 	<div class="settings-number-input">
 		{#if vm.config.currency}
-			<span class="settings-input-cur">₴</span>
+			<span class="settings-input-cur">{vm.currencySymbol}</span>
 		{/if}
 		{#if vm.config.isText}
 			<input

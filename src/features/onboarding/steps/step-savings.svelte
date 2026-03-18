@@ -4,6 +4,7 @@
 
 	let {
 		salary,
+		currency = '₴',
 		steps,
 		activeIdx,
 		savingsAmount,
@@ -13,6 +14,7 @@
 		onSkip
 	}: {
 		salary: number;
+		currency?: string;
 		steps: number[];
 		activeIdx: number | null;
 		savingsAmount: number;
@@ -78,11 +80,11 @@
 		<div class="summary">
 			<div class="summary-row">
 				<span class="summary-label">{m.onboarding_savings_pill()}</span>
-				<span class="summary-val green">₴{fmt(savingsAmount)} <span class="dim">{m.onboarding_per_month()}</span></span>
+				<span class="summary-val green">{currency}{fmt(savingsAmount)} <span class="dim">{m.onboarding_per_month()}</span></span>
 			</div>
 			<div class="summary-row">
 				<span class="summary-label">{m.onboarding_remaining_for_expenses()}</span>
-				<span class="summary-val">₴{fmt(budget)} <span class="dim">≈ ₴{fmt(dailyBudget)}/{m.home_days_short()}</span></span>
+				<span class="summary-val">{currency}{fmt(budget)} <span class="dim">≈ {currency}{fmt(dailyBudget)}/{m.home_days_short()}</span></span>
 			</div>
 		</div>
 	</div>

@@ -88,10 +88,29 @@ export const CAT_ICON_PRESETS = [
 	'utensils', 'car', 'tv', 'gamepad', 'heart-pulse', 'house',
 	'shopping-bag', 'coffee', 'gift', 'book', 'plane', 'bus',
 	'smartphone', 'music', 'dumbbell', 'baby', 'dog', 'scissors',
-	'briefcase', 'graduation-cap', 'wrench', 'shirt', 'fuel', 'pill'
+	'briefcase', 'graduation-cap', 'wrench', 'shirt', 'fuel', 'pill',
+	'wallet', 'credit-card', 'banknote', 'landmark', 'piggy-bank',
+	'target', 'bell', 'calendar', 'globe', 'sparkles',
+	'home', 'list', 'bar-chart', 'settings', 'arrow-left-right'
 ];
 
 export const CURRENCIES = ['₴', '$', '€', '£', 'zł'] as const;
+
+export const CURRENCY_CODES: Record<string, string> = {
+	'₴': 'UAH',
+	'$': 'USD',
+	'€': 'EUR',
+	'£': 'GBP',
+	'zł': 'PLN'
+};
+
+export const CURRENCY_LABELS: Record<string, string> = {
+	'₴': '₴ UAH',
+	'$': '$ USD',
+	'€': '€ EUR',
+	'£': '£ GBP',
+	'zł': 'zł PLN'
+};
 
 export const SCREEN_ORDER: ScreenId[] = ['analytics', 'home', 'history', 'settings'];
 
@@ -103,5 +122,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	notifications: false,
 	warning: true,
 	onboardingDone: false,
-	lastPayday: ''
+	lastPayday: '',
+	fiatViewEnabled: false,
+	fiatCurrency: '₴'
 };

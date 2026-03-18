@@ -75,12 +75,13 @@
 					{#if vm.currentSlide === 0}
 						<StepIntro onNext={() => vm.next()} onSkip={() => vm.skip()} />
 					{:else if vm.currentSlide === 1}
-						<StepSalary bind:value={vm.salary} onNext={() => vm.next()} onSkip={() => vm.skip()} />
+						<StepSalary bind:value={vm.salary} bind:currency={vm.currency} onNext={() => vm.next()} onSkip={() => vm.skip()} />
 					{:else if vm.currentSlide === 2}
 						<StepPayday bind:value={vm.payday} onNext={() => vm.next()} onSkip={() => vm.skip()} />
 					{:else if vm.currentSlide === 3}
 						<StepSavings
 							salary={vm.salary ?? 0}
+							currency={vm.currency}
 							steps={vm.savingsSteps}
 							activeIdx={vm.savingsIdx}
 							savingsAmount={vm.savingsAmount}
@@ -90,7 +91,7 @@
 							onSkip={() => vm.skip()}
 						/>
 					{:else if vm.currentSlide === 4}
-						<StepReady budget={vm.budget > 0 ? vm.budget : 10000} onFinish={() => vm.finish()} onBack={() => vm.prev()} />
+						<StepReady budget={vm.budget > 0 ? vm.budget : 10000} currency={vm.currency} onFinish={() => vm.finish()} onBack={() => vm.prev()} />
 					{/if}
 				</div>
 			{/key}

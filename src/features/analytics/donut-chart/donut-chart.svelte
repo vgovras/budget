@@ -4,11 +4,12 @@
 
 	let {
 		byCategory,
-		total
-	}: { byCategory: { icon: string; label: string; sum: number }[]; total: number } = $props();
+		total,
+		currency = '₴'
+	}: { byCategory: { icon: string; label: string; sum: number }[]; total: number; currency?: string } = $props();
 
 	const slices = $derived(buildSlices(byCategory, total));
-	const totalLabel = $derived(total >= 1000 ? `₴${(total / 1000).toFixed(1)}k` : `₴${total}`);
+	const totalLabel = $derived(total >= 1000 ? `${currency}${(total / 1000).toFixed(1)}k` : `${currency}${total}`);
 </script>
 
 <div class="donut-wrap">
