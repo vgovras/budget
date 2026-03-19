@@ -75,6 +75,7 @@ export interface RecurringTransaction {
 	accountId: string;
 	type: 'expense' | 'income';
 	frequency: 'daily' | 'weekly' | 'monthly';
+	dayOfMonth?: number;
 	nextDate: string;
 	enabled: boolean;
 }

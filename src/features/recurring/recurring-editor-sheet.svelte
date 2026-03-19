@@ -3,14 +3,16 @@
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
-	import Icon from '$lib/ui/icon/icon.svelte';
+	import CategoryPicker from '$features/add-expense/category-picker/category-picker.svelte';
 	import type { RecurringEditorSheetViewModel } from './recurring-editor-sheet.svelte.js';
-	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm }: { vm: RecurringEditorSheetViewModel } = $props();
+
+	const currency = $derived(accountsVM.active?.currency ?? settingsVM.currency);
 
 	const accountOptions = $derived(
 		accountsVM.accounts.map((a) => ({
@@ -28,18 +30,7 @@
 
 <BottomSheet bind:open={vm.isOpen}>
 	<div class="sheet-body">
-		<h3 class="sheet-title">{vm.isEditing ? m.recurring_edit_title() : m.recurring_add_title()}</h3>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_name()}</span>
-			<input
-				class="field-input"
-				type="text"
-				placeholder={m.placeholder_enter_name()}
-				bind:value={vm.label}
-			/>
-		</div>
-
+		<!-- Tabs -->
 		<div class="sheet-tabs">
 			<button
 				class="sheet-tab"
@@ -57,53 +48,61 @@
 			</button>
 		</div>
 
-		{#if vm.type === 'expense'}
-			<div class="field">
-				<span class="field-label">{m.label_category()}</span>
-				<div class="cat-chips">
-					{#each categoriesVM.categories as cat (cat.icon)}
-						<button
-							class="cat-chip"
-							class:active={vm.icon === cat.icon}
-							onclick={() => (vm.icon = cat.icon)}
-						>
-							<Icon name={cat.icon} size={16} />
-						</button>
-					{/each}
-				</div>
+		<!-- Amount -->
+		<div class="amount-field">
+			<MoneyInput bind:value={vm.amount} {currency} size="lg" autofocus={vm.isOpen} />
+		</div>
+
+		<!-- Category -->
+		<CategoryPicker
+			selected={vm.icon}
+			onSelect={(icon) => vm.selectCategory(icon)}
+			type={vm.type === 'income' ? 'income' : 'expense'}
+		/>
+
+		<!-- Name -->
+		<input
+			class="note-field"
+			type="text"
+			placeholder={m.placeholder_enter_name()}
+			bind:value={vm.label}
+		/>
+
+		<!-- Frequency + Day -->
+		<div class="row">
+			<div class="field flex-1">
+				<Dropdown bind:value={vm.frequency} options={frequencyOptions} />
 			</div>
+			{#if vm.frequency === 'monthly'}
+				<div class="field day-field">
+					<input
+						class="day-input"
+						type="number"
+						min="1"
+						max="31"
+						bind:value={vm.dayOfMonth}
+					/>
+					<span class="day-hint">{m.sub_billing_day()}</span>
+				</div>
+			{/if}
+		</div>
+
+		<!-- Account -->
+		{#if accountsVM.accounts.length > 1}
+			<Dropdown bind:value={vm.accountId} options={accountOptions} />
 		{/if}
 
-		<div class="field">
-			<span class="field-label">{m.transfer_amount()}</span>
-			<div class="amount-field">
-				<MoneyInput bind:value={vm.amount} size="lg" />
-			</div>
+		<!-- Actions -->
+		<div class="actions">
+			{#if vm.isEditing}
+				<Button variant="destructive" size="lg" class="flex-1" onclick={() => vm.delete()}>
+					{m.button_delete()}
+				</Button>
+			{/if}
+			<Button variant="accent" size="lg" class="flex-1" disabled={!vm.canSave} onclick={() => vm.save()}>
+				{m.button_save()}
+			</Button>
 		</div>
-
-		<div class="field">
-			<span class="field-label">{m.recurring_frequency()}</span>
-			<Dropdown bind:value={vm.frequency} options={frequencyOptions} />
-		</div>
-
-		<div class="field">
-			<span class="field-label">{m.recurring_account()}</span>
-			<Dropdown bind:value={vm.accountId} options={accountOptions} />
-		</div>
-
-		<div class="field">
-			<span class="field-label">{m.placeholder_note()}</span>
-			<input
-				class="field-input"
-				type="text"
-				placeholder={m.placeholder_note()}
-				bind:value={vm.note}
-			/>
-		</div>
-
-		<Button variant="soft" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
-			{m.button_save()}
-		</Button>
 	</div>
 </BottomSheet>
 
@@ -112,45 +111,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
-	}
-
-	.sheet-title {
-		font-size: 20px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: var(--text-hi);
-		text-align: center;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.field-label {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-mid);
-		padding-left: 2px;
-	}
-
-	.field-input {
-		padding: 14px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
-		font-size: 16px;
-		color: var(--text-hi);
-		font-family: var(--font);
-		outline: none;
-		transition: border-color 0.2s ease;
-	}
-	.field-input::placeholder {
-		color: var(--text-lo);
-	}
-	.field-input:focus {
-		border-color: rgba(221, 232, 240, 0.28);
 	}
 
 	.sheet-tabs {
@@ -184,41 +144,72 @@
 		color: var(--income);
 	}
 
-	.cat-chips {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	.cat-chip {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 10px;
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--text-lo);
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-family: var(--font);
-	}
-	.cat-chip.active {
-		border-color: rgba(255, 255, 255, 0.2);
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-hi);
-	}
-
 	.amount-field {
 		padding: 16px 18px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 		border-radius: var(--r-md);
-		transition: border-color 0.2s ease;
+		transition: all 0.2s ease;
 	}
 	.amount-field:focus-within {
-		border-color: rgba(221, 232, 240, 0.28);
+		border-color: rgba(255, 255, 255, 0.16);
+		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
 	}
 
+	.note-field {
+		padding: 13px 16px;
+		border-radius: var(--r-sm);
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: rgba(255, 255, 255, 0.03);
+		font-size: 15px;
+		width: 100%;
+		color: var(--text-hi);
+		font-family: var(--font);
+		transition: border-color 0.2s ease;
+	}
+	.note-field::placeholder { color: var(--text-lo); }
+	.note-field:focus { border-color: rgba(255, 255, 255, 0.16); outline: none; }
+
+	.row {
+		display: flex;
+		gap: 10px;
+		align-items: flex-start;
+	}
+	.flex-1 { flex: 1; }
+
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.day-field {
+		width: 80px;
+		align-items: center;
+	}
+
+	.day-input {
+		width: 100%;
+		padding: 10px 12px;
+		border-radius: var(--r-sm);
+		border: 1px solid rgba(255, 255, 255, 0.09);
+		background: rgba(255, 255, 255, 0.05);
+		font-size: 16px;
+		color: var(--text-hi);
+		font-family: var(--font);
+		text-align: center;
+		outline: none;
+	}
+	.day-input:focus { border-color: rgba(255, 255, 255, 0.16); }
+
+	.day-hint {
+		font-size: 10px;
+		color: var(--text-lo);
+		text-align: center;
+	}
+
+	.actions {
+		display: flex;
+		gap: 10px;
+	}
 </style>

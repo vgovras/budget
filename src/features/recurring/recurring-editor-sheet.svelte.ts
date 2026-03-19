@@ -12,19 +12,23 @@ export class RecurringEditorSheetViewModel {
 	accountId = $state('');
 	type = $state<'expense' | 'income'>('expense');
 	frequency = $state<'daily' | 'weekly' | 'monthly'>('monthly');
+	dayOfMonth = $state(1);
 
 	readonly isEditing = $derived(this.editingId !== null);
-	readonly canSave = $derived(this.label.trim().length > 0 && this.amount !== null && this.amount > 0);
+	readonly canSave = $derived(
+		this.label.trim().length > 0 && this.amount !== null && this.amount > 0
+	);
 
 	open() {
 		this.editingId = null;
-		this.icon = categoriesVM.categories[0]?.icon ?? 'utensils';
+		this.icon = categoriesVM.expenseCategories[0]?.icon ?? 'utensils';
 		this.label = '';
 		this.note = '';
 		this.amount = null;
-		this.accountId = accountsVM.accounts[0]?.id ?? '';
+		this.accountId = accountsVM.active?.id ?? '';
 		this.type = 'expense';
 		this.frequency = 'monthly';
+		this.dayOfMonth = 1;
 		this.isOpen = true;
 	}
 
@@ -39,6 +43,7 @@ export class RecurringEditorSheetViewModel {
 		this.accountId = item.accountId;
 		this.type = item.type;
 		this.frequency = item.frequency;
+		this.dayOfMonth = item.dayOfMonth ?? 1;
 		this.isOpen = true;
 	}
 
@@ -46,41 +51,61 @@ export class RecurringEditorSheetViewModel {
 		this.isOpen = false;
 	}
 
+	selectCategory(icon: string) {
+		this.icon = icon;
+		const cat = categoriesVM.getByIcon(icon);
+		if (cat && !this.label.trim()) {
+			this.label = cat.label;
+		}
+	}
+
 	save() {
 		if (!this.canSave || !this.amount) return;
 
-		const now = new Date();
-		let nextDate: Date;
-
-		switch (this.frequency) {
-			case 'daily':
-				nextDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-				break;
-			case 'weekly':
-				nextDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
-				break;
-			case 'monthly':
-				nextDate = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
-				break;
-		}
+		const nextDate = this.#computeNextDate();
 
 		const data = {
 			icon: this.icon,
 			label: this.label.trim(),
-			note: this.note,
+			note: this.note || this.label.trim(),
 			amount: this.amount,
 			accountId: this.accountId,
 			type: this.type,
 			frequency: this.frequency,
+			dayOfMonth: this.frequency === 'monthly' ? this.dayOfMonth : undefined,
 			nextDate: nextDate.toISOString(),
 			enabled: true
 		};
 
 		if (this.editingId) {
-			recurringVM.update(this.editingId, data);
+			const existing = recurringVM.items.find((r) => r.id === this.editingId);
+			recurringVM.update(this.editingId, { ...data, nextDate: existing?.nextDate ?? data.nextDate });
 		} else {
 			recurringVM.add(data);
 		}
 		this.close();
+	}
+
+	delete() {
+		if (this.editingId) {
+			recurringVM.remove(this.editingId);
+		}
+		this.close();
+	}
+
+	#computeNextDate(): Date {
+		const now = new Date();
+		switch (this.frequency) {
+			case 'daily':
+				return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+			case 'weekly':
+				return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+			case 'monthly': {
+				const day = Math.min(this.dayOfMonth, 28);
+				const next = new Date(now.getFullYear(), now.getMonth(), day);
+				if (next <= now) next.setMonth(next.getMonth() + 1);
+				return next;
+			}
+		}
 	}
 }
