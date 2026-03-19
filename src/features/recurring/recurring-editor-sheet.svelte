@@ -60,12 +60,12 @@
 			type={vm.type === 'income' ? 'income' : 'expense'}
 		/>
 
-		<!-- Name -->
+		<!-- Note -->
 		<input
 			class="note-field"
 			type="text"
-			placeholder={m.placeholder_enter_name()}
-			bind:value={vm.label}
+			placeholder={m.placeholder_note()}
+			bind:value={vm.note}
 		/>
 
 		<!-- Frequency + Day -->

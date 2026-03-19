@@ -15,9 +15,7 @@ export class RecurringEditorSheetViewModel {
 	dayOfMonth = $state(1);
 
 	readonly isEditing = $derived(this.editingId !== null);
-	readonly canSave = $derived(
-		this.label.trim().length > 0 && this.amount !== null && this.amount > 0
-	);
+	readonly canSave = $derived(this.amount !== null && this.amount > 0);
 
 	open() {
 		this.editingId = null;
@@ -53,10 +51,6 @@ export class RecurringEditorSheetViewModel {
 
 	selectCategory(icon: string) {
 		this.icon = icon;
-		const cat = categoriesVM.getByIcon(icon);
-		if (cat && !this.label.trim()) {
-			this.label = cat.label;
-		}
 	}
 
 	save() {
@@ -64,10 +58,13 @@ export class RecurringEditorSheetViewModel {
 
 		const nextDate = this.#computeNextDate();
 
+		const cat = categoriesVM.getByIcon(this.icon);
+		const label = cat?.label ?? this.icon;
+
 		const data = {
 			icon: this.icon,
-			label: this.label.trim(),
-			note: this.note || this.label.trim(),
+			label,
+			note: this.note || label,
 			amount: this.amount,
 			accountId: this.accountId,
 			type: this.type,
