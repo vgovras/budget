@@ -32,7 +32,14 @@
 	});
 
 	const grouped = $derived(groupByDate(filtered));
-	const total = $derived(filtered.reduce((s: number, e: Expense) => s + e.amount, 0));
+	const nativeCurrency = $derived(accountsVM.active?.currency ?? settingsVM.currency);
+	const displayCurrency = $derived(settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : nativeCurrency);
+	const total = $derived(
+		settingsVM.toDisplay(
+			filtered.reduce((s: number, e: Expense) => s + e.amount, 0),
+			nativeCurrency
+		)
+	);
 
 	function setFilter(f: string) {
 		currentFilter = f;
@@ -83,7 +90,7 @@
 <div class="content" use:scrollNav>
 	<div class="month-total">
 		<span class="month-total-label">{m.history_total()}</span>
-		<span class="month-total-amount">{accountsVM.active?.currency ?? settingsVM.currency} {fmt(total)}</span>
+		<span class="month-total-amount">{displayCurrency} {fmt(total)}</span>
 	</div>
 
 	{#each Object.entries(grouped) as [dateKey, items] (dateKey)}

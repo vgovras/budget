@@ -11,8 +11,14 @@
 		isNew = false
 	}: { expense: Expense; onclick?: () => void; isNew?: boolean } = $props();
 
-	const currency = $derived(
+	const nativeCurrency = $derived(
 		accountsVM.accounts.find((a) => a.id === expense.accountId)?.currency ?? settingsVM.currency
+	);
+	const currency = $derived(
+		settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : nativeCurrency
+	);
+	const displayAmount = $derived(
+		settingsVM.toDisplay(expense.amount, nativeCurrency)
 	);
 </script>
 
@@ -29,7 +35,7 @@
 		{/if}
 	</div>
 	<span class="exp-amount" class:income={expense.type === 'income'} class:transfer={expense.type === 'transfer'}>
-		{expense.type === 'income' ? '+' : expense.type === 'transfer' ? '↔' : '−'}{currency} {fmt(expense.amount)}
+		{expense.type === 'income' ? '+' : expense.type === 'transfer' ? '↔' : '−'}{currency} {fmt(displayAmount)}
 	</span>
 </div>
 

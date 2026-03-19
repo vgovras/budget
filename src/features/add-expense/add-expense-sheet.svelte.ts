@@ -41,8 +41,16 @@ export class AddExpenseSheetViewModel {
 		(this.sheetType !== 'transfer' || (this.toAccountId !== '' && this.toAccountId !== accountsVM.active?.id))
 	);
 
-	readonly dailyBudget = $derived(
-		accountsVM.active ? getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget) : 0
+	readonly dailyBudget = $derived.by(() => {
+		if (!accountsVM.active) return 0;
+		const raw = getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget);
+		return settingsVM.toDisplay(raw, accountsVM.active.currency);
+	});
+
+	readonly displayCurrency = $derived(
+		settingsVM.fiatViewEnabled
+			? settingsVM.fiatCurrency
+			: (accountsVM.active?.currency ?? settingsVM.currency)
 	);
 
 	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, 3));

@@ -112,7 +112,7 @@
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 
 			{#if vm.dailyBudget > 0 && vm.sheetType === 'expense'}
-				<div class="daily-hint">{m.daily_hint_available_today()} {accountsVM.active?.currency ?? settingsVM.currency}{fmt(vm.dailyBudget)}</div>
+				<div class="daily-hint">{m.daily_hint_available_today()} {vm.displayCurrency}{fmt(vm.dailyBudget)}</div>
 			{/if}
 
 			<Button variant="accent" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>

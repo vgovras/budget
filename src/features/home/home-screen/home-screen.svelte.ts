@@ -40,7 +40,14 @@ export class HomeScreenViewModel {
 		return m.home_greeting_evening();
 	});
 
-	readonly currency = $derived(accountsVM.active?.currency ?? settingsVM.currency);
+	readonly nativeCurrency = $derived(accountsVM.active?.currency ?? settingsVM.currency);
+	readonly currency = $derived(
+		settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : this.nativeCurrency
+	);
+
+	#toDisplay(amount: number) {
+		return settingsVM.toDisplay(amount, this.nativeCurrency);
+	}
 
 	readonly accountExpenses = $derived(
 		expensesVM.expenses.filter(
@@ -48,23 +55,27 @@ export class HomeScreenViewModel {
 		)
 	);
 
-	readonly spentAmount = $derived(
+	readonly #rawSpentAmount = $derived(
 		this.accountExpenses.reduce((s: number, e: Expense) => s + e.amount, 0)
 	);
 
+	readonly spentAmount = $derived(this.#toDisplay(this.#rawSpentAmount));
+
 	readonly totalBudget = $derived(accountsVM.active?.budget ?? settingsVM.budget);
 
-	readonly accountBalance = $derived(accountsVM.active?.balance ?? 0);
+	readonly accountBalance = $derived(this.#toDisplay(accountsVM.active?.balance ?? 0));
 
-	readonly remainingBudget = $derived(Math.max(0, this.totalBudget - this.spentAmount));
+	readonly remainingBudget = $derived(
+		this.#toDisplay(Math.max(0, this.totalBudget - this.#rawSpentAmount))
+	);
 
 	readonly spentPercent = $derived(
-		this.totalBudget > 0 ? Math.round((this.spentAmount / this.totalBudget) * 100) : 0
+		this.totalBudget > 0 ? Math.round((this.#rawSpentAmount / this.totalBudget) * 100) : 0
 	);
 
 	readonly changePercent = $derived(
 		this.totalBudget > 0
-			? `–${((this.spentAmount / this.totalBudget) * 100).toFixed(1)}%`
+			? `–${((this.#rawSpentAmount / this.totalBudget) * 100).toFixed(1)}%`
 			: '0%'
 	);
 
@@ -74,7 +85,7 @@ export class HomeScreenViewModel {
 
 	readonly dailyBudget = $derived(
 		accountsVM.active
-			? getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget)
+			? this.#toDisplay(getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget))
 			: 0
 	);
 
@@ -91,7 +102,7 @@ export class HomeScreenViewModel {
 	});
 
 	readonly todaySpent = $derived(
-		accountsVM.active ? getTodaySpent(expensesVM.expenses, accountsVM.active.id) : 0
+		accountsVM.active ? this.#toDisplay(getTodaySpent(expensesVM.expenses, accountsVM.active.id)) : 0
 	);
 
 	readonly dailyRemaining = $derived(Math.max(0, this.dailyBudget - this.todaySpent));
@@ -111,12 +122,14 @@ export class HomeScreenViewModel {
 		)
 			.map(([icon, sum]: [string, number]) => {
 				const cat = categoriesVM.categories.find((c) => c.icon === icon);
-				return { icon, label: cat?.label ?? icon, sum };
+				return { icon, label: cat?.label ?? icon, sum: this.#toDisplay(sum) };
 			})
 			.sort((a, b) => b.sum - a.sum)
 	);
 
-	readonly weeklyAmounts = $derived(getWeeklyAmounts(this.accountExpenses));
+	readonly weeklyAmounts = $derived(
+		getWeeklyAmounts(this.accountExpenses).map((v) => this.#toDisplay(v))
+	);
 
 	readonly recentExpenses = $derived.by(() => {
 		const limited = this.accountExpenses.slice(0, 5);

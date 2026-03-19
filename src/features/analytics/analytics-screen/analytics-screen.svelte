@@ -27,7 +27,7 @@
 </div>
 
 <div class="content" use:scrollNav>
-	{#if vm.byAccount.length > 0 && vm.showTotal}
+	{#if vm.byAccount.length > 0}
 		<div class="analytics-card">
 			<div class="analytics-title">{m.analytics_balance_distribution()}</div>
 			<DonutChart byCategory={vm.byAccount} total={vm.totalBalance} currency={vm.baseCurrency} />
@@ -45,6 +45,7 @@
 			{@const spent = getAccStats(expensesVM.expenses, acc.id)}
 			{@const pct = acc.budget > 0 ? Math.min(Math.round((spent / acc.budget) * 100), 100) : 0}
 			{@const goalPct = acc.goalAmount && acc.goalAmount > 0 ? Math.min(Math.round((acc.balance / acc.goalAmount) * 100), 100) : 0}
+			{@const cur = vm.isFiat ? settingsVM.fiatCurrency : acc.currency}
 			{#if i > 0}
 				<div class="acc-divider"></div>
 			{/if}
@@ -57,9 +58,9 @@
 				<div class="acc-info">
 					<div class="acc-name">{acc.name}</div>
 					{#if acc.goalAmount && acc.goalAmount > 0}
-						<div class="acc-budget-line">{acc.currency} {fmt(acc.balance)} / {acc.currency} {fmt(acc.goalAmount)} ({goalPct}%)</div>
+						<div class="acc-budget-line">{cur} {fmt(settingsVM.toDisplay(acc.balance, acc.currency))} / {cur} {fmt(settingsVM.toDisplay(acc.goalAmount, acc.currency))} ({goalPct}%)</div>
 					{:else if acc.budget > 0 && spent > 0}
-						<div class="acc-budget-line">{acc.currency} {fmt(spent)} / {acc.currency} {fmt(acc.budget)}</div>
+						<div class="acc-budget-line">{cur} {fmt(settingsVM.toDisplay(spent, acc.currency))} / {cur} {fmt(settingsVM.toDisplay(acc.budget, acc.currency))}</div>
 					{/if}
 				</div>
 				<div class="acc-balance-wrap">

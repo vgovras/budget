@@ -1,5 +1,6 @@
 import type { Settings } from '$lib/types.js';
 import { DEFAULT_SETTINGS } from '$lib/constants.js';
+import { convert } from '$lib/utils/currency.js';
 import { SettingsRepository } from './settings.js';
 
 export class SettingsViewModel {
@@ -16,6 +17,15 @@ export class SettingsViewModel {
 	fiatViewEnabled = $state(false);
 	fiatCurrency = $state(DEFAULT_SETTINGS.fiatCurrency);
 	loaded = $state(false);
+
+	readonly displayCurrency = $derived(
+		this.fiatViewEnabled ? this.fiatCurrency : this.currency
+	);
+
+	toDisplay(amount: number, fromCurrency: string): number {
+		if (!this.fiatViewEnabled || fromCurrency === this.fiatCurrency) return amount;
+		return convert(amount, fromCurrency, this.fiatCurrency);
+	}
 
 	constructor(repo: SettingsRepository) {
 		this.#repo = repo;
