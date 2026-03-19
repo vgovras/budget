@@ -10,6 +10,8 @@
 	import CategoryEditorSheet from '$features/categories/category-editor/category-editor-sheet.svelte';
 	import { CategoryEditorSheetViewModel } from '$features/categories/category-editor/category-editor-sheet.svelte.js';
 	import { recurringVM } from '$features/recurring/recurring.svelte.js';
+	import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
+	import { navigationVM } from '$features/navigation/navigation.svelte.js';
 	import RecurringEditorSheet from '$features/recurring/recurring-editor-sheet.svelte';
 	import { RecurringEditorSheetViewModel } from '$features/recurring/recurring-editor-sheet.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
@@ -66,6 +68,8 @@
 				accountsVM.resetAll();
 				categoriesVM.resetAll();
 				recurringVM.resetAll();
+				subscriptionsVM.resetAll();
+				navigationVM.goTo('home');
 			}
 		});
 	}

@@ -66,6 +66,11 @@ export class SubscriptionsViewModel {
 		this.#repo.save(this.items);
 	}
 
+	resetAll() {
+		this.items = [];
+		this.#repo.clear();
+	}
+
 	toggle(id: string) {
 		const sub = this.items.find((s) => s.id === id);
 		if (!sub) return;
