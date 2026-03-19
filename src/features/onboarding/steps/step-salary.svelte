@@ -26,7 +26,7 @@
 				<ellipse cx="50" cy="62" rx="40" ry="25" fill="rgba(60,100,255,0.18)"/>
 				<rect x="34" y="68" width="28" height="20" rx="4" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
 				<line x1="34" y1="76" x2="62" y2="76" stroke="rgba(255,255,255,0.12)" stroke-width="0.8"/>
-				<text x="34" y="108" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.35)" font-weight="300">Дохід</text>
+				<text x="34" y="108" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.35)" font-weight="300">{m.income_label()}</text>
 				<text x="34" y="124" font-family="DM Sans,sans-serif" font-size="18" fill="rgba(255,255,255,0.9)" font-weight="500" letter-spacing="-0.5">{displayAmount}</text>
 				<circle cx="118" cy="120" r="7" fill="rgba(80,200,120,0.5)"/>
 				<circle cx="130" cy="120" r="7" fill="rgba(80,200,120,0.3)"/>
