@@ -12,7 +12,13 @@
 	}: { value: number | null; currency: string; onNext: () => void } = $props();
 
 	const canNext = $derived(value !== null && value > 0);
-	const displayAmount = $derived(value && value > 0 ? `${currency}${fmt(value)}` : `${currency}0`);
+	function fmtShort(n: number): string {
+		if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+		if (n >= 10_000) return `${(n / 1_000).toFixed(1)}k`;
+		return fmt(n);
+	}
+
+	const displayAmount = $derived(value && value > 0 ? `${currency}${fmtShort(value)}` : `${currency}0`);
 </script>
 
 <div class="slide">
