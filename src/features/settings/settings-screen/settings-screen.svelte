@@ -135,22 +135,17 @@
 			{#each categoriesVM.expenseCategories as cat (cat.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div class="settings-row" out:fade={{ duration: 200 }}>
+				<div class="settings-row" out:fade={{ duration: 200 }} onclick={() => catEditorVM.openEdit(cat.id)}>
 					<div class="settings-row-icon" style:background={cat.bg} style:border-color={cat.border}>
 						<Icon name={cat.icon} size={18} />
 					</div>
-					<div class="settings-row-info" onclick={() => catEditorVM.openEdit(cat.id)}>
+					<div class="settings-row-info">
 						<div class="settings-row-label">{cat.label}</div>
 					</div>
 					<div class="settings-row-right">
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-edit-btn" onclick={() => catEditorVM.openEdit(cat.id)}>
-							<Icon name="edit" size={16} />
-						</span>
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-delete-btn" onclick={() => deleteCategory(cat.id)}>
+						<span class="cat-delete-btn" onclick={(e) => { e.stopPropagation(); deleteCategory(cat.id); }}>
 							<Icon name="trash" size={16} />
 						</span>
 					</div>
@@ -174,11 +169,11 @@
 			{#each categoriesVM.incomeCategories as cat (cat.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div class="settings-row" out:fade={{ duration: 200 }}>
+				<div class="settings-row" out:fade={{ duration: 200 }} onclick={() => catEditorVM.openEdit(cat.id)}>
 					<div class="settings-row-icon" style:background={cat.bg} style:border-color={cat.border}>
 						<Icon name={cat.icon} size={18} />
 					</div>
-					<div class="settings-row-info" onclick={() => catEditorVM.openEdit(cat.id)}>
+					<div class="settings-row-info">
 						<div class="settings-row-label">{cat.label}</div>
 						{#if cat.commission}
 							<div class="settings-row-value">{m.category_commission_label()}: {cat.commission}%</div>
@@ -187,12 +182,7 @@
 					<div class="settings-row-right">
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-edit-btn" onclick={() => catEditorVM.openEdit(cat.id)}>
-							<Icon name="edit" size={16} />
-						</span>
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-delete-btn" onclick={() => deleteCategory(cat.id)}>
+						<span class="cat-delete-btn" onclick={(e) => { e.stopPropagation(); deleteCategory(cat.id); }}>
 							<Icon name="trash" size={16} />
 						</span>
 					</div>

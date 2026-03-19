@@ -56,6 +56,15 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		border: 'rgba(255,200,50,0.25)',
 		type: 'expense',
 		isDefault: true
+	},
+	{
+		id: 'cat-salary',
+		icon: 'banknote',
+		label: m.settings_salary_label(),
+		bg: 'rgba(50,195,110,0.12)',
+		border: 'rgba(50,195,110,0.25)',
+		type: 'income',
+		isDefault: true
 	}
 ];
 
