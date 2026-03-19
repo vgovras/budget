@@ -77,6 +77,50 @@
 </div>
 
 <div class="content" use:scrollNav>
+	<!-- Регулярні платежі -->
+	<div>
+		<div class="settings-section-title">{m.recurring_section_title()}</div>
+		<div class="settings-group">
+			{#each recurringVM.items as item (item.id)}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="settings-row" onclick={() => recEditorVM.openEdit(item.id)}>
+					<div class="settings-row-icon">
+						<Icon name={item.icon} size={18} />
+					</div>
+					<div class="settings-row-info">
+						<div class="settings-row-label">{item.label}</div>
+						<div class="settings-row-value">
+							{item.type === 'income' ? '+' : '−'}{settingsVM.currency}{fmt(item.amount)} · {item.frequency === 'daily' ? m.recurring_daily() : item.frequency === 'weekly' ? m.recurring_weekly() : m.recurring_monthly()}
+						</div>
+					</div>
+					<div class="settings-row-right">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-edit-btn" onclick={(e) => { e.stopPropagation(); recurringVM.toggle(item.id); }}>
+							<div class="toggle" class:on={item.enabled}>
+								<div class="toggle-handle"></div>
+							</div>
+						</span>
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-delete-btn" onclick={(e) => { e.stopPropagation(); recurringVM.remove(item.id); }}>
+							<Icon name="trash" size={16} />
+						</span>
+					</div>
+				</div>
+			{/each}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="settings-row add-cat-row" onclick={() => recEditorVM.open()}>
+				<div class="settings-row-icon"><Icon name="plus" size={18} /></div>
+				<div class="settings-row-info">
+					<div class="settings-row-label" style="color:var(--accent)">{m.recurring_add_button()}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Категорії витрат -->
 	<div>
 		<div class="settings-section-title">{m.categories_expense_title()}</div>
@@ -143,50 +187,6 @@
 				<div class="settings-row-icon"><Icon name="plus" size={18} /></div>
 				<div class="settings-row-info">
 					<div class="settings-row-label" style="color:var(--accent)">{m.category_add_button()}</div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<!-- Регулярні платежі -->
-	<div>
-		<div class="settings-section-title">{m.recurring_section_title()}</div>
-		<div class="settings-group">
-			{#each recurringVM.items as item (item.id)}
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<div class="settings-row" onclick={() => recEditorVM.openEdit(item.id)}>
-					<div class="settings-row-icon">
-						<Icon name={item.icon} size={18} />
-					</div>
-					<div class="settings-row-info">
-						<div class="settings-row-label">{item.label}</div>
-						<div class="settings-row-value">
-							{item.type === 'income' ? '+' : '−'}{settingsVM.currency}{fmt(item.amount)} · {item.frequency === 'daily' ? m.recurring_daily() : item.frequency === 'weekly' ? m.recurring_weekly() : m.recurring_monthly()}
-						</div>
-					</div>
-					<div class="settings-row-right">
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-edit-btn" onclick={(e) => { e.stopPropagation(); recurringVM.toggle(item.id); }}>
-							<div class="toggle" class:on={item.enabled}>
-								<div class="toggle-handle"></div>
-							</div>
-						</span>
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-delete-btn" onclick={(e) => { e.stopPropagation(); recurringVM.remove(item.id); }}>
-							<Icon name="trash" size={16} />
-						</span>
-					</div>
-				</div>
-			{/each}
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row add-cat-row" onclick={() => recEditorVM.open()}>
-				<div class="settings-row-icon"><Icon name="plus" size={18} /></div>
-				<div class="settings-row-info">
-					<div class="settings-row-label" style="color:var(--accent)">{m.recurring_add_button()}</div>
 				</div>
 			</div>
 		</div>
