@@ -3,7 +3,7 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getDailyBudget, getTodaySpent, getWeeklyAmounts } from '$lib/utils/budget.js';
+import { getTodaySpent, getWeeklyAmounts } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
@@ -61,12 +61,6 @@ export class HomeScreenViewModel {
 		new Date().toLocaleDateString(locale(), { month: 'long', year: 'numeric' })
 	);
 
-	readonly dailyBudget = $derived(
-		accountsVM.active
-			? this.#toDisplay(getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget))
-			: 0
-	);
-
 	readonly #nextPayday = $derived.by(() => {
 		const salary = recurringVM.items.find((r) => r.id === 'rec-salary');
 		if (salary?.nextDate) return new Date(salary.nextDate);
@@ -85,6 +79,10 @@ export class HomeScreenViewModel {
 		const d = this.#nextPayday;
 		return d.toLocaleDateString(locale(), { day: 'numeric', month: 'long' });
 	});
+
+	readonly dailyBudget = $derived(
+		Math.floor(this.remainingBudget / Math.max(this.daysUntilEnd, 1))
+	);
 
 	readonly todaySpent = $derived(
 		accountsVM.active ? this.#toDisplay(getTodaySpent(expensesVM.expenses, accountsVM.active.id)) : 0

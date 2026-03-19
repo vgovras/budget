@@ -14,8 +14,18 @@
 	} = $props();
 
 	let open = $state(false);
+	let openUp = $state(false);
+	let triggerEl: HTMLElement;
 
 	const selected = $derived(options.find((o) => o.value === value));
+
+	function toggle() {
+		if (!open && triggerEl) {
+			const rect = triggerEl.getBoundingClientRect();
+			openUp = rect.bottom + 250 > window.innerHeight;
+		}
+		open = !open;
+	}
 
 	function pick(val: string) {
 		value = val;
@@ -26,7 +36,7 @@
 <div class="dropdown {className}">
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="trigger" class:open onclick={() => (open = !open)}>
+	<div class="trigger" class:open bind:this={triggerEl} onclick={toggle}>
 		{#if selected?.icon}
 			<span class="trigger-icon">{selected.icon}</span>
 		{/if}
@@ -40,7 +50,7 @@
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="backdrop" onclick={() => (open = false)}></div>
-		<div class="menu" class:menu-top={position === 'top'}>
+		<div class="menu" class:menu-top={position === 'top' || openUp}>
 			{#each options as opt (opt.value)}
 				<button class="option" class:active={value === opt.value} onclick={() => pick(opt.value)}>
 					{#if opt.icon}
@@ -64,6 +74,7 @@
 	.trigger {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 8px;
 		padding: 10px 16px;
 		border-radius: 14px;
@@ -106,9 +117,13 @@
 	.menu {
 		position: absolute;
 		top: calc(100% + 6px);
-		left: 50%;
-		transform: translateX(-50%);
+		right: 0;
 		min-width: 180px;
+		max-height: min(240px, 40vh);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
 		background: rgba(22, 22, 26, 0.92);
 		backdrop-filter: blur(24px) saturate(120%);
 		-webkit-backdrop-filter: blur(24px) saturate(120%);
@@ -119,6 +134,9 @@
 		box-shadow:
 			0 12px 40px rgba(0, 0, 0, 0.5),
 			0 0 0 1px rgba(255, 255, 255, 0.04);
+	}
+	.menu::-webkit-scrollbar {
+		display: none;
 	}
 	.menu-top {
 		top: auto;

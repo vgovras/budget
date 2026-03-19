@@ -3,7 +3,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { prorateForCurrentMonth } from '$lib/utils/budget.js';
 import * as m from '$lib/paraglide/messages.js';
 
-const SAVINGS_STEPS = [5, 10, 20, 25, 50, 75];
+const SAVINGS_STEPS = [5, 10, 30, 50, 65, 75];
 
 export class OnboardingViewModel {
 	currentSlide = $state(0);
@@ -13,6 +13,8 @@ export class OnboardingViewModel {
 
 	salary = $state<number | null>(null);
 	currency = $state(settingsVM.currency);
+	fiatViewEnabled = $state(false);
+	fiatCurrency = $state(settingsVM.currency);
 	payday = $state(1);
 	savingsIdx = $state<number | null>(2); // default 20%
 	customSavings = $state<number | null>(null);
@@ -89,6 +91,8 @@ export class OnboardingViewModel {
 		const { proratedBudget } = prorateForCurrentMonth(budget);
 
 		settingsVM.currency = this.currency;
+		settingsVM.fiatCurrency = this.fiatViewEnabled ? this.fiatCurrency : this.currency;
+		settingsVM.fiatViewEnabled = this.fiatViewEnabled;
 		settingsVM.updateBudget(budget);
 		if (sal > 0) settingsVM.updateSalary(sal);
 		settingsVM.updatePayday(this.payday);
@@ -100,7 +104,8 @@ export class OnboardingViewModel {
 			budget: proratedBudget,
 			spent: 0,
 			currency: this.currency,
-			label: m.account_label_monthly_budget()
+			label: m.account_label_monthly_budget(),
+			savingsPercent: this.savingsPercent ?? undefined
 		});
 
 		settingsVM.updateLastPayday(new Date().toISOString());

@@ -1,15 +1,26 @@
 <script lang="ts">
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
+	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
 	import { fmt } from '$lib/utils/format.js';
-	import { CURRENCIES, CURRENCY_CODES } from '$lib/constants.js';
+	import { convert } from '$lib/utils/currency.js';
+	import { CURRENCIES, CURRENCY_CODES, CURRENCY_LABELS } from '$lib/constants.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let {
 		value = $bindable<number | null>(null),
 		currency = $bindable<string>('₴'),
+		fiatViewEnabled = $bindable<boolean>(false),
+		fiatCurrency = $bindable<string>('₴'),
 		onNext
-	}: { value: number | null; currency: string; onNext: () => void } = $props();
+	}: { value: number | null; currency: string; fiatViewEnabled: boolean; fiatCurrency: string; onNext: () => void } = $props();
+
+	let fiatDropdown = $state('off');
+
+	$effect(() => {
+		fiatViewEnabled = fiatDropdown !== 'off';
+		if (fiatDropdown !== 'off') fiatCurrency = fiatDropdown;
+	});
 
 	const canNext = $derived(value !== null && value > 0);
 	function fmtShort(n: number): string {
@@ -18,7 +29,14 @@
 		return fmt(n);
 	}
 
-	const displayAmount = $derived(value && value > 0 ? `${currency}${fmtShort(value)}` : `${currency}0`);
+	const displayAmount = $derived.by(() => {
+		if (!value || value <= 0) return `${currency}0`;
+		if (fiatDropdown !== 'off' && fiatDropdown !== currency) {
+			const converted = convert(value, currency, fiatDropdown);
+			return `${fiatDropdown}${fmtShort(converted)}`;
+		}
+		return `${currency}${fmtShort(value)}`;
+	});
 </script>
 
 <div class="slide">
@@ -59,6 +77,21 @@
 			{/each}
 		</div>
 		<MoneyInput bind:value {currency} size="lg" placeholder="30 000" autofocus />
+
+		<div class="flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5">
+			<div class="flex flex-col gap-0.5">
+				<span class="text-[14px] font-medium text-white">{m.settings_fiat_view_label()}</span>
+				<span class="text-[11px] font-light text-white/20">{m.settings_fiat_view_desc()}</span>
+			</div>
+			<Dropdown
+				bind:value={fiatDropdown}
+				class="min-w-[100px]"
+				options={[
+					{ value: 'off', label: m.settings_fiat_view_off() },
+					...CURRENCIES.map((c) => ({ value: c, label: CURRENCY_LABELS[c] ?? c }))
+				]}
+			/>
+		</div>
 	</div>
 
 	<div class="bottom">
@@ -90,7 +123,7 @@
 
 	.ill { position: relative; z-index: 2; }
 
-	.text-block { padding: 8px 28px 0; display: flex; flex-direction: column; }
+	.text-block { padding: 8px 24px 0; display: flex; flex-direction: column; }
 	.slide-num {
 		font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
 		color: rgba(255,255,255,0.2); font-weight: 500; margin-bottom: 10px;
@@ -107,7 +140,7 @@
 	}
 
 	.input-area {
-		padding: 20px 28px 0;
+		padding: 20px 24px 0;
 		display: flex;
 		flex-direction: column;
 		gap: 12px;

@@ -141,7 +141,7 @@
 
 	"expenses_empty": "Витрат поки немає",
 
-	"default_account_name": "Загальний",
+	"default_account_name": "Моя картка",
 
 	"onboarding_slide1_title": "Контроль<br><em>бюджету</em><br>у твоїх руках",
 	"onboarding_slide1_desc": "Встанови місячний ліміт і завжди знай скільки ще можеш витратити — без сюрпризів.",
@@ -195,7 +195,7 @@
 	"home_days_short": "дн",
 
 	"settings_fiat_view_label": "Єдина валюта",
-	"settings_fiat_view_desc": "Конвертувати все в базову валюту",
+	"settings_fiat_view_desc": "Відображати все в єдиній валюті",
 	"settings_fiat_view_off": "Вимк.",
 	"settings_language_label": "Мова",
 	"settings_language_desc": "Мова інтерфейсу"

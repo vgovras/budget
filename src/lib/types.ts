@@ -23,6 +23,7 @@ export interface Account {
 	spent: number;
 	currency: string;
 	label: string;
+	savingsPercent?: number;
 	goalAmount?: number;
 	goalDeadline?: string;
 }

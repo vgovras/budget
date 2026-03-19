@@ -28,7 +28,7 @@
 				<rect x="34" y="68" width="28" height="20" rx="4" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" stroke-width="0.8"/>
 				<line x1="34" y1="76" x2="62" y2="76" stroke="rgba(255,255,255,0.12)" stroke-width="0.8"/>
 				<line x1="34" y1="80" x2="62" y2="80" stroke="rgba(255,255,255,0.08)" stroke-width="0.8"/>
-				<text x="34" y="108" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.35)" font-weight="300">Залишок</text>
+				<text x="34" y="108" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.35)" font-weight="300">{m.account_balance()}</text>
 				<text x="34" y="124" font-family="DM Sans,sans-serif" font-size="20" fill="rgba(255,255,255,0.9)" font-weight="500" letter-spacing="-0.5">₴31 856</text>
 				<circle cx="118" cy="120" r="7" fill="rgba(255,100,100,0.5)"/>
 				<circle cx="130" cy="120" r="7" fill="rgba(255,160,60,0.7)"/>
@@ -37,7 +37,7 @@
 				<rect x="110" y="42" width="66" height="28" rx="10" fill="rgba(15,15,30,0.95)" stroke="rgba(80,200,120,0.25)" stroke-width="1"/>
 				<circle cx="124" cy="56" r="5" fill="rgba(80,200,120,0.2)"/>
 				<circle cx="124" cy="56" r="2.5" fill="rgba(80,200,120,0.8)"/>
-				<text x="133" y="53" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(255,255,255,0.5)" font-weight="300">Бюджет</text>
+				<text x="133" y="53" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(255,255,255,0.5)" font-weight="300">{m.account_budget_label()}</text>
 				<text x="133" y="63" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(80,200,120,0.9)" font-weight="500">+₴2 000</text>
 			</svg>
 		</div>

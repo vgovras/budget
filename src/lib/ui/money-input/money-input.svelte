@@ -60,6 +60,7 @@
 		oninput={onInput}
 		onfocus={onFocus}
 		onblur={onBlur}
+		onkeydown={(e) => { if (e.key === 'Enter') inputEl.blur(); }}
 	/>
 </div>
 

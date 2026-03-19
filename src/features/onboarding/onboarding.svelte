@@ -75,13 +75,15 @@
 					{#if vm.currentSlide === 0}
 						<StepIntro onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 1}
-						<StepSalary bind:value={vm.salary} bind:currency={vm.currency} onNext={() => vm.next()} />
+						<StepSalary bind:value={vm.salary} bind:currency={vm.currency} bind:fiatViewEnabled={vm.fiatViewEnabled} bind:fiatCurrency={vm.fiatCurrency} onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 2}
 						<StepPayday bind:value={vm.payday} onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 3}
 						<StepSavings
 							salary={vm.salary ?? 0}
 							currency={vm.currency}
+							fiatViewEnabled={vm.fiatViewEnabled}
+							fiatCurrency={vm.fiatCurrency}
 							steps={vm.savingsSteps}
 							activeIdx={vm.savingsIdx}
 							savingsAmount={vm.savingsAmount}
@@ -140,8 +142,5 @@
 	.slide-wrap {
 		position: absolute;
 		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
 	}
 </style>

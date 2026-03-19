@@ -141,7 +141,7 @@
 
 	"expenses_empty": "No expenses yet",
 
-	"default_account_name": "General",
+	"default_account_name": "My Card",
 
 	"onboarding_slide1_title": "Your budget,<br><em>your</em> control",
 	"onboarding_slide1_desc": "Set a monthly limit and always know how much you can still spend — no surprises.",
@@ -195,7 +195,7 @@
 	"home_days_short": "d",
 
 	"settings_fiat_view_label": "Single currency",
-	"settings_fiat_view_desc": "Convert everything to base currency",
+	"settings_fiat_view_desc": "Display everything in a single currency",
 	"settings_fiat_view_off": "Off",
 	"settings_language_label": "Language",
 	"settings_language_desc": "Interface language"
