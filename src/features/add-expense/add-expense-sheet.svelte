@@ -107,7 +107,7 @@
 				<MoneyInput bind:value={vm.amount} currency={accountsVM.active?.currency ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
 			</div>
 
-			<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} />
+			<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} type={vm.sheetType === 'income' ? 'income' : 'expense'} />
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 

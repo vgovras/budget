@@ -121,6 +121,22 @@
 	"recurring_add_button": "Додати регулярний платіж",
 	"recurring_next": "Наступний",
 
+	"sub_section_title": "Підписки",
+	"sub_add_title": "Нова підписка",
+	"sub_edit_title": "Редагувати підписку",
+	"sub_add_button": "Додати підписку",
+	"sub_per_month": "/міс",
+	"sub_service": "Сервіс",
+	"sub_amount": "Сума",
+	"sub_cycle": "Цикл оплати",
+	"sub_cycle_monthly": "Щомісяця",
+	"sub_cycle_quarterly": "Щокварталу",
+	"sub_cycle_yearly": "Щороку",
+	"sub_billing_day": "День списання",
+	"sub_next_charge": "наст.",
+	"sub_paused": "Призупинено",
+	"sub_no_subs": "Підписок поки немає",
+
 	"expenses_empty": "Витрат поки немає",
 
 	"default_account_name": "Загальний",

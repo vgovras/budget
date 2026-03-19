@@ -1,16 +1,22 @@
 <script lang="ts">
+	import type { CategoryType } from '$lib/types.js';
 	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { selected, onSelect }: { selected: string | null; onSelect: (icon: string) => void } =
-		$props();
+	let { selected, onSelect, type = 'expense' }: {
+		selected: string | null;
+		onSelect: (icon: string) => void;
+		type?: CategoryType;
+	} = $props();
+
+	const filtered = $derived(categoriesVM.byType(type));
 </script>
 
 <div>
 	<div class="cat-label">{m.label_category()}</div>
 	<div class="categories">
-		{#each categoriesVM.categories as cat (cat.icon)}
+		{#each filtered as cat (cat.icon)}
 			<button
 				class="cat-btn"
 				class:selected={selected === cat.icon}

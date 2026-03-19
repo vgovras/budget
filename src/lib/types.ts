@@ -7,7 +7,7 @@ export interface Expense {
 	day: string;
 	date: string;
 	accountId: string;
-	type: 'expense' | 'income' | 'transfer';
+	type: 'expense' | 'income' | 'transfer' | 'subscription';
 	commission?: number;
 	netAmount?: number;
 	toAccountId?: string;
@@ -40,14 +40,30 @@ export interface Settings {
 	fiatCurrency: string;
 }
 
+export type CategoryType = 'expense' | 'income';
+
 export interface Category {
 	id: string;
 	icon: string;
 	label: string;
 	bg: string;
 	border: string;
+	type: CategoryType;
 	commission?: number;
 	isDefault?: boolean;
+}
+
+export interface Subscription {
+	id: string;
+	icon: string;
+	label: string;
+	amount: number;
+	currency: string;
+	accountId: string;
+	cycle: 'monthly' | 'quarterly' | 'yearly';
+	dayOfMonth: number;
+	nextDate: string;
+	status: 'active' | 'paused';
 }
 
 export interface RecurringTransaction {

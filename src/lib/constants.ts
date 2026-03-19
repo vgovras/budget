@@ -1,4 +1,4 @@
-import type { Category, Settings, ScreenId } from './types.js';
+import type { Category, Settings, ScreenId, Subscription } from './types.js';
 import * as m from '$lib/paraglide/messages.js';
 export type { ScreenId } from './types.js';
 
@@ -9,6 +9,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		label: m.category_food(),
 		bg: 'rgba(255,150,50,0.12)',
 		border: 'rgba(255,150,50,0.25)',
+		type: 'expense',
 		isDefault: true
 	},
 	{
@@ -17,6 +18,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		label: m.category_transport(),
 		bg: 'rgba(70,150,255,0.12)',
 		border: 'rgba(70,150,255,0.25)',
+		type: 'expense',
 		isDefault: true
 	},
 	{
@@ -25,6 +27,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		label: m.category_subscriptions(),
 		bg: 'rgba(150,90,255,0.12)',
 		border: 'rgba(150,90,255,0.25)',
+		type: 'expense',
 		isDefault: true
 	},
 	{
@@ -33,6 +36,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		label: m.category_entertainment(),
 		bg: 'rgba(50,195,110,0.12)',
 		border: 'rgba(50,195,110,0.25)',
+		type: 'expense',
 		isDefault: true
 	},
 	{
@@ -41,6 +45,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		label: m.category_health(),
 		bg: 'rgba(255,90,120,0.12)',
 		border: 'rgba(255,90,120,0.25)',
+		type: 'expense',
 		isDefault: true
 	},
 	{
@@ -49,6 +54,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		label: m.category_home(),
 		bg: 'rgba(255,200,50,0.12)',
 		border: 'rgba(255,200,50,0.25)',
+		type: 'expense',
 		isDefault: true
 	}
 ];
@@ -92,6 +98,29 @@ export const CAT_ICON_PRESETS = [
 	'wallet', 'credit-card', 'banknote', 'landmark', 'piggy-bank',
 	'target', 'bell', 'calendar', 'globe', 'sparkles',
 	'home', 'list', 'bar-chart', 'settings', 'arrow-left-right'
+];
+
+export const SUBSCRIPTION_ICON_PRESETS: { icon: string; label: string }[] = [
+	{ icon: 'tv', label: 'Netflix' },
+	{ icon: 'music', label: 'Spotify' },
+	{ icon: 'play-circle', label: 'YouTube' },
+	{ icon: 'cloud', label: 'iCloud' },
+	{ icon: 'package', label: 'Amazon Prime' },
+	{ icon: 'clapperboard', label: 'Disney+' },
+	{ icon: 'film', label: 'HBO Max' },
+	{ icon: 'github', label: 'GitHub' },
+	{ icon: 'figma', label: 'Figma' },
+	{ icon: 'bot', label: 'ChatGPT' },
+	{ icon: 'shield', label: 'VPN' },
+	{ icon: 'hard-drive', label: 'Cloud Storage' },
+	{ icon: 'dumbbell', label: 'Gym' },
+	{ icon: 'newspaper', label: 'News' },
+	{ icon: 'gamepad-2', label: 'Gaming' },
+	{ icon: 'palette', label: 'Adobe' },
+	{ icon: 'file-spreadsheet', label: 'Microsoft 365' },
+	{ icon: 'book-open', label: 'Notion' },
+	{ icon: 'phone', label: 'Mobile' },
+	{ icon: 'wifi', label: 'Internet' },
 ];
 
 export const CURRENCIES = ['₴', '$', '€', '£', 'zł'] as const;

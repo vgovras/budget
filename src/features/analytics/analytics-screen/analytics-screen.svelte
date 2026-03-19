@@ -9,9 +9,15 @@
 	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
+	import SubscriptionList from '$features/subscriptions/subscription-list/subscription-list.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { onAddAccount, onEditAccount }: { onAddAccount?: () => void; onEditAccount?: (id: string) => void } = $props();
+	let { onAddAccount, onEditAccount, onAddSubscription, onEditSubscription }: {
+		onAddAccount?: () => void;
+		onEditAccount?: (id: string) => void;
+		onAddSubscription?: () => void;
+		onEditSubscription?: (id: string) => void;
+	} = $props();
 
 	const vm = new AnalyticsViewModel();
 
@@ -91,6 +97,11 @@
 			<span class="add-acc-label">{m.button_add_account()}</span>
 		</div>
 	</div>
+
+	<SubscriptionList
+		onAdd={() => onAddSubscription?.()}
+		onEdit={(id) => onEditSubscription?.(id)}
+	/>
 
 </div>
 

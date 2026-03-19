@@ -15,6 +15,8 @@
 	import { AddAccountSheetViewModel } from '$features/accounts/add-account/add-account-sheet.svelte.js';
 	import EditAccountSheet from '$features/accounts/edit-account/edit-account-sheet.svelte';
 	import { EditAccountSheetViewModel } from '$features/accounts/edit-account/edit-account-sheet.svelte.js';
+	import SubscriptionEditorSheet from '$features/subscriptions/subscription-editor/subscription-editor-sheet.svelte';
+	import { SubscriptionEditorSheetViewModel } from '$features/subscriptions/subscription-editor/subscription-editor-sheet.svelte.js';
 	import Onboarding from '$features/onboarding/onboarding.svelte';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -23,6 +25,7 @@
 	const addAccountVM = new AddAccountSheetViewModel();
 	const editAccountVM = new EditAccountSheetViewModel();
 	const editExpenseVM = new EditExpenseViewModel();
+	const subEditorVM = new SubscriptionEditorSheetViewModel();
 	const confirmVM = new ConfirmDialogViewModel();
 </script>
 
@@ -32,6 +35,8 @@
 			<AnalyticsScreen
 				onAddAccount={() => addAccountVM.open()}
 				onEditAccount={(id) => editAccountVM.open(id)}
+				onAddSubscription={() => subEditorVM.openNew()}
+				onEditSubscription={(id) => subEditorVM.openEdit(id)}
 			/>
 		</div>
 		<div class="screen">
@@ -62,6 +67,7 @@
 		});
 	}} />
 	<EditExpense vm={editExpenseVM} />
+	<SubscriptionEditorSheet vm={subEditorVM} />
 	<ConfirmDialog vm={confirmVM} />
 
 	{#if settingsVM.loaded && !settingsVM.onboardingDone}

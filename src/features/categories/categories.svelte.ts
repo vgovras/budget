@@ -1,4 +1,4 @@
-import type { Category } from '$lib/types.js';
+import type { Category, CategoryType } from '$lib/types.js';
 import { DEFAULT_CATEGORIES } from '$lib/constants.js';
 import { CategoriesRepository } from './categories.js';
 
@@ -6,6 +6,14 @@ export class CategoriesViewModel {
 	#repo: CategoriesRepository;
 
 	categories = $state<Category[]>([]);
+
+	readonly expenseCategories = $derived(
+		this.categories.filter((c) => c.type === 'expense')
+	);
+
+	readonly incomeCategories = $derived(
+		this.categories.filter((c) => c.type === 'income')
+	);
 
 	constructor(repo: CategoriesRepository) {
 		this.#repo = repo;
@@ -16,7 +24,15 @@ export class CategoriesViewModel {
 
 	#hydrate() {
 		const saved = this.#repo.load();
-		this.categories = saved ?? [...DEFAULT_CATEGORIES];
+		if (saved) {
+			this.categories = saved.map((c) => ({ ...c, type: c.type ?? 'expense' as CategoryType }));
+		} else {
+			this.categories = [...DEFAULT_CATEGORIES];
+		}
+	}
+
+	byType(type: CategoryType): Category[] {
+		return this.categories.filter((c) => c.type === type);
 	}
 
 	getById(id: string): Category | undefined {

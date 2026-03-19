@@ -121,6 +121,22 @@
 	"recurring_add_button": "Add recurring payment",
 	"recurring_next": "Next",
 
+	"sub_section_title": "Subscriptions",
+	"sub_add_title": "New subscription",
+	"sub_edit_title": "Edit subscription",
+	"sub_add_button": "Add subscription",
+	"sub_per_month": "/mo",
+	"sub_service": "Service",
+	"sub_amount": "Amount",
+	"sub_cycle": "Billing cycle",
+	"sub_cycle_monthly": "Monthly",
+	"sub_cycle_quarterly": "Quarterly",
+	"sub_cycle_yearly": "Yearly",
+	"sub_billing_day": "Billing day",
+	"sub_next_charge": "next",
+	"sub_paused": "Paused",
+	"sub_no_subs": "No subscriptions yet",
+
 	"expenses_empty": "No expenses yet",
 
 	"default_account_name": "General",
