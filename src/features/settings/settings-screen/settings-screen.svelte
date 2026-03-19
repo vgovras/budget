@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import { settingsVM } from '../settings.svelte.js';
-	import SettingsInputModal from '../settings-input-modal/settings-input-modal.svelte';
-	import { SettingsInputModalViewModel } from '../settings-input-modal/settings-input-modal.svelte.js';
 	import type { ConfirmDialogViewModel } from '$lib/ui/confirm-dialog/confirm-dialog.svelte.js';
 	import { expensesVM } from '$features/expenses/expenses.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
@@ -48,7 +46,6 @@
 		}
 	});
 
-	const inputVM = new SettingsInputModalViewModel();
 	const catEditorVM = new CategoryEditorSheetViewModel();
 	const recEditorVM = new RecurringEditorSheetViewModel();
 
@@ -80,58 +77,6 @@
 </div>
 
 <div class="content" use:scrollNav>
-	<!-- Фінанси -->
-	<div>
-		<div class="settings-section-title">{m.settings_section_finances()}</div>
-		<div class="settings-group">
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row" onclick={() => inputVM.open('budget')}>
-				<div class="settings-row-icon"><Icon name="wallet" size={18} /></div>
-				<div class="settings-row-info">
-					<div class="settings-row-label">{m.settings_monthly_budget_label()}</div>
-					<div class="settings-row-value">{m.settings_monthly_budget_desc()}</div>
-				</div>
-				<div class="settings-row-right">
-					<span class="settings-val-badge">{settingsVM.currency} {fmt(settingsVM.budget)}</span>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-						><polyline points="9 18 15 12 9 6" /></svg
-					>
-				</div>
-			</div>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row" onclick={() => inputVM.open('salary')}>
-				<div class="settings-row-icon"><Icon name="credit-card" size={18} /></div>
-				<div class="settings-row-info">
-					<div class="settings-row-label">{m.settings_salary_label()}</div>
-					<div class="settings-row-value">{m.settings_salary_desc()}</div>
-				</div>
-				<div class="settings-row-right">
-					<span class="settings-val-badge">{settingsVM.currency} {fmt(settingsVM.salary)}</span>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-						><polyline points="9 18 15 12 9 6" /></svg
-					>
-				</div>
-			</div>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row" onclick={() => inputVM.open('payday')}>
-				<div class="settings-row-icon"><Icon name="calendar" size={18} /></div>
-				<div class="settings-row-info">
-					<div class="settings-row-label">{m.settings_payday_label()}</div>
-					<div class="settings-row-value">{m.settings_payday_desc()}</div>
-				</div>
-				<div class="settings-row-right">
-					<span class="settings-val-badge">{settingsVM.payday}</span>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-						><polyline points="9 18 15 12 9 6" /></svg
-					>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<!-- Категорії витрат -->
 	<div>
 		<div class="settings-section-title">{m.categories_expense_title()}</div>
@@ -326,7 +271,6 @@
 	</div>
 </div>
 
-<SettingsInputModal vm={inputVM} />
 <CategoryEditorSheet vm={catEditorVM} />
 <RecurringEditorSheet vm={recEditorVM} />
 

@@ -4,6 +4,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
 import { getDailyBudget, getTodaySpent, getWeeklyAmounts } from '$lib/utils/budget.js';
+import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
 
@@ -66,16 +67,23 @@ export class HomeScreenViewModel {
 			: 0
 	);
 
+	readonly #nextPayday = $derived.by(() => {
+		const salary = recurringVM.items.find((r) => r.id === 'rec-salary');
+		if (salary?.nextDate) return new Date(salary.nextDate);
+		const now = new Date();
+		return new Date(now.getFullYear(), now.getMonth() + 1, 0);
+	});
+
 	readonly daysUntilEnd = $derived.by(() => {
 		const now = new Date();
-		return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
+		now.setHours(0, 0, 0, 0);
+		const diff = this.#nextPayday.getTime() - now.getTime();
+		return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
 	});
 
 	readonly daysEndDate = $derived.by(() => {
-		const now = new Date();
-		const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-		const monthName = now.toLocaleDateString(locale(), { month: 'long' });
-		return `${lastDay} ${monthName}`;
+		const d = this.#nextPayday;
+		return d.toLocaleDateString(locale(), { day: 'numeric', month: 'long' });
 	});
 
 	readonly todaySpent = $derived(
