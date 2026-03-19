@@ -60,15 +60,12 @@
 		</div>
 
 		<!-- Amount + Currency -->
-		<div class="row">
-			<div class="field flex-1">
-				<span class="field-label">{m.sub_amount()}</span>
+		<div class="field">
+			<span class="field-label">{m.sub_amount()}</span>
+			<div class="amount-row">
 				<div class="amount-field">
-					<MoneyInput bind:value={vm.amount} currency={vm.currency} size="lg" />
+					<MoneyInput bind:value={vm.amount} currency={vm.currency} />
 				</div>
-			</div>
-			<div class="field" style="width:80px">
-				<span class="field-label">&nbsp;</span>
 				<Dropdown bind:value={vm.currency} options={currencyOptions} />
 			</div>
 		</div>
@@ -155,21 +152,18 @@
 		border-color: rgba(221, 232, 240, 0.28);
 	}
 
-	.row {
+	.amount-row {
 		display: flex;
 		gap: 10px;
-		align-items: flex-end;
-	}
-
-	.flex-1 {
-		flex: 1;
+		align-items: center;
 	}
 
 	.amount-field {
-		padding: 16px 18px;
+		flex: 1;
+		padding: 6px 14px;
 		background: rgba(255, 255, 255, 0.05);
 		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: var(--r-md);
+		border-radius: var(--r-sm);
 	}
 	.amount-field:focus-within {
 		border-color: rgba(221, 232, 240, 0.28);

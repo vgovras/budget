@@ -62,7 +62,27 @@
 		shirt: icons.Shirt,
 		fuel: icons.Fuel,
 		pill: icons.Pill,
-		'arrow-left-right': icons.ArrowLeftRight
+		'arrow-left-right': icons.ArrowLeftRight,
+		'play-circle': icons.PlayCircle,
+		clapperboard: icons.Clapperboard,
+		github: icons.Github,
+		figma: icons.Figma,
+		bot: icons.Bot,
+		shield: icons.Shield,
+		'hard-drive': icons.HardDrive,
+		newspaper: icons.Newspaper,
+		'gamepad-2': icons.Gamepad2,
+		palette: icons.Palette,
+		'file-spreadsheet': icons.FileSpreadsheet,
+		'book-open': icons.BookOpen,
+		phone: icons.Phone,
+		wifi: icons.Wifi,
+		cloud: icons.Cloud,
+		package: icons.Package,
+		film: icons.Film,
+		youtube: icons.Youtube,
+		slack: icons.Slack,
+		twitch: icons.Twitch
 	};
 
 	const IconComponent = $derived(iconMap[name]);
