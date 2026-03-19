@@ -55,14 +55,7 @@
 			</div>
 		</div>
 
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="advanced-toggle" onclick={() => (vm.showAdvanced = !vm.showAdvanced)}>
-			<Icon name={vm.showAdvanced ? 'chevron-down' : 'chevron-right'} size={16} />
-			<span>{m.category_advanced()}</span>
-		</div>
-
-		{#if vm.showAdvanced}
+		{#if vm.categoryType === 'income'}
 			<div class="field">
 				<span class="field-label">{m.category_commission_label()}</span>
 				<div class="commission-row">

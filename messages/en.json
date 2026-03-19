@@ -30,6 +30,8 @@
 	"category_commission_label": "Commission",
 	"category_commission_hint": "Commission percentage for income with this category",
 	"settings_section_categories": "Categories",
+	"categories_expense_title": "Expense categories",
+	"categories_income_title": "Income categories",
 	"category_add_button": "Add category",
 
 	"date_today": "Today",

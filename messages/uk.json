@@ -30,6 +30,8 @@
 	"category_commission_label": "Комісія",
 	"category_commission_hint": "Відсоток комісії для доходів з цією категорією",
 	"settings_section_categories": "Категорії",
+	"categories_expense_title": "Категорії витрат",
+	"categories_income_title": "Категорії надходжень",
 	"category_add_button": "Додати категорію",
 
 	"date_today": "Сьогодні",

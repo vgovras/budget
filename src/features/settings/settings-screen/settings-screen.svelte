@@ -128,11 +128,50 @@
 		</div>
 	</div>
 
-	<!-- Категорії -->
+	<!-- Категорії витрат -->
 	<div>
-		<div class="settings-section-title">{m.settings_section_categories()}</div>
+		<div class="settings-section-title">{m.categories_expense_title()}</div>
 		<div class="settings-group">
-			{#each categoriesVM.categories as cat (cat.id)}
+			{#each categoriesVM.expenseCategories as cat (cat.id)}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="settings-row" out:fade={{ duration: 200 }}>
+					<div class="settings-row-icon" style:background={cat.bg} style:border-color={cat.border}>
+						<Icon name={cat.icon} size={18} />
+					</div>
+					<div class="settings-row-info" onclick={() => catEditorVM.openEdit(cat.id)}>
+						<div class="settings-row-label">{cat.label}</div>
+					</div>
+					<div class="settings-row-right">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-edit-btn" onclick={() => catEditorVM.openEdit(cat.id)}>
+							<Icon name="edit" size={16} />
+						</span>
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<span class="cat-delete-btn" onclick={() => deleteCategory(cat.id)}>
+							<Icon name="trash" size={16} />
+						</span>
+					</div>
+				</div>
+			{/each}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="settings-row add-cat-row" onclick={() => catEditorVM.open('expense')}>
+				<div class="settings-row-icon"><Icon name="plus" size={18} /></div>
+				<div class="settings-row-info">
+					<div class="settings-row-label" style="color:var(--accent)">{m.category_add_button()}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Категорії надходжень -->
+	<div>
+		<div class="settings-section-title">{m.categories_income_title()}</div>
+		<div class="settings-group">
+			{#each categoriesVM.incomeCategories as cat (cat.id)}
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div class="settings-row" out:fade={{ duration: 200 }}>
@@ -161,7 +200,7 @@
 			{/each}
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row add-cat-row" onclick={() => catEditorVM.open()}>
+			<div class="settings-row add-cat-row" onclick={() => catEditorVM.open('income')}>
 				<div class="settings-row-icon"><Icon name="plus" size={18} /></div>
 				<div class="settings-row-info">
 					<div class="settings-row-label" style="color:var(--accent)">{m.category_add_button()}</div>
