@@ -101,18 +101,18 @@
 			</Button>
 		{:else}
 			<!-- Expense / Income content -->
-			<QuickChips chips={vm.quickChips} currency={accountsVM.active?.currency ?? settingsVM.currency} onSelect={(chip) => vm.quickFill(chip)} />
+			<QuickChips chips={vm.quickChips} currency={vm.displayCurrency} onSelect={(chip) => vm.quickFill(chip)} />
 
 			<div class="amount-field">
-				<MoneyInput bind:value={vm.amount} currency={accountsVM.active?.currency ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
+				<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
 			</div>
 
 			<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} type={vm.sheetType === 'income' ? 'income' : 'expense'} />
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 
-			{#if vm.dailyBudget > 0 && vm.sheetType === 'expense'}
-				<div class="daily-hint">{m.daily_hint_available_today()} {vm.displayCurrency}{fmt(vm.dailyBudget)}</div>
+			{#if vm.dailyRemaining > 0 && vm.sheetType === 'expense'}
+				<div class="daily-hint">{m.daily_hint_available_today()} {vm.displayCurrency}{fmt(vm.dailyRemaining)}</div>
 			{/if}
 
 			<Button variant="accent" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
@@ -234,7 +234,7 @@
 		padding-left: 2px;
 	}
 	.field-input {
-		padding: 14px 16px;
+		padding: 12px 16px;
 		border-radius: var(--r-sm);
 		border: 1px solid rgba(255, 255, 255, 0.09);
 		background: rgba(255, 255, 255, 0.05);

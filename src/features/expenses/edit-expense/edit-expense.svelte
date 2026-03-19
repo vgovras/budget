@@ -15,7 +15,7 @@
 		</div>
 
 		<div class="amount-field">
-			<MoneyInput bind:value={vm.amount} size="lg" autofocus={vm.isOpen} />
+			<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
 		</div>
 
 		<input class="note-field" type="text" placeholder={m.placeholder_note()} bind:value={vm.note} />
@@ -44,7 +44,7 @@
 	}
 
 	.note-field {
-		padding: 13px 16px;
+		padding: 12px 16px;
 		border-radius: var(--r-sm);
 		border: 1px solid rgba(255, 255, 255, 0.07);
 		background: rgba(255, 255, 255, 0.03);

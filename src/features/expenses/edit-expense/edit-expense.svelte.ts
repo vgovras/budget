@@ -1,6 +1,8 @@
 import type { Account, Expense } from '$lib/types.js';
 import { expensesVM } from '../expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
+import { settingsVM } from '$features/settings/settings.svelte.js';
+import { convert } from '$lib/utils/currency.js';
 
 function findAccount(id: string | undefined) {
 	if (!id) return undefined;
@@ -24,14 +26,42 @@ export class EditExpenseViewModel {
 	title = $state('');
 	isOpen = $state(false);
 
+	readonly displayCurrency = $derived(
+		settingsVM.fiatViewEnabled
+			? settingsVM.fiatCurrency
+			: (this.#accountCurrency ?? settingsVM.currency)
+	);
+
+	get #accountCurrency() {
+		if (this.editingId === null) return undefined;
+		const exp = expensesVM.expenses.find((e) => e.id === this.editingId);
+		return exp ? findAccount(exp.accountId)?.currency : undefined;
+	}
+
 	open(id: number) {
 		const exp = expensesVM.expenses.find((e) => e.id === id);
 		if (!exp) return;
 		this.editingId = id;
-		this.amount = exp.amount;
+		this.amount = exp.displayAmount && settingsVM.fiatViewEnabled && exp.displayCurrency === settingsVM.fiatCurrency
+			? exp.displayAmount
+			: this.#toDisplay(exp.amount, exp.accountId);
 		this.note = exp.note;
 		this.title = exp.label;
 		this.isOpen = true;
+	}
+
+	#toDisplay(amount: number, accountId: string): number {
+		if (!settingsVM.fiatViewEnabled) return amount;
+		const accCurrency = findAccount(accountId)?.currency;
+		if (!accCurrency || accCurrency === settingsVM.fiatCurrency) return amount;
+		return convert(amount, accCurrency, settingsVM.fiatCurrency);
+	}
+
+	#toAccountCurrency(displayAmount: number, accountId: string): number {
+		if (!settingsVM.fiatViewEnabled) return displayAmount;
+		const accCurrency = findAccount(accountId)?.currency;
+		if (!accCurrency || accCurrency === settingsVM.fiatCurrency) return displayAmount;
+		return convert(displayAmount, settingsVM.fiatCurrency, accCurrency);
 	}
 
 	close() {
@@ -44,20 +74,23 @@ export class EditExpenseViewModel {
 		const exp = expensesVM.expenses.find((e) => e.id === this.editingId);
 		if (!exp) return;
 
-		const diff = this.amount - exp.amount;
+		const nativeAmount = exp.type === 'transfer'
+			? this.amount
+			: this.#toAccountCurrency(this.amount, exp.accountId);
+		const diff = nativeAmount - exp.amount;
 		const acc = findAccount(exp.accountId);
 
 		if (exp.type === 'transfer') {
 			this.#saveTransfer(exp, acc, diff);
 		} else if (exp.type === 'income') {
-			this.#saveIncome(exp, acc);
+			this.#saveIncome(exp, acc, nativeAmount);
 		} else if (acc) {
 			accountsVM.update(acc.id, { balance: acc.balance - diff });
 		}
 
-		const patch: Partial<Expense> = { amount: this.amount, note: this.note };
+		const patch: Partial<Expense> = { amount: nativeAmount, note: this.note };
 		if (exp.type === 'income' && exp.commission && exp.commission > 0) {
-			patch.netAmount = getNetAmount(this.amount, exp.commission);
+			patch.netAmount = getNetAmount(nativeAmount, exp.commission);
 		}
 		expensesVM.update(this.editingId, patch);
 		this.close();
@@ -99,10 +132,10 @@ export class EditExpenseViewModel {
 		}
 	}
 
-	#saveIncome(exp: Expense, acc: Account | undefined) {
+	#saveIncome(exp: Expense, acc: Account | undefined, nativeAmount: number) {
 		if (!acc) return;
 		const oldNet = exp.netAmount ?? exp.amount;
-		const newNet = getNetAmount(this.amount, exp.commission);
+		const newNet = getNetAmount(nativeAmount, exp.commission);
 		accountsVM.update(acc.id, { balance: acc.balance + (newNet - oldNet) });
 	}
 

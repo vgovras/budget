@@ -3,7 +3,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { prorateForCurrentMonth } from '$lib/utils/budget.js';
 import * as m from '$lib/paraglide/messages.js';
 
-const SAVINGS_STEPS = [5, 10, 30, 50, 65, 75];
+const SAVINGS_STEPS = [0, 10, 30, 50, 65, 75];
 
 export class OnboardingViewModel {
 	currentSlide = $state(0);

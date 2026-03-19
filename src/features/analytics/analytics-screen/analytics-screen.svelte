@@ -145,6 +145,7 @@
 		border-radius: 20px;
 		padding: 20px;
 		border: 1px solid rgba(255, 255, 255, 0.07);
+		flex-shrink: 0;
 	}
 
 	.analytics-title {

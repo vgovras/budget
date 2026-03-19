@@ -76,22 +76,22 @@
 			<Dropdown bind:value={vm.accountId} options={accountOptions} />
 		</div>
 
-		<!-- Cycle -->
-		<div class="field">
-			<span class="field-label">{m.sub_cycle()}</span>
-			<Dropdown bind:value={vm.cycle} options={cycleOptions} />
-		</div>
-
-		<!-- Day of month -->
-		<div class="field">
-			<span class="field-label">{m.sub_billing_day()}</span>
-			<input
-				class="field-input"
-				type="number"
-				min="1"
-				max="31"
-				bind:value={vm.dayOfMonth}
-			/>
+		<!-- Cycle + Day of month -->
+		<div class="flex gap-2.5 items-stretch">
+			<div class="field flex-1">
+				<span class="field-label">{m.sub_cycle()}</span>
+				<Dropdown bind:value={vm.cycle} options={cycleOptions} />
+			</div>
+			<div class="field w-[110px] shrink-0">
+				<span class="field-label whitespace-nowrap">{m.sub_billing_day()}</span>
+				<input
+					class="field-input"
+					type="number"
+					min="1"
+					max="31"
+					bind:value={vm.dayOfMonth}
+				/>
+			</div>
 		</div>
 
 		<div class="actions">
@@ -136,7 +136,7 @@
 	}
 
 	.field-input {
-		padding: 14px 16px;
+		padding: 12px 16px;
 		border-radius: var(--r-sm);
 		border: 1px solid rgba(255, 255, 255, 0.09);
 		background: rgba(255, 255, 255, 0.05);

@@ -1,7 +1,7 @@
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 
-const SAVINGS_STEPS = [5, 10, 30, 50, 65, 75];
+const SAVINGS_STEPS = [0, 10, 30, 50, 65, 75];
 const MAX_STEP = SAVINGS_STEPS[SAVINGS_STEPS.length - 1];
 
 export class EditAccountSheetViewModel {

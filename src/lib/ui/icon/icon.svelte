@@ -82,7 +82,10 @@
 		film: icons.Film,
 		youtube: icons.Youtube,
 		slack: icons.Slack,
-		twitch: icons.Twitch
+		twitch: icons.Twitch,
+		search: icons.Search,
+		'search-x': icons.SearchX,
+		'sliders-horizontal': icons.SlidersHorizontal
 	};
 
 	const IconComponent = $derived(iconMap[name]);

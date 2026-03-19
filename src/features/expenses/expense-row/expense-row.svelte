@@ -18,7 +18,15 @@
 		settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : nativeCurrency
 	);
 	const displayAmount = $derived(
-		settingsVM.toDisplay(expense.amount, nativeCurrency)
+		expense.displayAmount && settingsVM.fiatViewEnabled && expense.displayCurrency === settingsVM.fiatCurrency
+			? expense.displayAmount
+			: settingsVM.toDisplay(expense.amount, nativeCurrency)
+	);
+	const commissionAmount = $derived(
+		expense.commission ? Math.round(displayAmount * expense.commission / 100) : 0
+	);
+	const shownAmount = $derived(
+		expense.commission ? displayAmount - commissionAmount : displayAmount
 	);
 </script>
 
@@ -34,9 +42,14 @@
 			<div class="exp-note">{expense.note}</div>
 		{/if}
 	</div>
-	<span class="exp-amount" class:income={expense.type === 'income'} class:transfer={expense.type === 'transfer'}>
-		{expense.type === 'income' ? '+' : expense.type === 'transfer' ? '↔' : '−'}{currency} {fmt(displayAmount)}
-	</span>
+	<div class="exp-amount-wrap">
+		<span class="exp-amount" class:income={expense.type === 'income'} class:transfer={expense.type === 'transfer'}>
+			{expense.type === 'income' ? '+' : expense.type === 'transfer' ? '↔' : '−'}{currency} {fmt(shownAmount)}
+		</span>
+		{#if expense.commission}
+			<span class="exp-commission">−{expense.commission}% ({currency} {fmt(commissionAmount)})</span>
+		{/if}
+	</div>
 </div>
 
 <style>
@@ -85,11 +98,21 @@
 		font-weight: 300;
 		color: rgba(255, 255, 255, 0.25);
 	}
+	.exp-amount-wrap {
+		flex-shrink: 0;
+		text-align: right;
+	}
 	.exp-amount {
 		font-size: 15px;
 		font-weight: 500;
 		color: rgba(255, 100, 100, 0.75);
-		flex-shrink: 0;
+	}
+	.exp-commission {
+		font-size: 11px;
+		font-weight: 300;
+		color: rgba(255, 255, 255, 0.25);
+		display: block;
+		margin-top: 2px;
 	}
 	.exp-amount.income {
 		color: var(--income);

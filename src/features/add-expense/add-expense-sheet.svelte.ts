@@ -2,8 +2,9 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getDailyBudget } from '$lib/utils/budget.js';
-import { getRate } from '$lib/utils/currency.js';
+import { getAccStats, getTodaySpent } from '$lib/utils/budget.js';
+import { recurringVM } from '$features/recurring/recurring.svelte.js';
+import { getRate, convert } from '$lib/utils/currency.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
 import { nowISO } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
@@ -41,10 +42,24 @@ export class AddExpenseSheetViewModel {
 		(this.sheetType !== 'transfer' || (this.toAccountId !== '' && this.toAccountId !== accountsVM.active?.id))
 	);
 
-	readonly dailyBudget = $derived.by(() => {
-		if (!accountsVM.active) return 0;
-		const raw = getDailyBudget(expensesVM.expenses, accountsVM.active, settingsVM.budget);
-		return settingsVM.toDisplay(raw, accountsVM.active.currency);
+	readonly dailyRemaining = $derived.by(() => {
+		const acc = accountsVM.active;
+		if (!acc) return 0;
+		const budget = acc.budget || settingsVM.budget;
+		const spent = getAccStats(expensesVM.expenses, acc.id);
+		const remaining = Math.max(0, budget - spent);
+
+		const salary = recurringVM.items.find((r) => r.id === 'rec-salary');
+		const nextPayday = salary?.nextDate
+			? new Date(salary.nextDate)
+			: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+		const now = new Date();
+		now.setHours(0, 0, 0, 0);
+		const daysLeft = Math.max(1, Math.ceil((nextPayday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+
+		const dailyBudget = Math.floor(settingsVM.toDisplay(remaining, acc.currency) / daysLeft);
+		const todaySpent = settingsVM.toDisplay(getTodaySpent(expensesVM.expenses, acc.id), acc.currency);
+		return Math.max(0, dailyBudget - todaySpent);
 	});
 
 	readonly displayCurrency = $derived(
@@ -92,24 +107,41 @@ export class AddExpenseSheetViewModel {
 		this.selectedCategory = chip.icon;
 	}
 
+	/** Convert entered amount from display currency to account's native currency */
+	private toAccountCurrency(entered: number): number {
+		if (!settingsVM.fiatViewEnabled) return entered;
+		const acc = accountsVM.active;
+		if (!acc || acc.currency === settingsVM.fiatCurrency) return entered;
+		return convert(entered, settingsVM.fiatCurrency, acc.currency);
+	}
+
+	private get isFiatConversion(): boolean {
+		const acc = accountsVM.active;
+		return settingsVM.fiatViewEnabled && !!acc && acc.currency !== settingsVM.fiatCurrency;
+	}
+
 	save() {
 		if (!this.canSave || !this.amount) return;
 		const acc = accountsVM.active;
 		if (!acc) return;
-		const amount = this.amount;
+		const entered = this.amount;
+		const nativeAmount = this.sheetType === 'transfer' ? entered : this.toAccountCurrency(entered);
 		const isoDate = nowISO();
+		const fiatFields = this.isFiatConversion
+			? { displayAmount: entered, displayCurrency: settingsVM.fiatCurrency }
+			: {};
 
 		if (this.sheetType === 'transfer') {
 			const to = this.toAccount;
 			if (!to) return;
-			const credited = this.isCrossCurrency ? this.convertedAmount : amount;
-			accountsVM.update(acc.id, { balance: acc.balance - amount });
+			const credited = this.isCrossCurrency ? this.convertedAmount : nativeAmount;
+			accountsVM.update(acc.id, { balance: acc.balance - nativeAmount });
 			accountsVM.update(to.id, { balance: to.balance + credited });
 			expensesVM.add({
 				icon: 'arrow-left-right',
 				label: `${acc.name} → ${to.name}`,
 				note: this.note || `${acc.name} → ${to.name}`,
-				amount,
+				amount: nativeAmount,
 				day: 'today',
 				date: isoDate,
 				accountId: acc.id,
@@ -124,35 +156,35 @@ export class AddExpenseSheetViewModel {
 		if (this.sheetType === 'income') {
 			const cat = categoriesVM.getByIcon(this.selectedCategory ?? '');
 			const commission = cat?.commission ?? 0;
-			const netAmount = commission > 0 ? Math.round(amount * (1 - commission / 100)) : amount;
+			const netAmount = commission > 0 ? Math.round(nativeAmount * (1 - commission / 100)) : nativeAmount;
 			accountsVM.update(acc.id, { balance: acc.balance + netAmount });
 			expensesVM.add({
 				icon: cat?.icon ?? 'wallet',
 				label: cat?.label ?? m.income_label(),
 				note: this.note || m.income_label(),
-				amount,
+				amount: nativeAmount,
 				day: 'today',
 				date: isoDate,
 				accountId: acc.id,
 				type: 'income',
 				commission: commission > 0 ? commission : undefined,
 				netAmount: commission > 0 ? netAmount : undefined,
-
+				...fiatFields,
 			});
 		} else {
 			const cats = categoriesVM.categories;
 			const cat = cats.find((c) => c.icon === this.selectedCategory) || cats[0];
-			accountsVM.update(acc.id, { balance: acc.balance - amount });
+			accountsVM.update(acc.id, { balance: acc.balance - nativeAmount });
 			expensesVM.add({
 				icon: cat.icon,
 				label: cat.label,
 				note: this.note || cat.label,
-				amount,
+				amount: nativeAmount,
 				day: 'today',
 				date: isoDate,
 				accountId: acc.id,
 				type: 'expense',
-
+				...fiatFields,
 			});
 		}
 

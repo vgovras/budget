@@ -24,3 +24,4 @@ vite.config.ts.timestamp-*
 
 # Paraglide (generated)
 /src/lib/paraglide
+.playwright-mcp/

@@ -12,6 +12,10 @@ export interface Expense {
 	netAmount?: number;
 	toAccountId?: string;
 	exchangeRate?: number;
+	/** Original amount as entered by the user (before currency conversion) */
+	displayAmount?: number;
+	/** Currency the user entered the amount in */
+	displayCurrency?: string;
 }
 
 export interface Account {

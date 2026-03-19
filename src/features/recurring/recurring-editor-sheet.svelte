@@ -157,7 +157,7 @@
 	}
 
 	.note-field {
-		padding: 13px 16px;
+		padding: 12px 16px;
 		border-radius: var(--r-sm);
 		border: 1px solid rgba(255, 255, 255, 0.07);
 		background: rgba(255, 255, 255, 0.03);
@@ -190,7 +190,7 @@
 
 	.day-input {
 		width: 100%;
-		padding: 10px 12px;
+		padding: 12px 16px;
 		border-radius: var(--r-sm);
 		border: 1px solid rgba(255, 255, 255, 0.09);
 		background: rgba(255, 255, 255, 0.05);

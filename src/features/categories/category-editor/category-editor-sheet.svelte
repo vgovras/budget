@@ -107,7 +107,7 @@
 	}
 
 	.field-input {
-		padding: 14px 16px;
+		padding: 12px 16px;
 		border-radius: var(--r-sm);
 		border: 1px solid rgba(255, 255, 255, 0.09);
 		background: rgba(255, 255, 255, 0.05);
