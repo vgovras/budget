@@ -28,6 +28,18 @@ export function convert(
 }
 
 /**
+ * Get raw exchange rate between two currencies (no rounding).
+ * Returns how many units of `to` currency you get for 1 unit of `from`.
+ */
+export function getRate(fromCurrency: string, toCurrency: string): number {
+	if (fromCurrency === toCurrency) return 1;
+	const fromRate = RATES_TO_USD[fromCurrency];
+	const toRate = RATES_TO_USD[toCurrency];
+	if (!fromRate || !toRate) return 1;
+	return fromRate / toRate;
+}
+
+/**
  * Get unique currencies used across accounts, excluding the base currency.
  */
 export function getForeignCurrencies(

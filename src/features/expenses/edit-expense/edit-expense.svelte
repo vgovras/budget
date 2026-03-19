@@ -22,7 +22,7 @@
 
 		<div class="flex gap-2.5">
 			<Button variant="destructive" size="md" class="flex-1" onclick={() => vm.delete()}>
-				{m.button_delete()}
+				{m.button_undo_transaction()}
 			</Button>
 			<Button variant="accent" size="md" class="flex-1" onclick={() => vm.save()}>
 				{m.button_save()}

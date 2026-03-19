@@ -3,6 +3,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
 import { getDailyBudget } from '$lib/utils/budget.js';
+import { getRate } from '$lib/utils/currency.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
 import { nowISO } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
@@ -25,6 +26,12 @@ export class AddExpenseSheetViewModel {
 			: false
 	);
 
+	readonly autoRate = $derived(
+		accountsVM.active && this.toAccount
+			? getRate(accountsVM.active.currency, this.toAccount.currency)
+			: 1
+	);
+
 	readonly convertedAmount = $derived(
 		this.amount && this.exchangeRate ? Math.round(this.amount * this.exchangeRate) : 0
 	);
@@ -39,6 +46,15 @@ export class AddExpenseSheetViewModel {
 	);
 
 	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, 3));
+
+	#prevToAccountId = '';
+
+	syncExchangeRate() {
+		if (this.toAccountId !== this.#prevToAccountId) {
+			this.#prevToAccountId = this.toAccountId;
+			this.exchangeRate = Math.round(this.autoRate * 10000) / 10000;
+		}
+	}
 
 	open() {
 		this.isOpen = true;

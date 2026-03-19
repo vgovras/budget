@@ -18,6 +18,11 @@
 
 	let { vm }: { vm: AddExpenseSheetViewModel } = $props();
 
+	$effect(() => {
+		vm.toAccountId;
+		vm.syncExchangeRate();
+	});
+
 	const transferAccountOptions = $derived(
 		accountsVM.accounts
 			.filter((a) => a.id !== accountsVM.active?.id)
@@ -102,9 +107,7 @@
 				<MoneyInput bind:value={vm.amount} currency={accountsVM.active?.currency ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
 			</div>
 
-			{#if vm.sheetType === 'expense'}
-				<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} />
-			{/if}
+			<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} />
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 

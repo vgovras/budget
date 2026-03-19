@@ -2,6 +2,7 @@
 	"button_save": "Save",
 	"button_cancel": "Cancel",
 	"button_delete": "Delete",
+	"button_undo_transaction": "Undo",
 	"button_clear": "Clear",
 	"button_create": "Create",
 	"button_start": "Get Started",

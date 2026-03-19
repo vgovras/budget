@@ -1,6 +1,21 @@
-import type { Account } from '$lib/types.js';
+import type { Account, Expense } from '$lib/types.js';
 import { expensesVM } from '../expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
+
+function findAccount(id: string | undefined) {
+	if (!id) return undefined;
+	return accountsVM.accounts.find((a: Account) => a.id === id);
+}
+
+function getCredited(exp: Expense) {
+	return exp.exchangeRate ? Math.round(exp.amount * exp.exchangeRate) : exp.amount;
+}
+
+function getNetAmount(amount: number, commission: number | undefined) {
+	return commission && commission > 0
+		? Math.round(amount * (1 - commission / 100))
+		: amount;
+}
 
 export class EditExpenseViewModel {
 	editingId = $state<number | null>(null);
@@ -30,33 +45,74 @@ export class EditExpenseViewModel {
 		if (!exp) return;
 
 		const diff = this.amount - exp.amount;
-		const acc = accountsVM.accounts.find((a: Account) => a.id === exp.accountId);
-		if (acc) {
-			// expense: більше витратив → баланс менший
-			// income: більше отримав → баланс більший
-			const balanceDiff = exp.type === 'income' ? diff : -diff;
-			accountsVM.update(acc.id, { balance: acc.balance + balanceDiff });
+		const acc = findAccount(exp.accountId);
+
+		if (exp.type === 'transfer') {
+			this.#saveTransfer(exp, acc, diff);
+		} else if (exp.type === 'income') {
+			this.#saveIncome(exp, acc);
+		} else if (acc) {
+			accountsVM.update(acc.id, { balance: acc.balance - diff });
 		}
 
-		expensesVM.update(this.editingId, {
-			amount: this.amount,
-			note: this.note
-		});
+		const patch: Partial<Expense> = { amount: this.amount, note: this.note };
+		if (exp.type === 'income' && exp.commission && exp.commission > 0) {
+			patch.netAmount = getNetAmount(this.amount, exp.commission);
+		}
+		expensesVM.update(this.editingId, patch);
 		this.close();
 	}
 
 	delete() {
 		if (this.editingId === null) return;
 		const exp = expensesVM.expenses.find((e) => e.id === this.editingId);
-		if (exp) {
-			const acc = accountsVM.accounts.find((a: Account) => a.id === exp.accountId);
+		if (!exp) return;
+
+		const acc = findAccount(exp.accountId);
+
+		if (exp.type === 'transfer') {
+			this.#deleteTransfer(exp, acc);
+		} else if (exp.type === 'income') {
 			if (acc) {
-				// Повернути баланс: expense → +amount, income → -amount
-				const balanceDiff = exp.type === 'income' ? -exp.amount : exp.amount;
-				accountsVM.update(acc.id, { balance: acc.balance + balanceDiff });
+				const net = exp.netAmount ?? exp.amount;
+				accountsVM.update(acc.id, { balance: acc.balance - net });
 			}
-			expensesVM.remove(this.editingId);
+		} else if (acc) {
+			accountsVM.update(acc.id, { balance: acc.balance + exp.amount });
 		}
+
+		expensesVM.remove(this.editingId);
 		this.close();
+	}
+
+	#saveTransfer(exp: Expense, acc: Account | undefined, diff: number) {
+		if (acc) {
+			accountsVM.update(acc.id, { balance: acc.balance - diff });
+		}
+		const toAcc = findAccount(exp.toAccountId);
+		if (toAcc) {
+			const oldCredited = getCredited(exp);
+			const newCredited = exp.exchangeRate
+				? Math.round(this.amount * exp.exchangeRate)
+				: this.amount;
+			accountsVM.update(toAcc.id, { balance: toAcc.balance - oldCredited + newCredited });
+		}
+	}
+
+	#saveIncome(exp: Expense, acc: Account | undefined) {
+		if (!acc) return;
+		const oldNet = exp.netAmount ?? exp.amount;
+		const newNet = getNetAmount(this.amount, exp.commission);
+		accountsVM.update(acc.id, { balance: acc.balance + (newNet - oldNet) });
+	}
+
+	#deleteTransfer(exp: Expense, acc: Account | undefined) {
+		if (acc) {
+			accountsVM.update(acc.id, { balance: acc.balance + exp.amount });
+		}
+		const toAcc = findAccount(exp.toAccountId);
+		if (toAcc) {
+			accountsVM.update(toAcc.id, { balance: toAcc.balance - getCredited(exp) });
+		}
 	}
 }
