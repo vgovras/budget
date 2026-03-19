@@ -73,11 +73,11 @@
 					out:fly={{ x: vm.direction * -80, duration: 250 }}
 				>
 					{#if vm.currentSlide === 0}
-						<StepIntro onNext={() => vm.next()} onSkip={() => vm.skip()} />
+						<StepIntro onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 1}
-						<StepSalary bind:value={vm.salary} bind:currency={vm.currency} onNext={() => vm.next()} onSkip={() => vm.skip()} />
+						<StepSalary bind:value={vm.salary} bind:currency={vm.currency} onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 2}
-						<StepPayday bind:value={vm.payday} onNext={() => vm.next()} onSkip={() => vm.skip()} />
+						<StepPayday bind:value={vm.payday} onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 3}
 						<StepSavings
 							salary={vm.salary ?? 0}
@@ -88,7 +88,6 @@
 							budget={vm.budget}
 							onSelectIdx={(i) => vm.setSavingsIdx(i)}
 							onNext={() => vm.next()}
-							onSkip={() => vm.skip()}
 						/>
 					{:else if vm.currentSlide === 4}
 						<StepReady budget={vm.budget > 0 ? vm.budget : 10000} currency={vm.currency} onFinish={() => vm.finish()} onBack={() => vm.prev()} />

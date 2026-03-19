@@ -5,7 +5,7 @@
 	import { LANG_OPTIONS } from '$lib/utils/locale.js';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { onNext, onSkip }: { onNext: () => void; onSkip: () => void } = $props();
+	let { onNext }: { onNext: () => void } = $props();
 
 	let locale = $state(getLocale());
 
@@ -54,9 +54,6 @@
 		<div class="lang-row">
 			<Dropdown bind:value={locale} options={LANG_OPTIONS} position="top" />
 		</div>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="skip-link" onclick={onSkip}>{m.onboarding_skip()}</div>
 	</div>
 </div>
 
@@ -106,9 +103,4 @@
 		display: flex;
 		justify-content: center;
 	}
-	.skip-link {
-		text-align: center; font-size: 12px; color: rgba(255,255,255,0.2);
-		cursor: pointer; padding-top: 2px; font-weight: 300;
-	}
-	.skip-link:hover { color: rgba(255,255,255,0.4); }
 </style>

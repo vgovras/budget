@@ -8,9 +8,8 @@
 	let {
 		value = $bindable<number | null>(null),
 		currency = $bindable<string>('₴'),
-		onNext,
-		onSkip
-	}: { value: number | null; currency: string; onNext: () => void; onSkip: () => void } = $props();
+		onNext
+	}: { value: number | null; currency: string; onNext: () => void } = $props();
 
 	const canNext = $derived(value !== null && value > 0);
 	const displayAmount = $derived(value && value > 0 ? `${currency}${fmt(value)}` : `${currency}0`);
@@ -58,9 +57,6 @@
 
 	<div class="bottom">
 		<Button variant="primary" size="lg" class="text-[15px] rounded-[18px]" disabled={!canNext} onclick={onNext}>{m.onboarding_next()} →</Button>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="skip-link" onclick={onSkip}>{m.onboarding_skip()}</div>
 	</div>
 </div>
 
@@ -135,9 +131,4 @@
 	}
 
 	.bottom { padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-	.skip-link {
-		text-align: center; font-size: 12px; color: rgba(255,255,255,0.2);
-		cursor: pointer; padding-top: 4px; font-weight: 300;
-	}
-	.skip-link:hover { color: rgba(255,255,255,0.4); }
 </style>

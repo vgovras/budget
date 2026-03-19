@@ -11,8 +11,7 @@
 		savingsAmount,
 		budget,
 		onSelectIdx,
-		onNext,
-		onSkip
+		onNext
 	}: {
 		salary: number;
 		currency?: string;
@@ -22,7 +21,6 @@
 		budget: number;
 		onSelectIdx: (idx: number) => void;
 		onNext: () => void;
-		onSkip: () => void;
 	} = $props();
 
 	const dailyBudget = $derived(Math.floor(budget / 30));
@@ -92,9 +90,6 @@
 
 	<div class="bottom">
 		<Button variant="primary" size="lg" class="text-[15px] rounded-[18px]" onclick={onNext}>{m.onboarding_next()} →</Button>
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div class="skip-link" onclick={onSkip}>{m.onboarding_skip()}</div>
 	</div>
 </div>
 
@@ -215,9 +210,4 @@
 	}
 
 	.bottom { padding: 12px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-	.skip-link {
-		text-align: center; font-size: 12px; color: rgba(255,255,255,0.2);
-		cursor: pointer; padding-top: 4px; font-weight: 300;
-	}
-	.skip-link:hover { color: rgba(255,255,255,0.4); }
 </style>
