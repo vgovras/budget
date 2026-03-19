@@ -1,5 +1,5 @@
 import type { Expense, Account } from '$lib/types.js';
-import { getDateKey } from './format.js';
+import { getDateKey, locale } from './format.js';
 
 export function isSpending(e: Expense): boolean {
 	return e.type === 'expense';
@@ -29,12 +29,12 @@ export function getWeeklyAmounts(expenses: Expense[]): number[] {
 	return Array.from({ length: 7 }, (_, i) => {
 		const d = new Date();
 		d.setDate(d.getDate() - (6 - i));
-		const key = d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' });
+		const key = d.toLocaleDateString(locale(), { day: '2-digit', month: '2-digit' });
 		return expenses
 			.filter(
 				(e) =>
 					e.date &&
-					new Date(e.date).toLocaleDateString('uk-UA', {
+					new Date(e.date).toLocaleDateString(locale(), {
 						day: '2-digit',
 						month: '2-digit'
 					}) === key
@@ -47,7 +47,7 @@ export function getWeekDayLabels(): string[] {
 	return Array.from({ length: 7 }, (_, i) => {
 		const d = new Date();
 		d.setDate(d.getDate() - (6 - i));
-		return d.toLocaleDateString('uk-UA', { weekday: 'short' }).slice(0, 2);
+		return d.toLocaleDateString(locale(), { weekday: 'short' }).slice(0, 2);
 	});
 }
 

@@ -2,7 +2,7 @@
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { subscriptionsVM } from '../subscriptions.svelte.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
-	import { fmt } from '$lib/utils/format.js';
+	import { fmt, locale } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { onAdd, onEdit }: { onAdd: () => void; onEdit: (id: string) => void } = $props();
@@ -13,7 +13,7 @@
 
 	function formatNextDate(iso: string): string {
 		const d = new Date(iso);
-		return d.toLocaleDateString('en', { day: 'numeric', month: 'short' });
+		return d.toLocaleDateString(locale(), { day: 'numeric', month: 'short' });
 	}
 </script>
 

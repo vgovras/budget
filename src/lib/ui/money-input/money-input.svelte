@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { locale } from '$lib/utils/format.js';
 	let {
 		value = $bindable<number | null>(null),
 		currency = '₴',
@@ -18,7 +19,7 @@
 	let inputEl: HTMLInputElement;
 	let editing = $state(false);
 
-	const formatted = $derived(value ? value.toLocaleString('uk-UA') : '');
+	const formatted = $derived(value ? value.toLocaleString(locale()) : '');
 
 	function onFocus() {
 		editing = true;

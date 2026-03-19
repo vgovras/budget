@@ -1,8 +1,15 @@
 import type { Expense } from '$lib/types.js';
+import { getLocale } from '$lib/paraglide/runtime.js';
 import * as m from '$lib/paraglide/messages.js';
 
+const LOCALE_MAP: Record<string, string> = { en: 'en-US', uk: 'uk-UA' };
+
+export function locale(): string {
+	return LOCALE_MAP[getLocale()] ?? getLocale();
+}
+
 export function fmt(n: number): string {
-	return n.toLocaleString('uk-UA');
+	return n.toLocaleString(locale());
 }
 
 export function getDateKey(date: string): string {
@@ -15,7 +22,7 @@ export function getDateKey(date: string): string {
 
 	if (day.getTime() === today.getTime()) return 'today';
 	if (day.getTime() === yest.getTime()) return 'yesterday';
-	return d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long' });
+	return d.toLocaleDateString(locale(), { day: 'numeric', month: 'long' });
 }
 
 export function groupByDate(list: Expense[]): Record<string, Expense[]> {

@@ -4,7 +4,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
 import { getDailyBudget, getTodaySpent, getWeeklyAmounts } from '$lib/utils/budget.js';
-import { groupByDate } from '$lib/utils/format.js';
+import { groupByDate, locale } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
 
 export class HomeScreenViewModel {
@@ -57,7 +57,7 @@ export class HomeScreenViewModel {
 	);
 
 	readonly monthLabel = $derived(
-		new Date().toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' })
+		new Date().toLocaleDateString(locale(), { month: 'long', year: 'numeric' })
 	);
 
 	readonly dailyBudget = $derived(
@@ -74,7 +74,7 @@ export class HomeScreenViewModel {
 	readonly daysEndDate = $derived.by(() => {
 		const now = new Date();
 		const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-		const monthName = now.toLocaleDateString('uk-UA', { month: 'long' });
+		const monthName = now.toLocaleDateString(locale(), { month: 'long' });
 		return `${lastDay} ${monthName}`;
 	});
 
