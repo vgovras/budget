@@ -6,16 +6,10 @@ export class AnalyticsViewModel {
 	readonly isFiat = $derived(settingsVM.fiatViewEnabled);
 	readonly baseCurrency = $derived(this.isFiat ? settingsVM.fiatCurrency : settingsVM.currency);
 
-	readonly allSameCurrency = $derived(
-		accountsVM.accounts.every((a) => a.currency === this.baseCurrency)
-	);
-
-	readonly showTotal = $derived(this.isFiat || this.allSameCurrency);
+	readonly showTotal = true;
 
 	#convertBalance(balance: number, currency: string): number {
-		return this.isFiat
-			? convert(balance, currency, settingsVM.fiatCurrency)
-			: balance;
+		return convert(balance, currency, this.baseCurrency);
 	}
 
 	readonly totalBalance = $derived(

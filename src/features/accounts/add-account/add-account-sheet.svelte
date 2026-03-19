@@ -10,7 +10,6 @@
 	let { vm }: { vm: AddAccountSheetViewModel } = $props();
 
 	const TYPES = [
-		{ value: 'savings', label: m.add_account_type_savings(), icon: 'landmark' },
 		{ value: 'cash', label: m.add_account_type_cash(), icon: 'banknote' },
 		{ value: 'card', label: m.add_account_type_card(), icon: 'credit-card' }
 	];

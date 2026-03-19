@@ -6,7 +6,7 @@ export class AddAccountSheetViewModel {
 	isOpen = $state(false);
 	name = $state('');
 	budget = $state<number | null>(null);
-	type = $state('savings');
+	type = $state('cash');
 	currency = $state(settingsVM.currency);
 	goalAmount = $state<number | null>(null);
 
@@ -16,7 +16,7 @@ export class AddAccountSheetViewModel {
 		this.isOpen = true;
 		this.name = '';
 		this.budget = null;
-		this.type = 'savings';
+		this.type = 'cash';
 		this.currency = settingsVM.currency;
 		this.goalAmount = null;
 	}
