@@ -52,16 +52,19 @@ export class RecurringViewModel {
 			return;
 		}
 
+		const nextDate = this.#computeNextPayday(payday);
+
 		if (existing) {
-			if (existing.amount === salary && existing.accountId === accountId) return;
-			this.update(SALARY_ID, { amount: salary, accountId });
+			const dayChanged = existing.dayOfMonth !== payday;
+			if (existing.amount === salary && existing.accountId === accountId && !dayChanged) return;
+			this.update(SALARY_ID, {
+				amount: salary,
+				accountId,
+				dayOfMonth: payday,
+				...(dayChanged ? { nextDate: nextDate.toISOString() } : {})
+			});
 			return;
 		}
-
-		const now = new Date();
-		const day = Math.min(payday, 28);
-		let nextDate = new Date(now.getFullYear(), now.getMonth(), day);
-		if (nextDate <= now) nextDate.setMonth(nextDate.getMonth() + 1);
 
 		const item: RecurringTransaction = {
 			id: SALARY_ID,
@@ -72,11 +75,20 @@ export class RecurringViewModel {
 			accountId,
 			type: 'income',
 			frequency: 'monthly',
+			dayOfMonth: payday,
 			nextDate: nextDate.toISOString(),
 			enabled: true
 		};
 		this.items = [...this.items, item];
 		this.#repo.save(this.items);
+	}
+
+	#computeNextPayday(payday: number): Date {
+		const now = new Date();
+		const day = Math.min(payday, 28);
+		const next = new Date(now.getFullYear(), now.getMonth(), day);
+		if (next <= now) next.setMonth(next.getMonth() + 1);
+		return next;
 	}
 
 	resetAll(): void {
