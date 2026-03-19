@@ -19,6 +19,8 @@
 	import { SubscriptionEditorSheetViewModel } from '$features/subscriptions/subscription-editor/subscription-editor-sheet.svelte.js';
 	import Onboarding from '$features/onboarding/onboarding.svelte';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
+	import { accountsVM } from '$features/accounts/accounts.svelte.js';
+	import { recurringVM } from '$features/recurring/recurring.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	const addExpenseVM = new AddExpenseSheetViewModel();
@@ -27,6 +29,12 @@
 	const editExpenseVM = new EditExpenseViewModel();
 	const subEditorVM = new SubscriptionEditorSheetViewModel();
 	const confirmVM = new ConfirmDialogViewModel();
+
+	$effect(() => {
+		const acc = accountsVM.active;
+		if (!acc || !settingsVM.loaded) return;
+		recurringVM.syncSalary(settingsVM.salary, settingsVM.payday, acc.id);
+	});
 </script>
 
 <div class="phone">

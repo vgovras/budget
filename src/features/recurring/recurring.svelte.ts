@@ -4,6 +4,8 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { nowISO } from '$lib/utils/format.js';
 import { RecurringRepository } from './recurring.js';
 
+const SALARY_ID = 'rec-salary';
+
 export class RecurringViewModel {
 	#repo: RecurringRepository;
 
@@ -40,6 +42,41 @@ export class RecurringViewModel {
 		if (item) {
 			this.update(id, { enabled: !item.enabled });
 		}
+	}
+
+	syncSalary(salary: number, payday: number, accountId: string) {
+		const existing = this.items.find((r) => r.id === SALARY_ID);
+
+		if (salary <= 0) {
+			if (existing) this.remove(SALARY_ID);
+			return;
+		}
+
+		if (existing) {
+			if (existing.amount === salary && existing.accountId === accountId) return;
+			this.update(SALARY_ID, { amount: salary, accountId });
+			return;
+		}
+
+		const now = new Date();
+		const day = Math.min(payday, 28);
+		let nextDate = new Date(now.getFullYear(), now.getMonth(), day);
+		if (nextDate <= now) nextDate.setMonth(nextDate.getMonth() + 1);
+
+		const item: RecurringTransaction = {
+			id: SALARY_ID,
+			icon: 'banknote',
+			label: 'Salary',
+			note: 'Salary',
+			amount: salary,
+			accountId,
+			type: 'income',
+			frequency: 'monthly',
+			nextDate: nextDate.toISOString(),
+			enabled: true
+		};
+		this.items = [...this.items, item];
+		this.#repo.save(this.items);
 	}
 
 	resetAll(): void {

@@ -3,35 +3,12 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getDailyBudget, checkPayday, getTodaySpent, getWeeklyAmounts } from '$lib/utils/budget.js';
+import { getDailyBudget, getTodaySpent, getWeeklyAmounts } from '$lib/utils/budget.js';
 import { groupByDate } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
 
 export class HomeScreenViewModel {
 	activePeriod = $state<'week' | 'month' | 'year'>('month');
-
-	constructor() {
-		this.#checkAndApplyPayday();
-	}
-
-	#checkAndApplyPayday() {
-		const acc = accountsVM.active;
-		if (!acc || settingsVM.salary <= 0) return;
-
-		const { shouldCredit, newPaydayDate } = checkPayday(
-			settingsVM.payday,
-			settingsVM.lastPayday
-		);
-
-		if (shouldCredit) {
-			accountsVM.update(acc.id, {
-				balance: acc.balance + settingsVM.salary,
-				budget: settingsVM.budget,
-				spent: 0
-			});
-			settingsVM.updateLastPayday(newPaydayDate);
-		}
-	}
 
 	readonly greeting = $derived.by(() => {
 		const hour = new Date().getHours();
