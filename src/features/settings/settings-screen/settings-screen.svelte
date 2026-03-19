@@ -219,14 +219,14 @@
 					<div class="settings-row-right">
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-edit-btn" onclick={() => recurringVM.toggle(item.id)}>
+						<span class="cat-edit-btn" onclick={(e) => { e.stopPropagation(); recurringVM.toggle(item.id); }}>
 							<div class="toggle" class:on={item.enabled}>
 								<div class="toggle-handle"></div>
 							</div>
 						</span>
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<span class="cat-delete-btn" onclick={() => recurringVM.remove(item.id)}>
+						<span class="cat-delete-btn" onclick={(e) => { e.stopPropagation(); recurringVM.remove(item.id); }}>
 							<Icon name="trash" size={16} />
 						</span>
 					</div>
