@@ -3,8 +3,12 @@
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
-	import Icon from '$lib/ui/icon/icon.svelte';
 	import NumberInput from '$lib/ui/number-input/number-input.svelte';
+	import SheetForm from '$lib/ui/sheet-form/sheet-form.svelte';
+	import FormField from '$lib/ui/form-field/form-field.svelte';
+	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
+	import IconPicker from '$lib/ui/icon-picker/icon-picker.svelte';
+	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import type { SubscriptionEditorSheetViewModel } from './subscription-editor-sheet.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
@@ -26,62 +30,54 @@
 	];
 
 	const currencyOptions = vm.currencies.map((c) => ({ value: c, label: c }));
+
+	function handleIconSelect(icon: string) {
+		const preset = vm.presets.find((p) => p.icon === icon);
+		if (preset) vm.selectPreset(preset);
+	}
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
-	<div class="sheet-body">
-		<h3 class="sheet-title">{vm.isEditing ? m.sub_edit_title() : m.sub_add_title()}</h3>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_name()}</span>
+	<SheetForm title={vm.isEditing ? m.sub_edit_title() : m.sub_add_title()}>
+		<FormField label={m.field_label_name()}>
 			<input
 				class="field-input"
 				type="text"
 				placeholder={m.placeholder_enter_name()}
 				bind:value={vm.label}
 			/>
-		</div>
+		</FormField>
 
-		<div class="field">
-			<span class="field-label">{m.sub_service()}</span>
-			<div class="icon-grid">
-				{#each vm.presets as preset (preset.icon)}
-					<button
-						class="icon-btn"
-						class:active={vm.icon === preset.icon}
-						onclick={() => vm.selectPreset(preset)}
-					>
-						<Icon name={preset.icon} size={18} />
-					</button>
-				{/each}
-			</div>
-		</div>
+		<FormField label={m.sub_service()}>
+			<IconPicker
+				icons={vm.presets}
+				selected={vm.icon}
+				onSelect={handleIconSelect}
+			/>
+		</FormField>
 
-		<div class="field">
-			<span class="field-label">{m.sub_amount()}</span>
+		<FormField label={m.sub_amount()}>
 			<div class="amount-row">
-				<div class="amount-field">
+				<AmountField>
 					<MoneyInput bind:value={vm.amount} currency={vm.currency} />
-				</div>
+				</AmountField>
 				<Dropdown bind:value={vm.currency} options={currencyOptions} />
 			</div>
-		</div>
+		</FormField>
 
 		{#if accountOptions.length > 1}
-			<div class="field">
-				<span class="field-label">{m.recurring_account()}</span>
+			<FormField label={m.recurring_account()}>
 				<Dropdown bind:value={vm.accountId} options={accountOptions} />
-			</div>
+			</FormField>
 		{/if}
 
-		<div class="field">
-			<span class="field-label">{m.sub_cycle()}</span>
+		<FormField label={m.sub_cycle()}>
 			<Dropdown bind:value={vm.cycle} options={cycleOptions} />
-		</div>
+		</FormField>
 
 		<NumberInput bind:value={vm.dayOfMonth} min={1} max={31} label={m.sub_billing_day()} />
 
-		<div class="actions">
+		<SheetActions>
 			{#if vm.isEditing}
 				<Button variant="destructive" size="lg" class="flex-1" onclick={() => vm.delete()}>
 					{m.button_delete()}
@@ -90,38 +86,11 @@
 			<Button variant="accent" size="lg" class="flex-1" disabled={!vm.canSave} onclick={() => vm.save()}>
 				{m.button_save()}
 			</Button>
-		</div>
-	</div>
+		</SheetActions>
+	</SheetForm>
 </BottomSheet>
 
 <style>
-	.sheet-body {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.sheet-title {
-		font-size: 20px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: var(--text-hi);
-		text-align: center;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.field-label {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-mid);
-		padding-left: 2px;
-	}
-
 	.field-input {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
@@ -143,52 +112,5 @@
 		display: flex;
 		gap: 10px;
 		align-items: center;
-	}
-
-	.amount-field {
-		flex: 1;
-		padding: 6px 14px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: var(--r-sm);
-	}
-	.amount-field:focus-within {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
-	.icon-grid {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		gap: 8px;
-		max-height: 160px;
-		overflow-y: auto;
-		scrollbar-width: none;
-	}
-	.icon-grid::-webkit-scrollbar {
-		display: none;
-	}
-
-	.icon-btn {
-		aspect-ratio: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 12px;
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--text-lo);
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-family: var(--font);
-	}
-	.icon-btn.active {
-		border-color: var(--accent);
-		background: rgba(80, 130, 255, 0.12);
-		color: var(--text-hi);
-	}
-
-	.actions {
-		display: flex;
-		gap: 10px;
 	}
 </style>

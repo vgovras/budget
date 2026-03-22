@@ -4,6 +4,8 @@
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
 	import NumberInput from '$lib/ui/number-input/number-input.svelte';
+	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
+	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import CategoryPicker from '$features/add-expense/category-picker/category-picker.svelte';
 	import type { RecurringEditorSheetViewModel } from './recurring-editor-sheet.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
@@ -31,7 +33,6 @@
 
 <BottomSheet bind:open={vm.isOpen}>
 	<div class="sheet-body">
-		<!-- Tabs -->
 		<div class="sheet-tabs">
 			<button
 				class="sheet-tab"
@@ -49,19 +50,16 @@
 			</button>
 		</div>
 
-		<!-- Amount -->
-		<div class="amount-field">
+		<AmountField>
 			<MoneyInput bind:value={vm.amount} {currency} size="lg" autofocus={vm.isOpen} />
-		</div>
+		</AmountField>
 
-		<!-- Category -->
 		<CategoryPicker
 			selected={vm.icon}
 			onSelect={(icon) => vm.selectCategory(icon)}
 			type={vm.type === 'income' ? 'income' : 'expense'}
 		/>
 
-		<!-- Note -->
 		<input
 			class="note-field"
 			type="text"
@@ -69,19 +67,16 @@
 			bind:value={vm.note}
 		/>
 
-		<!-- Frequency + Day -->
 		<Dropdown bind:value={vm.frequency} options={frequencyOptions} />
 		{#if vm.frequency === 'monthly'}
 			<NumberInput bind:value={vm.dayOfMonth} min={1} max={31} label={m.sub_billing_day()} />
 		{/if}
 
-		<!-- Account -->
 		{#if accountsVM.accounts.length > 1}
 			<Dropdown bind:value={vm.accountId} options={accountOptions} />
 		{/if}
 
-		<!-- Actions -->
-		<div class="actions">
+		<SheetActions>
 			{#if vm.isEditing}
 				<Button variant="destructive" size="lg" class="flex-1" onclick={() => vm.delete()}>
 					{m.button_delete()}
@@ -90,7 +85,7 @@
 			<Button variant="accent" size="lg" class="flex-1" disabled={!vm.canSave} onclick={() => vm.save()}>
 				{m.button_save()}
 			</Button>
-		</div>
+		</SheetActions>
 	</div>
 </BottomSheet>
 
@@ -132,18 +127,6 @@
 		color: var(--income);
 	}
 
-	.amount-field {
-		padding: 16px 18px;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		border-radius: var(--r-md);
-		transition: all 0.2s ease;
-	}
-	.amount-field:focus-within {
-		border-color: rgba(255, 255, 255, 0.16);
-		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
-	}
-
 	.note-field {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
@@ -157,47 +140,4 @@
 	}
 	.note-field::placeholder { color: var(--text-lo); }
 	.note-field:focus { border-color: rgba(255, 255, 255, 0.16); outline: none; }
-
-	.row {
-		display: flex;
-		gap: 10px;
-		align-items: flex-start;
-	}
-	.flex-1 { flex: 1; }
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.day-field {
-		width: 80px;
-		align-items: center;
-	}
-
-	.day-input {
-		width: 100%;
-		padding: 12px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
-		font-size: 16px;
-		color: var(--text-hi);
-		font-family: var(--font);
-		text-align: center;
-		outline: none;
-	}
-	.day-input:focus { border-color: rgba(255, 255, 255, 0.16); }
-
-	.day-hint {
-		font-size: 10px;
-		color: var(--text-lo);
-		text-align: center;
-	}
-
-	.actions {
-		display: flex;
-		gap: 10px;
-	}
 </style>

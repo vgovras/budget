@@ -2,6 +2,9 @@
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
+	import SheetForm from '$lib/ui/sheet-form/sheet-form.svelte';
+	import FormField from '$lib/ui/form-field/form-field.svelte';
+	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
 	import type { AddAccountSheetViewModel } from './add-account-sheet.svelte.js';
 	import { CURRENCIES, CURRENCY_CODES } from '$lib/constants.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -10,21 +13,17 @@
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
-	<div class="sheet-body">
-		<h3 class="sheet-title">{m.add_account_title()}</h3>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_name()}</span>
+	<SheetForm title={m.add_account_title()}>
+		<FormField label={m.field_label_name()}>
 			<input
 				class="field-input"
 				type="text"
 				placeholder={m.placeholder_account_name()}
 				bind:value={vm.name}
 			/>
-		</div>
+		</FormField>
 
-		<div class="field">
-			<span class="field-label">{m.field_label_currency()}</span>
+		<FormField label={m.field_label_currency()}>
 			<div class="type-chips">
 				{#each CURRENCIES as cur (cur)}
 					<button
@@ -36,49 +35,21 @@
 					</button>
 				{/each}
 			</div>
-		</div>
+		</FormField>
 
-		<div class="field">
-			<span class="field-label">{m.field_label_budget_balance()}</span>
-			<div class="amount-field">
+		<FormField label={m.field_label_budget_balance()}>
+			<AmountField>
 				<MoneyInput bind:value={vm.budget} size="lg" />
-			</div>
-		</div>
+			</AmountField>
+		</FormField>
 
 		<Button variant="soft" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
 			{m.button_create()}
 		</Button>
-	</div>
+	</SheetForm>
 </BottomSheet>
 
 <style>
-	.sheet-body {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.sheet-title {
-		font-size: 20px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: var(--text-hi);
-		text-align: center;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.field-label {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-mid);
-		padding-left: 2px;
-	}
-
 	.field-input {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
@@ -127,22 +98,5 @@
 		border-color: rgba(255, 255, 255, 0.2);
 		background: rgba(255, 255, 255, 0.08);
 		color: var(--text-hi);
-	}
-
-	.amount-field {
-		padding: 16px 18px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: var(--r-md);
-		transition: border-color 0.2s ease;
-	}
-	.amount-field:focus-within {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
-	.field-hint {
-		font-size: 11px;
-		color: var(--text-lo);
-		padding-left: 2px;
 	}
 </style>

@@ -4,6 +4,10 @@
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import Toggle from '$lib/ui/toggle/toggle.svelte';
+	import SheetForm from '$lib/ui/sheet-form/sheet-form.svelte';
+	import FormField from '$lib/ui/form-field/form-field.svelte';
+	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
+	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import type { EditAccountSheetViewModel } from './edit-account-sheet.svelte.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -14,20 +18,16 @@
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
-	<div class="sheet-body">
-		<h3 class="sheet-title">{m.edit_account_title()}</h3>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_name()}</span>
+	<SheetForm title={m.edit_account_title()}>
+		<FormField label={m.field_label_name()}>
 			<input class="field-input" type="text" bind:value={vm.name} />
-		</div>
+		</FormField>
 
-		<div class="field">
-			<span class="field-label">{m.account_balance()}</span>
-			<div class="amount-field">
+		<FormField label={m.account_balance()}>
+			<AmountField>
 				<MoneyInput bind:value={vm.balance} {currency} />
-			</div>
-		</div>
+			</AmountField>
+		</FormField>
 
 		<div class="primary-row" onclick={() => vm.togglePrimary()}>
 			<div class="primary-info">
@@ -37,7 +37,7 @@
 			<Toggle checked={vm.isPrimary} />
 		</div>
 
-		<div class="flex gap-2.5">
+		<SheetActions>
 			<Button variant="destructive" size="lg" class="flex-1 gap-2" onclick={() => { vm.close(); onDelete?.(vm.accountId, vm.name); }}>
 				<Icon name="trash" size={16} />
 				{m.button_delete()}
@@ -45,38 +45,11 @@
 			<Button variant="soft" size="lg" class="flex-1" disabled={!vm.canSave} onclick={() => vm.save()}>
 				{m.button_save()}
 			</Button>
-		</div>
-	</div>
+		</SheetActions>
+	</SheetForm>
 </BottomSheet>
 
 <style>
-	.sheet-body {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.sheet-title {
-		font-size: 20px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: var(--text-hi);
-		text-align: center;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.field-label {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-mid);
-		padding-left: 2px;
-	}
-
 	.field-input {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
@@ -88,16 +61,6 @@
 		outline: none;
 	}
 	.field-input:focus {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
-	.amount-field {
-		padding: 10px 14px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: var(--r-sm);
-	}
-	.amount-field:focus-within {
 		border-color: rgba(221, 232, 240, 0.28);
 	}
 

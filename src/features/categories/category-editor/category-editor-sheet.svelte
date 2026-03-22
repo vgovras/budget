@@ -1,7 +1,9 @@
 <script lang="ts">
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
 	import Button from '$lib/ui/button/button.svelte';
-	import Icon from '$lib/ui/icon/icon.svelte';
+	import SheetForm from '$lib/ui/sheet-form/sheet-form.svelte';
+	import FormField from '$lib/ui/form-field/form-field.svelte';
+	import IconPicker from '$lib/ui/icon-picker/icon-picker.svelte';
 	import type { CategoryEditorSheetViewModel } from './category-editor-sheet.svelte.js';
 	import { CAT_COLOR_PRESETS, CAT_ICON_PRESETS } from '$lib/constants.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -10,38 +12,27 @@
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
-	<div class="sheet-body">
-		<h3 class="sheet-title">{vm.isEditing ? m.category_edit_title() : m.category_add_title()}</h3>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_name()}</span>
+	<SheetForm title={vm.isEditing ? m.category_edit_title() : m.category_add_title()}>
+		<FormField label={m.field_label_name()}>
 			<input
 				class="field-input"
 				type="text"
 				placeholder={m.placeholder_enter_name()}
 				bind:value={vm.label}
 			/>
-		</div>
+		</FormField>
 
-		<div class="field">
-			<span class="field-label">{m.category_icon_label()}</span>
-			<div class="icon-grid">
-				{#each CAT_ICON_PRESETS as ico (ico)}
-					<button
-						class="icon-btn"
-						class:active={vm.icon === ico}
-						style:background={vm.icon === ico ? vm.bg : ''}
-						style:border-color={vm.icon === ico ? vm.border : ''}
-						onclick={() => (vm.icon = ico)}
-					>
-						<Icon name={ico} size={18} />
-					</button>
-				{/each}
-			</div>
-		</div>
+		<FormField label={m.category_icon_label()}>
+			<IconPicker
+				icons={CAT_ICON_PRESETS}
+				selected={vm.icon}
+				onSelect={(ico) => (vm.icon = ico)}
+				activeBg={vm.bg}
+				activeBorder={vm.border}
+			/>
+		</FormField>
 
-		<div class="field">
-			<span class="field-label">{m.category_color_label()}</span>
+		<FormField label={m.category_color_label()}>
 			<div class="color-row">
 				{#each CAT_COLOR_PRESETS as preset, i (i)}
 					<button
@@ -53,11 +44,10 @@
 					></button>
 				{/each}
 			</div>
-		</div>
+		</FormField>
 
 		{#if vm.categoryType === 'income'}
-			<div class="field">
-				<span class="field-label">{m.category_commission_label()}</span>
+			<FormField label={m.category_commission_label()} hint={m.category_commission_hint()}>
 				<div class="commission-row">
 					<input
 						class="field-input commission-input"
@@ -68,44 +58,16 @@
 					/>
 					<span class="commission-pct">%</span>
 				</div>
-				<span class="field-hint">{m.category_commission_hint()}</span>
-			</div>
+			</FormField>
 		{/if}
 
 		<Button variant="soft" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
 			{m.button_save()}
 		</Button>
-	</div>
+	</SheetForm>
 </BottomSheet>
 
 <style>
-	.sheet-body {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.sheet-title {
-		font-size: 20px;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: var(--text-hi);
-		text-align: center;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.field-label {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-mid);
-		padding-left: 2px;
-	}
-
 	.field-input {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
@@ -122,41 +84,6 @@
 	}
 	.field-input:focus {
 		border-color: rgba(221, 232, 240, 0.28);
-	}
-
-	.field-hint {
-		font-size: 11px;
-		color: var(--text-lo);
-		padding-left: 2px;
-	}
-
-	.icon-grid {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		gap: 8px;
-		max-height: 160px;
-		overflow-y: auto;
-		scrollbar-width: none;
-	}
-	.icon-grid::-webkit-scrollbar {
-		display: none;
-	}
-
-	.icon-btn {
-		aspect-ratio: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 12px;
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--text-lo);
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-family: var(--font);
-	}
-	.icon-btn.active {
-		color: var(--text-hi);
 	}
 
 	.color-row {
@@ -177,16 +104,6 @@
 		box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(255, 255, 255, 0.3);
 	}
 
-	.advanced-toggle {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 13px;
-		color: var(--text-mid);
-		cursor: pointer;
-		padding: 4px 0;
-	}
-
 	.commission-row {
 		display: flex;
 		align-items: center;
@@ -201,5 +118,4 @@
 		font-size: 16px;
 		color: var(--text-mid);
 	}
-
 </style>

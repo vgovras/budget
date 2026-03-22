@@ -2,8 +2,10 @@
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
-	import type { EditExpenseViewModel } from './edit-expense.svelte.js';
+	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
+	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import DatePicker from '$lib/ui/date-picker/date-picker.svelte';
+	import type { EditExpenseViewModel } from './edit-expense.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm }: { vm: EditExpenseViewModel } = $props();
@@ -15,37 +17,26 @@
 			{vm.title}
 		</div>
 
-		<div class="amount-field">
+		<AmountField>
 			<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
-		</div>
+		</AmountField>
 
 		<input class="note-field" type="text" placeholder={m.placeholder_note()} bind:value={vm.note} />
 
 		<DatePicker bind:value={vm.editDate} />
 
-		<div class="flex gap-2.5">
+		<SheetActions>
 			<Button variant="destructive" size="md" class="flex-1" onclick={() => vm.delete()}>
 				{m.button_undo_transaction()}
 			</Button>
 			<Button variant="accent" size="md" class="flex-1" onclick={() => vm.save()}>
 				{m.button_save()}
 			</Button>
-		</div>
+		</SheetActions>
 	</div>
 </BottomSheet>
 
 <style>
-	.amount-field {
-		padding: 16px 18px;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		border-radius: var(--r-md);
-		transition: all 0.2s ease;
-	}
-	.amount-field:focus-within {
-		border-color: rgba(255, 255, 255, 0.16);
-	}
-
 	.note-field {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);

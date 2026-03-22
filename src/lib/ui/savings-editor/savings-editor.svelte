@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { fmt } from '$lib/utils/format.js';
 	import NumberInput from '$lib/ui/number-input/number-input.svelte';
+	import Chip from '$lib/ui/chip/chip.svelte';
+	import ProgressBar from '$lib/ui/progress-bar/progress-bar.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let {
@@ -34,20 +36,14 @@
 
 	<div class="presets">
 		{#each PRESETS as pct (pct)}
-			<button
-				class="preset-chip"
-				class:active={savingsPercent === pct}
-				onclick={() => onSetPercent(pct)}
-			>
+			<Chip active={savingsPercent === pct} onclick={() => onSetPercent(pct)}>
 				{pct}%
-			</button>
+			</Chip>
 		{/each}
 	</div>
 
 	<div class="summary">
-		<div class="bar-wrap">
-			<div class="bar-fill" style="width:{barPercent}%"></div>
-		</div>
+		<ProgressBar value={barPercent} variant="green" />
 		<div class="summary-row">
 			<span class="summary-label">{m.onboarding_savings_pill()}</span>
 			<span class="summary-val green">{currency}{fmt(savingsAmount)}<span class="dim">/{m.onboarding_per_month()}</span></span>
@@ -77,26 +73,6 @@
 		flex-wrap: wrap;
 		gap: 8px;
 	}
-	.preset-chip {
-		padding: 8px 16px;
-		border-radius: 12px;
-		border: 1px solid rgba(255,255,255,0.08);
-		background: rgba(255,255,255,0.04);
-		color: rgba(255,255,255,0.5);
-		font-size: 14px;
-		font-weight: 500;
-		font-family: var(--font);
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-	.preset-chip:active {
-		transform: scale(0.96);
-	}
-	.preset-chip.active {
-		background: rgba(80,200,120,0.15);
-		border-color: rgba(80,200,120,0.4);
-		color: rgba(80,200,120,0.9);
-	}
 
 	.summary {
 		display: flex;
@@ -106,18 +82,6 @@
 		background: rgba(255,255,255,0.03);
 		border: 1px solid rgba(255,255,255,0.06);
 		border-radius: 16px;
-	}
-	.bar-wrap {
-		height: 6px;
-		background: rgba(255,255,255,0.06);
-		border-radius: 99px;
-		overflow: hidden;
-	}
-	.bar-fill {
-		height: 100%;
-		border-radius: 99px;
-		background: rgba(80,200,120,0.6);
-		transition: width 0.3s ease;
 	}
 	.summary-row {
 		display: flex;

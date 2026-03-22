@@ -16,10 +16,6 @@
 	const vm = new HomeScreenViewModel();
 </script>
 
-<div class="top-bar">
-	<span class="greeting">{vm.greeting}</span>
-</div>
-
 <div class="content" use:scrollNav>
 	<!-- Hero Balance -->
 	<div class="hero">
@@ -132,21 +128,6 @@
 
 <style>
 	/* Layout — same pattern as analytics */
-	.top-bar {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 16px 16px 10px;
-		flex-shrink: 0;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.greeting {
-		font-size: 15px;
-		color: rgba(255, 255, 255, 0.8);
-		font-weight: 500;
-	}
 	.content {
 		flex: 1;
 		min-height: 0;
