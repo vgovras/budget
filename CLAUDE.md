@@ -603,6 +603,34 @@ let { vm }: { vm: AddExpenseSheetViewModel } = $props();
 
 ---
 
+## Стилізація — Tailwind CSS first
+
+```
+✅ Tailwind класи в class="" — за замовчуванням для всіх стилів
+✅ Theme токени — text-text-hi, bg-card-alt, border-accent-border (не hardcoded rgba)
+✅ Типографія — text-2xs(10) text-xs(12) text-sm(14) text-base(16) text-lg(18) text-xl(20)
+✅ cn() — для умовних класів і variant maps (button, chip)
+✅ <style> — ТІЛЬКИ для pseudo-elements (::before/::after), нескінченних CSS анімацій,
+   scroll-snap, SVG filter, :global() селекторів, CSS vars в gradient
+❌ <style> для layout, кольорів, spacing, typography — використовуй Tailwind
+❌ Hardcoded кольори (rgba, #hex) — додай токен в :root + @theme в app.css
+❌ Hardcoded font-size (text-[13px]) — використовуй шкалу або додай в @theme
+```
+
+### Theme архітектура (app.css)
+
+```
+:root { --accent: rgba(80,130,255,0.7); }     ← значення, override для тем
+@theme inline { --color-accent: var(--accent); }  ← маплення на Tailwind утиліти
+```
+
+Для додавання нового кольору:
+1. Додай змінну в `:root` в `app.css`
+2. Додай маплення в `@theme inline`
+3. Використовуй як `bg-accent`, `text-accent`, `border-accent`
+
+---
+
 ## Що НЕ робити
 
 ```
@@ -613,4 +641,6 @@ let { vm }: { vm: AddExpenseSheetViewModel } = $props();
 ❌ Глобальний стор для всього  — тільки Repository як singleton
 ❌ Feature імпортує .svelte іншої feature  — тільки через VM props
 ❌ Логіка в .svelte файлах  — тільки в ViewModel або Model
+❌ <style> для layout/кольорів — використовуй Tailwind класи
+❌ Hardcoded rgba/hex кольори — додай токен в :root + @theme
 ```

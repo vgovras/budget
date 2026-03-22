@@ -15,7 +15,7 @@
 	<Drawer.Portal>
 		<Drawer.Overlay class="sheet-overlay" />
 		<Drawer.Content class="sheet-content">
-			<div class="sheet-handle"></div>
+			<div class="w-9 h-1 rounded-full bg-surface-16 mx-auto mb-0.5"></div>
 			<div class="sheet-body" data-vaul-no-drag>
 				{@render children()}
 			</div>
@@ -30,6 +30,7 @@
 		background: var(--overlay);
 		z-index: 20;
 		transition: opacity 0.3s ease;
+		animation: sheet-fade-in 0.3s ease;
 	}
 
 	:global(.sheet-content) {
@@ -41,9 +42,9 @@
 		max-width: 600px;
 		max-height: 85vh;
 		margin: 0 auto;
-		background: #09090e;
-		border-radius: 28px 28px 0 0;
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: var(--card);
+		border-radius: var(--r-xl) var(--r-xl) 0 0;
+		border: 1px solid var(--border);
 		border-bottom: none;
 		z-index: 21;
 		padding: 14px 20px 0;
@@ -66,32 +67,14 @@
 		flex-direction: column;
 		gap: 18px;
 	}
-
 	.sheet-body::-webkit-scrollbar {
 		display: none;
 	}
 
 	@keyframes sheet-slide-up {
-		from {
-			transform: translateY(100%);
-		}
+		from { transform: translateY(100%); }
 	}
-
-	:global(.sheet-overlay) {
-		animation: sheet-fade-in 0.3s ease;
-	}
-
 	@keyframes sheet-fade-in {
-		from {
-			opacity: 0;
-		}
-	}
-
-	.sheet-handle {
-		width: 36px;
-		height: 4px;
-		border-radius: 99px;
-		background: rgba(255, 255, 255, 0.15);
-		margin: 0 auto 2px;
+		from { opacity: 0; }
 	}
 </style>

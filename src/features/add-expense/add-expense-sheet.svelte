@@ -2,6 +2,8 @@
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
+	import FormField from '$lib/ui/form-field/form-field.svelte';
+	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
 	import type { AddExpenseSheetViewModel } from './add-expense-sheet.svelte.js';
 	import QuickChips from './quick-chips/quick-chips.svelte';
 	import CategoryPicker from './category-picker/category-picker.svelte';
@@ -40,27 +42,27 @@
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
-	<div class="sheet-body">
-		<div class="sheet-tabs">
+	<div class="flex flex-col gap-4">
+		<div class="flex bg-surface-4 border border-border rounded-xl p-[3px] gap-[3px]">
 			<button
-				class="sheet-tab"
-				class:active={vm.sheetType === 'expense'}
+				class="flex-1 py-2.5 px-2 rounded-[9px] font-sans text-sm font-medium transition-all duration-200
+					{vm.sheetType === 'expense' ? 'bg-surface-8 text-text-hi' : 'text-text-lo'}"
 				onclick={() => vm.setType('expense')}
 			>
 				{m.tab_expense()}
 			</button>
 			<button
-				class="sheet-tab income-tab"
-				class:active={vm.sheetType === 'income'}
+				class="flex-1 py-2.5 px-2 rounded-[9px] font-sans text-sm font-medium transition-all duration-200
+					{vm.sheetType === 'income' ? 'bg-income-bg text-income' : 'text-text-lo'}"
 				onclick={() => vm.setType('income')}
 			>
 				{m.tab_income()}
 			</button>
-			<div class="transfer-tab-wrap">
+			<div class="flex-1 relative">
 				<button
-					class="sheet-tab transfer-tab"
-					class:active={vm.sheetType === 'transfer'}
-					class:disabled={!canTransfer}
+					class="w-full py-2.5 px-2 rounded-[9px] font-sans text-sm font-medium transition-all duration-200
+						{vm.sheetType === 'transfer' ? 'bg-accent-bg text-accent' : 'text-text-lo'}
+						{!canTransfer ? 'opacity-30 cursor-not-allowed' : ''}"
 					onclick={() => {
 						if (canTransfer) {
 							vm.setType('transfer');
@@ -79,61 +81,53 @@
 		</div>
 
 		{#if accountsVM.accounts.length > 1}
-			<div class="field">
-				<span class="field-label">{m.recurring_account()}</span>
+			<FormField label={m.recurring_account()}>
 				<Dropdown bind:value={vm.selectedAccountId} options={accountOptions} />
-			</div>
+			</FormField>
 		{/if}
 
 		{#if vm.sheetType === 'transfer'}
-			<!-- Transfer content -->
-			<div class="field">
-				<span class="field-label">{m.transfer_to()}</span>
+			<FormField label={m.transfer_to()}>
 				<Dropdown bind:value={vm.toAccountId} options={transferAccountOptions} />
-			</div>
+			</FormField>
 
-			<div class="amount-field">
+			<AmountField>
 				<MoneyInput bind:value={vm.amount} currency={vm.selectedAccount?.currency ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
-			</div>
+			</AmountField>
 
 			{#if vm.isCrossCurrency}
-				<div class="field">
-					<span class="field-label">{m.transfer_exchange_rate()}</span>
-					<input class="field-input" type="number" step="0.01" min="0" bind:value={vm.exchangeRate} />
+				<FormField label={m.transfer_exchange_rate()}>
+					<input class="px-4 py-3 rounded-sm border border-surface-8 bg-surface-5 text-base text-text-hi font-sans" type="number" step="0.01" min="0" bind:value={vm.exchangeRate} />
 					{#if vm.amount && vm.amount > 0}
-						<span class="convert-hint">= {vm.toAccount?.currency} {fmt(vm.convertedAmount)}</span>
+						<span class="text-sm text-accent pl-0.5">= {vm.toAccount?.currency} {fmt(vm.convertedAmount)}</span>
 					{/if}
-				</div>
+				</FormField>
 			{/if}
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 
-			<div class="field">
-				<span class="field-label">{m.label_date()}</span>
+			<FormField label={m.label_date()}>
 				<DatePicker bind:value={vm.selectedDate} />
-			</div>
+			</FormField>
 
 			<Button variant="accent" size="lg" class="gap-2" disabled={!vm.canSave} onclick={() => vm.save()}>
 				<Icon name="arrow-left-right" size={18} />
 				{m.button_transfer()}
 			</Button>
 		{:else}
-			<!-- Expense / Income content -->
 			<QuickChips chips={vm.quickChips} currency={vm.displayCurrency} onSelect={(chip) => vm.quickFill(chip)} />
 
-			<div class="amount-field">
+			<AmountField>
 				<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
-			</div>
+			</AmountField>
 
 			<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} type={vm.sheetType === 'income' ? 'income' : 'expense'} />
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 
-			<div class="field">
-				<span class="field-label">{m.label_date()}</span>
+			<FormField label={m.label_date()}>
 				<DatePicker bind:value={vm.selectedDate} />
-			</div>
-
+			</FormField>
 
 			<Button variant="accent" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
 				{vm.sheetType === 'expense' ? m.button_save() : m.button_add_income()}
@@ -143,60 +137,6 @@
 </BottomSheet>
 
 <style>
-	.sheet-body {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.sheet-tabs {
-		display: flex;
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		border-radius: 12px;
-		padding: 3px;
-		gap: 3px;
-	}
-
-	.sheet-tab {
-		flex: 1;
-		padding: 9px 8px;
-		border-radius: 9px;
-		border: none;
-		font-family: var(--font);
-		font-size: 14px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		color: var(--text-lo);
-		background: transparent;
-	}
-
-	.sheet-tab.active {
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-hi);
-	}
-	.sheet-tab.income-tab.active {
-		background: var(--income-bg);
-		color: var(--income);
-	}
-	.sheet-tab.transfer-tab.active {
-		background: var(--accent-bg);
-		color: var(--accent);
-	}
-	.sheet-tab.disabled {
-		opacity: 0.3;
-		cursor: not-allowed;
-	}
-
-	.transfer-tab-wrap {
-		flex: 1;
-		position: relative;
-	}
-	.transfer-tab-wrap .sheet-tab {
-		width: 100%;
-	}
-
 	.tooltip {
 		position: absolute;
 		bottom: calc(100% + 8px);
@@ -221,55 +161,4 @@
 		border: 6px solid transparent;
 		border-top-color: rgba(30, 30, 40, 0.95);
 	}
-
-	.amount-field {
-		padding: 16px 18px;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		border-radius: var(--r-md);
-		transition: all 0.2s ease;
-	}
-	.amount-field:focus-within {
-		border-color: rgba(255, 255, 255, 0.16);
-		box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
-	}
-
-	.daily-hint {
-		text-align: center;
-		font-size: 12px;
-		font-family: var(--font-mono);
-		color: var(--text-lo);
-		margin-top: -6px;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-	.field-label {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-mid);
-		padding-left: 2px;
-	}
-	.field-input {
-		padding: 12px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
-		font-size: 16px;
-		color: var(--text-hi);
-		font-family: var(--font);
-		outline: none;
-	}
-	.field-input:focus {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-	.convert-hint {
-		font-size: 13px;
-		color: var(--accent);
-		padding-left: 2px;
-	}
-
 </style>

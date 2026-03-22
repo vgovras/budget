@@ -12,31 +12,12 @@
 	} = $props();
 </script>
 
-<div class="field">
+<div class="flex flex-col gap-1.5">
 	{#if label}
-		<span class="field-label">{label}</span>
+		<span class="text-sm font-medium text-text-mid pl-0.5">{label}</span>
 	{/if}
 	{@render children()}
 	{#if hint}
-		<span class="field-hint">{hint}</span>
+		<span class="text-xs text-text-lo pl-0.5">{hint}</span>
 	{/if}
 </div>
-
-<style>
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-	.field-label {
-		font-size: 13px;
-		font-weight: 500;
-		color: var(--text-mid);
-		padding-left: 2px;
-	}
-	.field-hint {
-		font-size: 11px;
-		color: var(--text-lo);
-		padding-left: 2px;
-	}
-</style>

@@ -12,9 +12,9 @@
 	const totalLabel = $derived(total >= 1000 ? `${currency}${(total / 1000).toFixed(1)}k` : `${currency}${total}`);
 </script>
 
-<div class="donut-wrap">
-	<div class="donut-svg-wrap">
-		<svg class="donut-svg" viewBox="0 0 148 148" xmlns="http://www.w3.org/2000/svg">
+<div class="flex items-center gap-4">
+	<div class="shrink-0 relative w-[120px] h-[120px]">
+		<svg class="donut-svg w-full h-full" viewBox="0 0 148 148" xmlns="http://www.w3.org/2000/svg">
 			<circle
 				cx={DONUT_CX}
 				cy={DONUT_CY}
@@ -59,14 +59,14 @@
 		</svg>
 	</div>
 
-	<div class="donut-legend">
+	<div class="flex-1 min-w-0 flex flex-col gap-2.5">
 		{#each slices.slice(0, 5) as slice (slice.label)}
-			<div class="donut-item">
-				<div class="donut-dot" style="background:{slice.color}"></div>
-				<div style="flex:1;min-width:0">
-					<div style="display:flex;justify-content:space-between;align-items:center">
-						<div class="donut-label">{slice.label}</div>
-						<div class="donut-pct">{slice.pct}%</div>
+			<div class="flex items-center gap-2.5">
+				<div class="w-2.5 h-2.5 rounded-full shrink-0" style="background:{slice.color}"></div>
+				<div class="flex-1 min-w-0">
+					<div class="flex justify-between items-center">
+						<div class="text-sm text-text-mid flex-1">{slice.label}</div>
+						<div class="text-sm font-mono text-text-hi font-medium">{slice.pct}%</div>
 					</div>
 					<div class="donut-bar" style="width:{slice.pct}%;--bar-color:{slice.color}"></div>
 				</div>
@@ -76,50 +76,8 @@
 </div>
 
 <style>
-	.donut-wrap {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-	}
-	.donut-svg-wrap {
-		flex-shrink: 0;
-		position: relative;
-		width: 120px;
-		height: 120px;
-	}
 	.donut-svg {
-		width: 100%;
-		height: 100%;
 		filter: drop-shadow(0 0 6px rgba(80, 130, 255, 0.08));
-	}
-	.donut-legend {
-		flex: 1;
-		min-width: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-	.donut-item {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-	.donut-dot {
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-		flex-shrink: 0;
-	}
-	.donut-label {
-		font-size: 13px;
-		color: var(--text-mid);
-		flex: 1;
-	}
-	.donut-pct {
-		font-size: 14px;
-		font-family: var(--font-mono);
-		color: var(--text-hi);
-		font-weight: 500;
 	}
 	.donut-bar {
 		height: 2px;

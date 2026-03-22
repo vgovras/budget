@@ -49,26 +49,25 @@
 {#if vm.visible}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
-		class="onboarding"
+		class="fixed inset-0 z-50 bg-bg flex flex-col max-w-[600px] mx-auto"
 		transition:fade={{ duration: 400 }}
 		ontouchstart={onTouchStart}
 		ontouchmove={onTouchMove}
 		ontouchend={onTouchEnd}
 	>
-		<div class="progress-bar">
+		<div class="flex gap-[5px] px-6 pt-3.5 shrink-0">
 			{#each segments as i (i)}
 				<div
-					class="seg"
-					class:done={i < vm.currentSlide}
-					class:active={i === vm.currentSlide}
+					class="flex-1 h-0.5 rounded-[1px] transition-colors duration-400
+						{i < vm.currentSlide ? 'bg-[rgba(255,255,255,0.7)]' : i === vm.currentSlide ? 'bg-text-mid' : 'bg-surface-10'}"
 				></div>
 			{/each}
 		</div>
 
-		<div class="slides">
+		<div class="flex-1 grid place-items-center overflow-hidden relative">
 			{#key vm.currentSlide}
 				<div
-					class="slide-wrap"
+					class="absolute inset-0"
 					in:fly={{ x: vm.direction * 80, duration: 350, delay: 150 }}
 					out:fly={{ x: vm.direction * -80, duration: 250 }}
 				>
@@ -98,50 +97,3 @@
 		</div>
 	</div>
 {/if}
-
-<style>
-	.onboarding {
-		position: fixed;
-		inset: 0;
-		z-index: 50;
-		background: var(--bg);
-		display: flex;
-		flex-direction: column;
-		max-width: 600px;
-		margin: 0 auto;
-	}
-
-	.progress-bar {
-		display: flex;
-		gap: 5px;
-		padding: 14px 24px 0;
-		flex-shrink: 0;
-	}
-
-	.seg {
-		flex: 1;
-		height: 2px;
-		border-radius: 1px;
-		background: rgba(255, 255, 255, 0.1);
-		transition: background 0.4s ease;
-	}
-	.seg.done {
-		background: rgba(255, 255, 255, 0.7);
-	}
-	.seg.active {
-		background: rgba(255, 255, 255, 0.45);
-	}
-
-	.slides {
-		flex: 1;
-		display: grid;
-		place-items: center;
-		overflow: hidden;
-		position: relative;
-	}
-
-	.slide-wrap {
-		position: absolute;
-		inset: 0;
-	}
-</style>

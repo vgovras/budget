@@ -14,6 +14,7 @@
 	--bg: #050508;
 	--card: #09090e;
 	--card-elevated: #09090e;
+	--card-alt: #111118;
 	--overlay: rgba(0, 0, 0, 0.65);
 	--border: rgba(255, 255, 255, 0.07);
 	--border-hi: rgba(255, 255, 255, 0.1);
@@ -22,7 +23,9 @@
 	--accent: rgba(80, 130, 255, 0.7);
 	--accent-dim: rgba(80, 130, 255, 0.45);
 	--accent-bg: rgba(80, 130, 255, 0.08);
+	--accent-hover: rgba(80, 130, 255, 0.14);
 	--accent-border: rgba(80, 130, 255, 0.2);
+	--accent-border-hi: rgba(80, 130, 255, 0.3);
 	--accent-glow: rgba(80, 130, 255, 0.15);
 
 	/* Semantic: income / success — soft green */
@@ -35,6 +38,7 @@
 	--danger: rgba(255, 100, 100, 0.75);
 	--danger-dim: rgba(255, 100, 100, 0.45);
 	--danger-bg: rgba(255, 100, 100, 0.08);
+	--danger-hover: rgba(255, 100, 100, 0.16);
 	--danger-border: rgba(255, 100, 100, 0.2);
 
 	/* Semantic: warning / near-limit — amber */
@@ -45,11 +49,24 @@
 
 	/* Text */
 	--text-hi: rgba(255, 255, 255, 0.85);
+	--text-primary: rgba(255, 255, 255, 0.65);
+	--text-secondary: rgba(255, 255, 255, 0.5);
 	--text-mid: rgba(255, 255, 255, 0.35);
 	--text-lo: rgba(255, 255, 255, 0.25);
+	--text-muted: rgba(255, 255, 255, 0.2);
+
+	/* Primary — high-contrast CTA */
+	--primary-bg: rgba(255, 255, 255, 0.95);
+	--primary-fg: #08080f;
 
 	/* Expenses — neutral */
 	--expense: rgba(255, 255, 255, 0.35);
+
+	/* Success — green (savings, chips) */
+	--success: rgba(80, 200, 120, 0.9);
+	--success-dim: rgba(80, 200, 120, 0.6);
+	--success-bg: rgba(80, 200, 120, 0.15);
+	--success-border: rgba(80, 200, 120, 0.4);
 
 	/* Radii */
 	--r-sm: 14px;
@@ -72,25 +89,27 @@
    bg-accent, text-text-hi, border-danger-border, rounded-md, etc.
    ============================================================ */
 @theme inline {
-	/* Base colors (Tailwind v4 needs these explicitly with inline theme) */
 	--color-white: #fff;
 	--color-black: #000;
 	--color-transparent: transparent;
 
-	/* Background */
-	--color-bg: #050508;
-	--color-card: #09090e;
-	--color-card-elevated: #09090e;
-	--color-overlay: rgb(0 0 0 / 0.65);
-	--color-border: rgb(255 255 255 / 0.07);
-	--color-border-hi: rgb(255 255 255 / 0.1);
+	/* Background — reference :root vars for theme switching */
+	--color-bg: var(--bg);
+	--color-card: var(--card);
+	--color-card-elevated: var(--card-elevated);
+	--color-card-alt: var(--card-alt);
+	--color-overlay: var(--overlay);
+	--color-border: var(--border);
+	--color-border-hi: var(--border-hi);
 
 	/* Accent */
-	--color-accent: rgb(80 130 255 / 0.7);
-	--color-accent-dim: rgb(80 130 255 / 0.45);
-	--color-accent-bg: rgb(80 130 255 / 0.08);
-	--color-accent-border: rgb(80 130 255 / 0.2);
-	--color-accent-glow: rgb(80 130 255 / 0.15);
+	--color-accent: var(--accent);
+	--color-accent-dim: var(--accent-dim);
+	--color-accent-bg: var(--accent-bg);
+	--color-accent-hover: var(--accent-hover);
+	--color-accent-border: var(--accent-border);
+	--color-accent-border-hi: var(--accent-border-hi);
+	--color-accent-glow: var(--accent-glow);
 
 	/* Soft — prominent CTA buttons */
 	--color-soft: rgb(221 232 240 / 0.09);
@@ -107,36 +126,50 @@
 	--shadow-gradient: 0 8px 24px rgb(60 100 255 / 0.25);
 
 	/* Income */
-	--color-income: #5ee6a0;
-	--color-income-dim: rgb(94 230 160 / 0.55);
-	--color-income-bg: rgb(94 230 160 / 0.08);
-	--color-income-border: rgb(94 230 160 / 0.2);
+	--color-income: var(--income);
+	--color-income-dim: var(--income-dim);
+	--color-income-bg: var(--income-bg);
+	--color-income-border: var(--income-border);
 
 	/* Danger */
-	--color-danger: rgb(255 100 100 / 0.75);
-	--color-danger-dim: rgb(255 100 100 / 0.45);
-	--color-danger-bg: rgb(255 100 100 / 0.08);
-	--color-danger-border: rgb(255 100 100 / 0.2);
+	--color-danger: var(--danger);
+	--color-danger-dim: var(--danger-dim);
+	--color-danger-bg: var(--danger-bg);
+	--color-danger-hover: var(--danger-hover);
+	--color-danger-border: var(--danger-border);
 
 	/* Warning */
-	--color-warning: #ffb347;
-	--color-warning-dim: rgb(255 179 71 / 0.55);
-	--color-warning-bg: rgb(255 179 71 / 0.08);
-	--color-warning-border: rgb(255 179 71 / 0.2);
+	--color-warning: var(--warning);
+	--color-warning-dim: var(--warning-dim);
+	--color-warning-bg: var(--warning-bg);
+	--color-warning-border: var(--warning-border);
 
 	/* Text */
-	--color-text-hi: rgb(255 255 255 / 0.85);
-	--color-text-mid: rgb(255 255 255 / 0.35);
-	--color-text-lo: rgb(255 255 255 / 0.25);
+	--color-text-hi: var(--text-hi);
+	--color-text-primary: var(--text-primary);
+	--color-text-secondary: var(--text-secondary);
+	--color-text-mid: var(--text-mid);
+	--color-text-lo: var(--text-lo);
+	--color-text-muted: var(--text-muted);
+
+	/* Primary */
+	--color-primary-bg: var(--primary-bg);
+	--color-primary-fg: var(--primary-fg);
 
 	/* Expense */
-	--color-expense: rgb(255 255 255 / 0.35);
+	--color-expense: var(--expense);
+
+	/* Success — green */
+	--color-success: var(--success);
+	--color-success-dim: var(--success-dim);
+	--color-success-bg: var(--success-bg);
+	--color-success-border: var(--success-border);
 
 	/* Radii */
-	--radius-sm: 14px;
-	--radius-md: 20px;
-	--radius-lg: 24px;
-	--radius-xl: 28px;
+	--radius-sm: var(--r-sm);
+	--radius-md: var(--r-md);
+	--radius-lg: var(--r-lg);
+	--radius-xl: var(--r-xl);
 
 	/* Surfaces — white at different opacities */
 	--color-surface-3: rgb(255 255 255 / 0.03);
@@ -148,63 +181,82 @@
 	--color-surface-12: rgb(255 255 255 / 0.12);
 	--color-surface-14: rgb(255 255 255 / 0.14);
 	--color-surface-16: rgb(255 255 255 / 0.16);
+
+	/* Typography scale
+	   Tailwind defaults: xs(12) sm(14) base(16) lg(18) xl(20) 2xl(24) 3xl(30) 4xl(36) 5xl(48)
+	   Custom additions for gaps in the scale: */
+	--text-2xs: 10px;
+	--text-2xs--line-height: 1.4;
+
+	/* Fonts */
+	--font-sans: var(--font);
+	--font-mono: var(--font-mono);
+
+	/* Easing */
+	--ease-out: var(--ease-out);
+	--ease-spring: var(--ease-spring);
+
+	/* Blur */
+	--blur-glass: var(--glass-blur);
 }
 
 /* ============================================================
-   RESET
+   RESET — in @layer base so Tailwind utilities can override
    ============================================================ */
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-	margin: 0;
-}
+@layer base {
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+		margin: 0;
+	}
 
-html, body {
-	overscroll-behavior: none;
-}
+	html, body {
+		overscroll-behavior: none;
+	}
 
-::selection {
-	background: rgba(255, 255, 255, 0.15);
-	color: inherit;
-}
+	::selection {
+		background: rgba(255, 255, 255, 0.15);
+		color: inherit;
+	}
 
-html,
-body {
-	height: 100%;
-	margin: 0;
-	background: #050508;
-	font-family: var(--font);
-	font-weight: 400;
-	color: var(--text-hi);
-	-webkit-font-smoothing: antialiased;
-}
+	html,
+	body {
+		height: 100%;
+		margin: 0;
+		background: #050508;
+		font-family: var(--font);
+		font-weight: 400;
+		color: var(--text-hi);
+		-webkit-font-smoothing: antialiased;
+	}
 
-body {
-	overflow: hidden;
-}
+	body {
+		overflow: hidden;
+	}
 
-button {
-	font-family: var(--font);
-	cursor: pointer;
-	border: none;
-	background: none;
-}
+	button {
+		font-family: var(--font);
+		cursor: pointer;
+		border: none;
+		background: none;
+	}
 
-input {
-	font-family: var(--font);
-	border: none;
-	outline: none;
-	background: none;
-	color: var(--text-hi);
-}
+	input {
+		font-family: var(--font);
+		border: none;
+		outline: none;
+		background: none;
+		color: var(--text-hi);
+	}
 
-/* Hide scrollbars globally */
-.no-scrollbar {
-	scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-	display: none;
+	/* Hide scrollbars globally */
+	.no-scrollbar {
+		scrollbar-width: none;
+	}
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
 }
 
 /* ============================================================

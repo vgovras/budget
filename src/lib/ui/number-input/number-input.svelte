@@ -28,13 +28,13 @@
 	}
 </script>
 
-<div class="number-input">
+<div class="flex items-center justify-between px-3.5 py-3 bg-surface-3 border border-surface-8 rounded-sm">
 	{#if label}
-		<span class="ni-label">{label}</span>
+		<span class="text-sm text-text-mid">{label}</span>
 	{/if}
-	<div class="ni-control">
+	<div class="flex items-center gap-1">
 		<input
-			class="ni-input"
+			class="w-12 bg-transparent text-right text-lg font-semibold font-sans text-text-hi [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
 			type="number"
 			{min}
 			{max}
@@ -43,81 +43,11 @@
 			onblur={handleBlur}
 		/>
 		{#if suffix}
-			<span class="ni-suffix">{suffix}</span>
+			<span class="text-base text-text-mid font-medium">{suffix}</span>
 		{/if}
-		<div class="ni-buttons">
-			<button class="ni-btn" onclick={() => (value = clamp(value + 1))}>▲</button>
-			<button class="ni-btn" onclick={() => (value = clamp(value - 1))}>▼</button>
+		<div class="flex flex-col gap-0.5 ml-1">
+			<button class="flex items-center justify-center w-6 h-[18px] border border-border-hi rounded-[5px] bg-surface-4 text-text-mid text-2xs transition-all duration-150 active:bg-surface-10 active:text-text-primary" onclick={() => (value = clamp(value + 1))}>▲</button>
+			<button class="flex items-center justify-center w-6 h-[18px] border border-border-hi rounded-[5px] bg-surface-4 text-text-mid text-2xs transition-all duration-150 active:bg-surface-10 active:text-text-primary" onclick={() => (value = clamp(value - 1))}>▼</button>
 		</div>
 	</div>
 </div>
-
-<style>
-	.number-input {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 12px 14px;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 14px;
-	}
-	.ni-label {
-		font-size: 14px;
-		color: rgba(255, 255, 255, 0.45);
-		font-weight: 400;
-	}
-	.ni-control {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-	.ni-input {
-		width: 48px;
-		background: transparent;
-		border: none;
-		outline: none;
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 18px;
-		font-weight: 600;
-		font-family: var(--font);
-		text-align: right;
-		-moz-appearance: textfield;
-	}
-	.ni-input::-webkit-inner-spin-button,
-	.ni-input::-webkit-outer-spin-button {
-		-webkit-appearance: none;
-		margin: 0;
-	}
-	.ni-suffix {
-		font-size: 16px;
-		color: rgba(255, 255, 255, 0.4);
-		font-weight: 500;
-	}
-	.ni-buttons {
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		margin-left: 4px;
-	}
-	.ni-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 18px;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 5px;
-		background: rgba(255, 255, 255, 0.04);
-		color: rgba(255, 255, 255, 0.4);
-		font-size: 9px;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		padding: 0;
-		font-family: var(--font);
-	}
-	.ni-btn:active {
-		background: rgba(255, 255, 255, 0.1);
-		color: rgba(255, 255, 255, 0.7);
-	}
-</style>

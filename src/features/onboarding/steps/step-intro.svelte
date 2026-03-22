@@ -16,8 +16,8 @@
 	});
 </script>
 
-<div class="slide">
-	<div class="visual">
+<div class="flex flex-col h-full justify-center">
+	<div class="relative h-60 overflow-hidden shrink-0 flex items-center justify-center">
 		<div class="glow glow-1"></div>
 		<div class="glow glow-2"></div>
 		<div class="ill">
@@ -43,64 +43,54 @@
 		</div>
 	</div>
 
-	<div class="text-block">
-		<div class="slide-num">01 / 05</div>
-		<h2 class="slide-title">{@html m.onboarding_slide1_title()}</h2>
-		<p class="slide-desc">{m.onboarding_slide1_desc()}</p>
+	<div class="px-7 pt-2 flex flex-col">
+		<div class="text-2xs tracking-[1.5px] uppercase text-text-muted font-medium mb-2.5">01 / 05</div>
+		<h2 class="text-[32px] font-medium text-white tracking-tight leading-[1.15] mb-2.5">{@html m.onboarding_slide1_title()}</h2>
+		<p class="text-base text-text-mid font-light leading-relaxed">{m.onboarding_slide1_desc()}</p>
 	</div>
 
-	<div class="bottom">
-		<Button variant="primary" size="lg" class="text-[15px] rounded-[18px]" onclick={onNext}>{m.onboarding_start()} →</Button>
-		<div class="lang-row">
+	<div class="px-6 pt-4 pb-7 flex flex-col gap-2.5 mt-auto">
+		<Button variant="primary" size="lg" class="text-base rounded-[18px]" onclick={onNext}>{m.onboarding_start()} →</Button>
+		<div class="flex justify-center">
 			<Dropdown bind:value={locale} options={LANG_OPTIONS} position="top" />
 		</div>
 	</div>
 </div>
 
 <style>
-	.slide { display: flex; flex-direction: column; height: 100%; justify-content: center; }
-
-	.visual {
-		position: relative; height: 240px; overflow: hidden; flex-shrink: 0;
-		display: flex; align-items: center; justify-content: center;
-	}
-
 	.glow {
-		position: absolute; border-radius: 50%; pointer-events: none;
+		position: absolute;
+		border-radius: 50%;
+		pointer-events: none;
 		animation: glow-pulse 4s ease-in-out infinite;
 	}
 	.glow-1 {
-		width: 260px; height: 200px; left: -40px; top: -40px;
-		background: radial-gradient(ellipse, rgba(60,100,255,0.22) 0%, transparent 70%);
+		width: 260px;
+		height: 200px;
+		left: -40px;
+		top: -40px;
+		background: radial-gradient(ellipse, rgba(60, 100, 255, 0.22) 0%, transparent 70%);
 	}
 	.glow-2 {
-		width: 180px; height: 180px; right: -20px; bottom: -20px;
-		background: radial-gradient(ellipse, rgba(120,60,220,0.16) 0%, transparent 70%);
+		width: 180px;
+		height: 180px;
+		right: -20px;
+		bottom: -20px;
+		background: radial-gradient(ellipse, rgba(120, 60, 220, 0.16) 0%, transparent 70%);
 		animation-delay: 2s;
 	}
-
-	.ill { position: relative; z-index: 2; animation: float 3.5s ease-in-out infinite; }
-	@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-
-	.text-block { padding: 8px 28px 0; display: flex; flex-direction: column; }
-	.slide-num {
-		font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-		color: rgba(255,255,255,0.2); font-weight: 500; margin-bottom: 10px;
+	.ill {
+		position: relative;
+		z-index: 2;
+		animation: float 3.5s ease-in-out infinite;
 	}
-	.slide-title {
-		font-size: 32px; font-weight: 500; color: #fff; letter-spacing: -0.8px;
-		line-height: 1.15; margin-bottom: 10px;
+	@keyframes float {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-10px); }
 	}
-	.slide-title :global(em) {
-		font-style: normal; color: rgba(255,255,255,0.38); font-weight: 300;
-	}
-	.slide-desc {
-		font-size: 15px; color: rgba(255,255,255,0.38); font-weight: 300; line-height: 1.6;
-	}
-
-	.bottom { padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-	.lang-row {
-		display: flex;
-		justify-content: center;
+	h2 :global(em) {
+		font-style: normal;
+		color: rgba(255, 255, 255, 0.38);
+		font-weight: 300;
 	}
 </style>

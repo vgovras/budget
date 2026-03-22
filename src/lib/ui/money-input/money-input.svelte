@@ -44,15 +44,21 @@
 			setTimeout(() => inputEl.focus(), 350);
 		}
 	});
+
+	const sizeClasses = {
+		md: { currency: 'text-xl', input: 'text-[28px]' },
+		lg: { currency: 'text-2xl', input: 'text-4xl' },
+		xl: { currency: 'text-sm', input: 'text-[44px] tracking-tighter text-center' }
+	} as const;
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="money-input size-{size} {className}" onclick={focusInput}>
-	<span class="currency">{currency}</span>
+<div class="flex items-baseline gap-2 cursor-text {className}" onclick={focusInput}>
+	<span class="font-mono font-light text-text-lo {sizeClasses[size].currency}">{currency}</span>
 	<input
 		bind:this={inputEl}
-		class="input"
+		class="flex-1 font-mono font-light tracking-tight w-full caret-accent text-text-hi bg-transparent {sizeClasses[size].input}"
 		type="text"
 		inputmode="numeric"
 		{placeholder}
@@ -65,56 +71,7 @@
 </div>
 
 <style>
-	.money-input {
-		display: flex;
-		align-items: baseline;
-		gap: 8px;
-		cursor: text;
-	}
-
-	.currency {
-		font-family: var(--font-mono);
-		font-weight: 300;
+	input::placeholder {
 		color: var(--text-lo);
-	}
-
-	.input {
-		flex: 1;
-		font-family: var(--font-mono);
-		font-weight: 300;
-		letter-spacing: -0.03em;
-		width: 100%;
-		caret-color: var(--accent);
-		color: var(--text-hi);
-		background: none;
-		border: none;
-		outline: none;
-	}
-	.input::placeholder {
-		color: var(--text-lo);
-	}
-
-	/* Sizes */
-	.size-md .currency {
-		font-size: 20px;
-	}
-	.size-md .input {
-		font-size: 28px;
-	}
-
-	.size-lg .currency {
-		font-size: 24px;
-	}
-	.size-lg .input {
-		font-size: 36px;
-	}
-
-	.size-xl .currency {
-		font-size: 14px;
-	}
-	.size-xl .input {
-		font-size: 44px;
-		letter-spacing: -0.04em;
-		text-align: center;
 	}
 </style>

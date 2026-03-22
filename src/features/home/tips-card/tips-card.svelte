@@ -2,53 +2,12 @@
 	import * as m from '$lib/paraglide/messages.js';
 </script>
 
-<div class="tips-card">
-	<div class="tips-inner">
-		<div class="tip-dot"></div>
+<div class="bg-card-alt border border-border rounded-md overflow-hidden">
+	<div class="px-4 py-3.5 flex gap-3 items-start">
+		<div class="w-1.5 h-1.5 rounded-full bg-accent-dim shrink-0 mt-[3px]"></div>
 		<div>
-			<div class="tip-label">{m.home_tip_title()}</div>
-			<div class="tip-text">{m.home_tip_text()}</div>
+			<div class="text-2xs tracking-[1.2px] uppercase text-accent-dim font-medium mb-1">{m.home_tip_title()}</div>
+			<div class="text-xs text-text-secondary font-light leading-relaxed">{m.home_tip_text()}</div>
 		</div>
 	</div>
 </div>
-
-<style>
-	.tips-card {
-		background: #111118;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		border-radius: 20px;
-		overflow: hidden;
-	}
-
-	.tips-inner {
-		padding: 14px 16px;
-		display: flex;
-		gap: 12px;
-		align-items: flex-start;
-	}
-
-	.tip-dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: rgba(80, 130, 255, 0.6);
-		flex-shrink: 0;
-		margin-top: 3px;
-	}
-
-	.tip-label {
-		font-size: 9px;
-		letter-spacing: 1.2px;
-		text-transform: uppercase;
-		color: rgba(80, 130, 255, 0.6);
-		font-weight: 500;
-		margin-bottom: 4px;
-	}
-
-	.tip-text {
-		font-size: 12px;
-		color: rgba(255, 255, 255, 0.5);
-		font-weight: 300;
-		line-height: 1.5;
-	}
-</style>

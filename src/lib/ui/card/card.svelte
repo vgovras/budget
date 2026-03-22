@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	let {
 		variant = 'default',
@@ -12,27 +13,14 @@
 	} = $props();
 </script>
 
-<div class="{variant === 'led' ? 'card-led' : 'card'} {className}">
+<div
+	class="{variant === 'led' ? 'card-led' : ''} bg-card border border-border relative shrink-0 {variant === 'led' ? 'rounded-xl overflow-hidden' : 'rounded-lg'} {className}"
+	in:fade={{ duration: 300 }}
+>
 	{@render children()}
 </div>
 
 <style>
-	.card {
-		background: #09090e;
-		border-radius: var(--r-lg);
-		position: relative;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		flex-shrink: 0;
-	}
-
-	.card-led {
-		background: #09090e;
-		border-radius: var(--r-xl);
-		position: relative;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		overflow: hidden;
-		flex-shrink: 0;
-	}
 	.card-led::before {
 		content: '';
 		position: absolute;

@@ -33,15 +33,20 @@
 	}
 </script>
 
-<div class="dropdown {className}">
+<div class="relative {className}">
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
-	<div class="trigger" class:open bind:this={triggerEl} onclick={toggle}>
+	<div
+		class="flex items-center justify-center gap-2 px-4 py-3 rounded-sm bg-surface-5 border border-surface-8 cursor-pointer transition-all duration-150 text-text-mid
+			{open ? 'bg-surface-8' : ''}"
+		bind:this={triggerEl}
+		onclick={toggle}
+	>
 		{#if selected?.icon}
-			<span class="trigger-icon">{selected.icon}</span>
+			<span class="text-lg leading-none">{selected.icon}</span>
 		{/if}
-		<span class="trigger-label">{selected?.label ?? value}</span>
-		<span class="trigger-chevron" class:flipped={open}>
+		<span class="text-base text-text-hi font-medium font-sans">{selected?.label ?? value}</span>
+		<span class="flex items-center transition-transform duration-200 {open ? 'rotate-180' : ''}">
 			<Icon name="chevron-down" size={14} />
 		</span>
 	</div>
@@ -49,16 +54,20 @@
 	{#if open}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="backdrop" onclick={() => (open = false)}></div>
-		<div class="menu" class:menu-top={position === 'top' || openUp}>
+		<div class="fixed inset-0 z-10" onclick={() => (open = false)}></div>
+		<div class="menu {position === 'top' || openUp ? 'menu-top' : ''}">
 			{#each options as opt (opt.value)}
-				<button class="option" class:active={value === opt.value} onclick={() => pick(opt.value)}>
+				<button
+					class="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-[10px] text-base font-sans transition-colors duration-100 active:bg-surface-5
+						{value === opt.value ? 'text-text-hi font-medium' : 'text-text-mid'}"
+					onclick={() => pick(opt.value)}
+				>
 					{#if opt.icon}
-						<span class="option-icon">{opt.icon}</span>
+						<span class="text-lg leading-none">{opt.icon}</span>
 					{/if}
-					<span class="option-label">{opt.label}</span>
+					<span class="flex-1 text-left">{opt.label}</span>
 					{#if value === opt.value}
-						<span class="option-check"><Icon name="check" size={16} /></span>
+						<span class="flex items-center text-text-hi"><Icon name="check" size={16} /></span>
 					{/if}
 				</button>
 			{/each}
@@ -67,53 +76,6 @@
 </div>
 
 <style>
-	.dropdown {
-		position: relative;
-	}
-
-	.trigger {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		padding: 12px 16px;
-		border-radius: 14px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		cursor: pointer;
-		transition: all 0.15s ease;
-		color: var(--text-mid);
-	}
-	.trigger:active,
-	.trigger.open {
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.trigger-icon {
-		font-size: 18px;
-		line-height: 1;
-	}
-	.trigger-label {
-		color: var(--text-hi);
-		font-size: 15px;
-		font-weight: 500;
-		font-family: var(--font);
-	}
-	.trigger-chevron {
-		display: flex;
-		align-items: center;
-		transition: transform 0.2s ease;
-	}
-	.trigger-chevron.flipped {
-		transform: rotate(180deg);
-	}
-
-	.backdrop {
-		position: fixed;
-		inset: 0;
-		z-index: 10;
-	}
-
 	.menu {
 		position: absolute;
 		top: calc(100% + 6px);
@@ -127,7 +89,7 @@
 		background: rgba(22, 22, 26, 0.92);
 		backdrop-filter: blur(24px) saturate(120%);
 		-webkit-backdrop-filter: blur(24px) saturate(120%);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		border: 1px solid var(--border-hi);
 		border-radius: 16px;
 		padding: 6px;
 		z-index: 11;
@@ -141,43 +103,5 @@
 	.menu-top {
 		top: auto;
 		bottom: calc(100% + 6px);
-	}
-
-	.option {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		width: 100%;
-		padding: 10px 12px;
-		border: none;
-		background: none;
-		border-radius: 10px;
-		color: var(--text-mid);
-		font-family: var(--font);
-		font-size: 15px;
-		font-weight: 400;
-		cursor: pointer;
-		transition: background 0.12s ease;
-	}
-	.option:active {
-		background: rgba(255, 255, 255, 0.06);
-	}
-	.option.active {
-		color: var(--text-hi);
-		font-weight: 500;
-	}
-
-	.option-icon {
-		font-size: 18px;
-		line-height: 1;
-	}
-	.option-label {
-		flex: 1;
-		text-align: left;
-	}
-	.option-check {
-		display: flex;
-		align-items: center;
-		color: var(--text-hi);
 	}
 </style>

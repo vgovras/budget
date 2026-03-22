@@ -90,6 +90,7 @@
 		display: flex;
 		gap: 10px;
 		flex-wrap: wrap;
+		padding: 4px;
 	}
 
 	.color-dot {

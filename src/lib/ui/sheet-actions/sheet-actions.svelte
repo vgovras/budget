@@ -8,13 +8,6 @@
 	} = $props();
 </script>
 
-<div class="actions">
+<div class="flex gap-2.5">
 	{@render children()}
 </div>
-
-<style>
-	.actions {
-		display: flex;
-		gap: 10px;
-	}
-</style>

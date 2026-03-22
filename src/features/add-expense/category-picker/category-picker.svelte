@@ -14,12 +14,14 @@
 </script>
 
 <div>
-	<div class="cat-label">{m.label_category()}</div>
-	<div class="categories">
+	<div class="text-xs font-semibold tracking-[0.06em] uppercase text-text-lo mb-2">{m.label_category()}</div>
+	<div class="grid grid-cols-3 gap-2">
 		{#each filtered as cat (cat.icon)}
 			<button
-				class="cat-btn"
-				class:selected={selected === cat.icon}
+				class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-sm border font-sans text-xs font-medium transition-all duration-150
+					{selected === cat.icon
+						? 'border-text-muted bg-surface-8 text-text-hi'
+						: 'border-surface-5 bg-surface-3 text-text-hi hover:border-surface-12 hover:bg-surface-5'}"
 				style:background={selected === cat.icon ? cat.bg : ''}
 				style:border-color={selected === cat.icon ? cat.border : ''}
 				onclick={() => onSelect(cat.icon)}
@@ -30,52 +32,3 @@
 		{/each}
 	</div>
 </div>
-
-<style>
-	.cat-label {
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--text-lo);
-		margin-bottom: 8px;
-	}
-
-	.categories {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 8px;
-	}
-
-	.cat-btn {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 5px;
-		padding: 12px 8px;
-		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.03);
-		color: var(--text-hi);
-		font-size: 12px;
-		font-weight: 500;
-		transition: all 0.18s ease;
-		font-family: var(--font);
-		cursor: pointer;
-		box-shadow: none;
-	}
-
-	.cat-btn:hover {
-		border-color: rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.06);
-		box-shadow: none;
-		transform: none;
-	}
-
-	.cat-btn.selected {
-		border-color: rgba(255, 255, 255, 0.2);
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-hi);
-		box-shadow: none;
-	}
-</style>

@@ -10,52 +10,17 @@
 </script>
 
 {#if vm.isEmpty}
-	<div class="empty">{m.expenses_empty()}</div>
+	<div class="py-2 px-0.5 text-sm text-text-lo">{m.expenses_empty()}</div>
 {:else}
 	{#each Object.entries(vm.grouped) as [dateKey, items] (dateKey)}
-		<div class="card expenses-card">
-			<div class="day-label">{getDateLabel(dateKey)}</div>
+		<div class="bg-card rounded-md border border-border">
+			<div class="text-xs font-medium text-text-muted tracking-[1.4px] uppercase px-4 pt-4 pb-2">{getDateLabel(dateKey)}</div>
 			{#each items as expense, i (expense.id)}
 				{#if i > 0}
-					<div class="exp-divider"></div>
+					<div class="h-px bg-surface-4 mx-4"></div>
 				{/if}
 				<ExpenseRow {expense} onclick={() => onEdit?.(expense.id)} />
 			{/each}
 		</div>
 	{/each}
 {/if}
-
-<style>
-	.empty {
-		padding: 8px 2px;
-		font-size: 14px;
-		color: var(--text-lo);
-	}
-
-	.card {
-		background: #09090e;
-		border-radius: 20px;
-		position: relative;
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		overflow: hidden;
-	}
-
-	.expenses-card {
-		overflow: visible;
-	}
-
-	.day-label {
-		font-size: 11px;
-		font-weight: 500;
-		color: rgba(255, 255, 255, 0.2);
-		letter-spacing: 1.4px;
-		text-transform: uppercase;
-		padding: 16px 16px 8px;
-	}
-
-	.exp-divider {
-		height: 1px;
-		background: rgba(255, 255, 255, 0.04);
-		margin: 0 16px;
-	}
-</style>

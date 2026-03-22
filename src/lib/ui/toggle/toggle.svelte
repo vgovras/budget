@@ -13,8 +13,7 @@
 </script>
 
 <div
-	class={cn('toggle', className)}
-	class:on={checked}
+	class={cn('toggle', checked && 'on', className)}
 	role="switch"
 	aria-checked={checked}
 	tabindex="0"
@@ -35,16 +34,16 @@
 		width: 48px;
 		height: 28px;
 		border-radius: 99px;
-		background: rgba(255, 255, 255, 0.08);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--color-surface-8);
+		border: 1px solid var(--color-surface-8);
 		position: relative;
 		cursor: pointer;
 		transition: all 0.25s ease;
 		flex-shrink: 0;
 	}
 	.toggle.on {
-		background: rgba(255, 255, 255, 0.16);
-		border-color: rgba(255, 255, 255, 0.14);
+		background: var(--color-surface-16);
+		border-color: var(--color-surface-14);
 	}
 	.toggle-handle {
 		position: absolute;

@@ -11,45 +11,15 @@
 	}
 </script>
 
-<div class="weekly-bars">
+<div class="flex items-end gap-1.5 h-20">
 	{#each weeklyAmounts as val, i (i)}
-		<div class="week-bar-wrap">
-			<div class="week-bar" class:current={i === 6} style="height:{barHeight(val)}px"></div>
-			<div class="week-label">{days[i]}</div>
+		<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+			<div
+				class="w-full rounded-t min-h-1 transition-[height] duration-600 ease-out
+					{i === 6 ? 'bg-accent-dim shadow-[0_0_8px_var(--accent-glow)]' : 'bg-accent-bg'}"
+				style="height:{barHeight(val)}px"
+			></div>
+			<div class="text-2xs text-text-lo font-medium">{days[i]}</div>
 		</div>
 	{/each}
 </div>
-
-<style>
-	.weekly-bars {
-		display: flex;
-		align-items: flex-end;
-		gap: 6px;
-		height: 80px;
-	}
-	.week-bar-wrap {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 4px;
-		height: 100%;
-		justify-content: flex-end;
-	}
-	.week-bar {
-		width: 100%;
-		border-radius: 4px 4px 0 0;
-		background: rgba(80, 130, 255, 0.12);
-		min-height: 4px;
-		transition: height 0.6s var(--ease-out);
-	}
-	.week-bar.current {
-		background: rgba(80, 130, 255, 0.35);
-		box-shadow: 0 0 8px var(--accent-glow);
-	}
-	.week-label {
-		font-size: 10px;
-		color: var(--text-lo);
-		font-weight: 500;
-	}
-</style>

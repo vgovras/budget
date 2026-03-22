@@ -20,11 +20,13 @@
 	);
 </script>
 
-<div class="icon-grid">
+<div class="grid grid-cols-6 gap-2 max-h-40 overflow-y-auto no-scrollbar">
 	{#each items as item (item.icon)}
 		<button
-			class="icon-btn"
-			class:active={selected === item.icon}
+			class="aspect-square flex items-center justify-center rounded-xl border transition-all duration-200
+				{selected === item.icon
+					? 'border-accent bg-accent-bg text-text-hi'
+					: 'border-surface-8 bg-surface-4 text-text-lo'}"
 			style:background={selected === item.icon && activeBg ? activeBg : ''}
 			style:border-color={selected === item.icon && activeBorder ? activeBorder : ''}
 			onclick={() => onSelect(item.icon)}
@@ -34,36 +36,3 @@
 		</button>
 	{/each}
 </div>
-
-<style>
-	.icon-grid {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		gap: 8px;
-		max-height: 160px;
-		overflow-y: auto;
-		scrollbar-width: none;
-	}
-	.icon-grid::-webkit-scrollbar {
-		display: none;
-	}
-
-	.icon-btn {
-		aspect-ratio: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 12px;
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.04);
-		color: var(--text-lo);
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-family: var(--font);
-	}
-	.icon-btn.active {
-		border-color: var(--accent);
-		background: rgba(80, 130, 255, 0.12);
-		color: var(--text-hi);
-	}
-</style>
