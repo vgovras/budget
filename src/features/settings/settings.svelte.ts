@@ -7,6 +7,11 @@ import { recurringVM } from '$features/recurring/recurring.svelte.js';
 export class SettingsViewModel {
 	#repo: SettingsRepository;
 
+	#systemTheme(): 'dark' | 'light' {
+		if (typeof window === 'undefined') return 'dark';
+		return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+	}
+
 	payday = $state(DEFAULT_SETTINGS.payday);
 	currency = $state(DEFAULT_SETTINGS.currency);
 	notifications = $state(DEFAULT_SETTINGS.notifications);
@@ -16,6 +21,7 @@ export class SettingsViewModel {
 	fiatViewEnabled = $state(false);
 	fiatCurrency = $state(DEFAULT_SETTINGS.fiatCurrency);
 	savingsPercent = $state(DEFAULT_SETTINGS.savingsPercent);
+	theme = $state<'dark' | 'light'>('dark');
 	loaded = $state(false);
 
 	readonly salary = $derived(
@@ -61,8 +67,10 @@ export class SettingsViewModel {
 			this.fiatViewEnabled = saved.fiatViewEnabled ?? false;
 			this.fiatCurrency = (saved as any).fiatCurrency ?? saved.currency ?? DEFAULT_SETTINGS.fiatCurrency;
 			this.savingsPercent = (saved as any).savingsPercent ?? 0;
+			this.theme = (saved as any).theme ?? this.#systemTheme();
 		}
 		this.loaded = true;
+		this.#applyTheme();
 	}
 
 	updatePayday(val: number) {
@@ -78,6 +86,18 @@ export class SettingsViewModel {
 	toggleWarning() {
 		this.warning = !this.warning;
 		this.#save();
+	}
+
+	toggleTheme() {
+		this.theme = this.theme === 'dark' ? 'light' : 'dark';
+		this.#applyTheme();
+		this.#save();
+	}
+
+	#applyTheme() {
+		if (typeof document !== 'undefined') {
+			document.documentElement.setAttribute('data-theme', this.theme);
+		}
 	}
 
 	toggleFiatView() {
@@ -119,6 +139,8 @@ export class SettingsViewModel {
 		this.fiatViewEnabled = false;
 		this.fiatCurrency = DEFAULT_SETTINGS.fiatCurrency;
 		this.savingsPercent = 0;
+		this.theme = 'dark';
+		this.#applyTheme();
 		this.#repo.clear();
 	}
 
@@ -136,7 +158,8 @@ export class SettingsViewModel {
 			lastPayday: this.lastPayday,
 			fiatViewEnabled: this.fiatViewEnabled,
 			fiatCurrency: this.fiatCurrency,
-			savingsPercent: this.savingsPercent
+			savingsPercent: this.savingsPercent,
+			theme: this.theme
 		};
 	}
 }

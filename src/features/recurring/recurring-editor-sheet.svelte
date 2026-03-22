@@ -98,8 +98,8 @@
 
 	.sheet-tabs {
 		display: flex;
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: var(--surface-4);
+		border: 1px solid var(--border);
 		border-radius: 12px;
 		padding: 3px;
 		gap: 3px;
@@ -119,7 +119,7 @@
 		background: transparent;
 	}
 	.sheet-tab.active {
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--surface-8);
 		color: var(--text-hi);
 	}
 	.sheet-tab.income-tab.active {
@@ -130,8 +130,8 @@
 	.note-field {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--border);
+		background: var(--surface-3);
 		font-size: 15px;
 		width: 100%;
 		color: var(--text-hi);
@@ -139,5 +139,5 @@
 		transition: border-color 0.2s ease;
 	}
 	.note-field::placeholder { color: var(--text-lo); }
-	.note-field:focus { border-color: rgba(255, 255, 255, 0.16); outline: none; }
+	.note-field:focus { border-color: var(--surface-16); outline: none; }
 </style>

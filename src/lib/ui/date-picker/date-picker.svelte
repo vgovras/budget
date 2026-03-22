@@ -28,6 +28,6 @@
 		transition: background 0.15s ease;
 	}
 	input::-webkit-calendar-picker-indicator:hover {
-		background: rgba(255, 255, 255, 0.1);
+		background: var(--border-hi);
 	}
 </style>

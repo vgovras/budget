@@ -41,8 +41,8 @@
 		align-items: baseline;
 		gap: 8px;
 		padding: 12px 16px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: var(--surface-5);
+		border: 1px solid var(--border-hi);
 		border-radius: var(--r-sm);
 	}
 

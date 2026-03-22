@@ -130,7 +130,7 @@
 	.top-bar-title {
 		font-size: 20px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 	}
 
 	.content {
@@ -151,10 +151,10 @@
 	}
 
 	.analytics-card {
-		background: #09090e;
+		background: var(--card);
 		border-radius: 20px;
 		padding: 20px;
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		border: 1px solid var(--border);
 		flex-shrink: 0;
 	}
 
@@ -163,7 +163,7 @@
 		font-weight: 500;
 		letter-spacing: 1.4px;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 		margin-bottom: 16px;
 	}
 
@@ -180,11 +180,11 @@
 	.accounts-total {
 		font-size: 15px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--text-secondary);
 	}
 	.acc-divider {
 		height: 1px;
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--surface-4);
 		margin: 0 20px;
 	}
 	.acc-row {
@@ -201,9 +201,9 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		color: rgba(255, 255, 255, 0.4);
+		background: var(--surface-5);
+		border: 1px solid var(--border);
+		color: var(--text-mid);
 	}
 	.acc-icon.primary {
 		background: rgba(80, 200, 120, 0.12);
@@ -217,12 +217,12 @@
 	.acc-name {
 		font-size: 15px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 	}
 	.acc-budget-line {
 		font-size: 12px;
 		font-weight: 300;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 		margin-top: 2px;
 	}
 	.acc-balance-wrap {
@@ -232,18 +232,18 @@
 	.acc-balance {
 		font-size: 15px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 	}
 	.acc-balance-original {
 		font-size: 12px;
 		font-weight: 300;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 		margin-top: 2px;
 	}
 	.acc-prog-track {
 		height: 2px;
 		border-radius: 99px;
-		background: rgba(255, 255, 255, 0.07);
+		background: var(--border);
 		margin: 0 20px 4px;
 	}
 	.acc-prog-fill {
@@ -263,7 +263,7 @@
 		transition: background 0.15s ease;
 	}
 	.add-acc-row:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--surface-3);
 	}
 	.add-acc-icon {
 		width: 34px;

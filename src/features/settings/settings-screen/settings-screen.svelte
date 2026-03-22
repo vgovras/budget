@@ -288,7 +288,7 @@
 	.top-bar-title {
 		font-size: 20px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 	}
 
 	.content {
@@ -313,14 +313,14 @@
 		font-weight: 500;
 		letter-spacing: 1.4px;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 		padding: 0 4px 8px;
 	}
 
 	.settings-group {
-		background: #09090e;
+		background: var(--card);
 		border-radius: 20px;
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		border: 1px solid var(--border);
 		position: relative;
 	}
 
@@ -343,7 +343,7 @@
 		background: var(--border);
 	}
 	.settings-row:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--surface-3);
 	}
 	.lang-row {
 		cursor: default;
@@ -357,9 +357,9 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		color: rgba(255, 255, 255, 0.4);
+		background: var(--surface-5);
+		border: 1px solid var(--border);
+		color: var(--text-mid);
 	}
 
 	.settings-row-info {
@@ -369,7 +369,7 @@
 	.settings-row-label {
 		font-size: 14px;
 		font-weight: 500;
-		color: #fff;
+		color: var(--text-hi);
 	}
 	.settings-row-value {
 		font-size: 13px;
@@ -403,8 +403,8 @@
 		width: 48px;
 		height: 28px;
 		border-radius: 99px;
-		background: rgba(255, 255, 255, 0.08);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--surface-8);
+		border: 1px solid var(--surface-8);
 		position: relative;
 		cursor: pointer;
 		transition: all 0.25s ease;
@@ -424,7 +424,7 @@
 		width: 22px;
 		height: 22px;
 		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.8);
+		background: var(--text-hi);
 		transition: all 0.25s ease;
 		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 	}
@@ -450,7 +450,7 @@
 		transition: background 0.15s ease;
 	}
 	.cat-edit-btn:hover {
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--surface-5);
 	}
 	.cat-delete-btn {
 		color: var(--danger);

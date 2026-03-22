@@ -42,8 +42,8 @@
 		flex-shrink: 0;
 	}
 	.toggle.on {
-		background: var(--color-surface-16);
-		border-color: var(--color-surface-14);
+		background: var(--accent);
+		border-color: var(--accent-border);
 	}
 	.toggle-handle {
 		position: absolute;
@@ -52,12 +52,11 @@
 		width: 22px;
 		height: 22px;
 		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.8);
+		background: #ffffff;
 		transition: all 0.25s ease;
-		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 	}
 	.toggle.on .toggle-handle {
 		left: 22px;
-		background: #ffffff;
 	}
 </style>

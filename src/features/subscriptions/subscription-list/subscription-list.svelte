@@ -61,8 +61,8 @@
 
 <style>
 	.sub-section {
-		background: var(--card-bg, rgba(255, 255, 255, 0.03));
-		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: var(--card);
+		border: 1px solid var(--border);
 		border-radius: 20px;
 		overflow: hidden;
 		flex-shrink: 0;
@@ -79,14 +79,14 @@
 		font-size: 10px;
 		letter-spacing: 1.3px;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.22);
+		color: var(--text-muted);
 		font-weight: 500;
 	}
 
 	.sub-total {
 		font-size: 13px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--text-secondary);
 	}
 
 	.sub-row {
@@ -98,7 +98,7 @@
 		transition: background 0.15s ease;
 	}
 	.sub-row:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--surface-3);
 	}
 	.sub-row.paused {
 		opacity: 0.4;
@@ -125,25 +125,25 @@
 	.sub-name {
 		font-size: 14px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 	}
 
 	.sub-meta {
 		font-size: 11px;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 		font-weight: 300;
 	}
 
 	.sub-amount {
 		font-size: 14px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--text-primary);
 		flex-shrink: 0;
 	}
 
 	.sub-divider {
 		height: 1px;
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--surface-4);
 		margin: 0 16px;
 	}
 
@@ -156,7 +156,7 @@
 		transition: background 0.15s ease;
 	}
 	.add-row:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--surface-3);
 	}
 
 	.add-icon {
@@ -166,13 +166,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 1px dashed rgba(255, 255, 255, 0.1);
-		color: rgba(80, 130, 255, 0.6);
+		border: 1px dashed var(--border-hi);
+		color: var(--accent);
 	}
 
 	.add-label {
 		font-size: 14px;
-		color: rgba(80, 130, 255, 0.6);
+		color: var(--accent);
 		font-weight: 400;
 	}
 </style>

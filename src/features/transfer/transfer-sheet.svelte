@@ -111,8 +111,8 @@
 	.field-input {
 		padding: 14px 16px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--surface-8);
+		background: var(--surface-5);
 		font-size: 16px;
 		color: var(--text-hi);
 		font-family: var(--font);
@@ -134,8 +134,8 @@
 
 	.amount-field {
 		padding: 16px 18px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: var(--surface-5);
+		border: 1px solid var(--border-hi);
 		border-radius: var(--r-md);
 		transition: border-color 0.2s ease;
 	}

@@ -30,8 +30,8 @@
 		gap: 4px;
 		padding: 8px 12px;
 		border-radius: 10px;
-		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--surface-5);
+		background: var(--surface-3);
 		cursor: pointer;
 		transition: all 0.15s ease;
 		font-size: 11px;
@@ -40,7 +40,7 @@
 	}
 
 	.quick-chip:hover {
-		background: rgba(255, 255, 255, 0.07);
+		background: var(--border);
 	}
 
 	.quick-chip-emoji {

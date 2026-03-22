@@ -51,8 +51,8 @@
 		position: relative;
 		cursor: pointer;
 		transition: transform 0.3s var(--ease-out);
-		background: #09090e;
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: var(--card);
+		border: 1px solid var(--border);
 	}
 
 	.card::before {
@@ -89,7 +89,7 @@
 		font-weight: 500;
 		letter-spacing: 1.4px;
 		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 	}
 
 	.amount {
@@ -99,7 +99,7 @@
 		font-weight: 300;
 		letter-spacing: -2px;
 		line-height: 1;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 	}
 
 	.cur {
@@ -119,7 +119,7 @@
 		margin-top: 20px;
 		margin-bottom: 10px;
 		font-size: 12px;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 		font-weight: 300;
 	}
 	.budget-nums {
@@ -127,7 +127,7 @@
 	}
 	.budget-pct {
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--text-secondary);
 	}
 
 	.prog-track {
@@ -135,7 +135,7 @@
 		z-index: 1;
 		height: 3px;
 		border-radius: 99px;
-		background: rgba(255, 255, 255, 0.07);
+		background: var(--border);
 		overflow: visible;
 	}
 	.prog-fill {

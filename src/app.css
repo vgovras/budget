@@ -68,6 +68,17 @@
 	--success-bg: rgba(80, 200, 120, 0.15);
 	--success-border: rgba(80, 200, 120, 0.4);
 
+	/* Surfaces — white at different opacities (dark) */
+	--surface-3: rgba(255, 255, 255, 0.03);
+	--surface-4: rgba(255, 255, 255, 0.04);
+	--surface-5: rgba(255, 255, 255, 0.05);
+	--surface-7: rgba(255, 255, 255, 0.07);
+	--surface-8: rgba(255, 255, 255, 0.08);
+	--surface-10: rgba(255, 255, 255, 0.10);
+	--surface-12: rgba(255, 255, 255, 0.12);
+	--surface-14: rgba(255, 255, 255, 0.14);
+	--surface-16: rgba(255, 255, 255, 0.16);
+
 	/* Radii */
 	--r-sm: 14px;
 	--r-md: 20px;
@@ -82,6 +93,70 @@
 	--font-mono: 'DM Sans', 'Currency Fallback', monospace;
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================================
+   LIGHT THEME
+   ============================================================ */
+[data-theme="light"] {
+	--bg: #f5f5f0;
+	--card: #ffffff;
+	--card-elevated: #ffffff;
+	--card-alt: #f0f0eb;
+	--overlay: rgba(0, 0, 0, 0.25);
+	--border: rgba(0, 0, 0, 0.08);
+	--border-hi: rgba(0, 0, 0, 0.12);
+
+	--accent: rgba(50, 100, 220, 0.85);
+	--accent-dim: rgba(50, 100, 220, 0.55);
+	--accent-bg: rgba(50, 100, 220, 0.08);
+	--accent-hover: rgba(50, 100, 220, 0.12);
+	--accent-border: rgba(50, 100, 220, 0.2);
+	--accent-border-hi: rgba(50, 100, 220, 0.3);
+	--accent-glow: rgba(50, 100, 220, 0.1);
+
+	--income: #2eaa60;
+	--income-dim: rgba(46, 170, 96, 0.65);
+	--income-bg: rgba(46, 170, 96, 0.08);
+	--income-border: rgba(46, 170, 96, 0.2);
+
+	--danger: rgba(220, 60, 60, 0.8);
+	--danger-dim: rgba(220, 60, 60, 0.5);
+	--danger-bg: rgba(220, 60, 60, 0.06);
+	--danger-hover: rgba(220, 60, 60, 0.12);
+	--danger-border: rgba(220, 60, 60, 0.18);
+
+	--warning: #d4880a;
+	--warning-dim: rgba(212, 136, 10, 0.6);
+	--warning-bg: rgba(212, 136, 10, 0.06);
+	--warning-border: rgba(212, 136, 10, 0.18);
+
+	--text-hi: rgba(0, 0, 0, 0.87);
+	--text-primary: rgba(0, 0, 0, 0.7);
+	--text-secondary: rgba(0, 0, 0, 0.55);
+	--text-mid: rgba(0, 0, 0, 0.45);
+	--text-lo: rgba(0, 0, 0, 0.38);
+	--text-muted: rgba(0, 0, 0, 0.3);
+
+	--primary-bg: rgba(0, 0, 0, 0.9);
+	--primary-fg: #ffffff;
+
+	--expense: rgba(0, 0, 0, 0.4);
+
+	--success: rgba(40, 160, 80, 0.9);
+	--success-dim: rgba(40, 160, 80, 0.6);
+	--success-bg: rgba(40, 160, 80, 0.1);
+	--success-border: rgba(40, 160, 80, 0.3);
+
+	--surface-3: rgba(0, 0, 0, 0.03);
+	--surface-4: rgba(0, 0, 0, 0.04);
+	--surface-5: rgba(0, 0, 0, 0.05);
+	--surface-7: rgba(0, 0, 0, 0.07);
+	--surface-8: rgba(0, 0, 0, 0.08);
+	--surface-10: rgba(0, 0, 0, 0.10);
+	--surface-12: rgba(0, 0, 0, 0.12);
+	--surface-14: rgba(0, 0, 0, 0.15);
+	--surface-16: rgba(0, 0, 0, 0.18);
 }
 
 /* ============================================================
@@ -171,16 +246,16 @@
 	--radius-lg: var(--r-lg);
 	--radius-xl: var(--r-xl);
 
-	/* Surfaces — white at different opacities */
-	--color-surface-3: rgb(255 255 255 / 0.03);
-	--color-surface-4: rgb(255 255 255 / 0.04);
-	--color-surface-5: rgb(255 255 255 / 0.05);
-	--color-surface-7: rgb(255 255 255 / 0.07);
-	--color-surface-8: rgb(255 255 255 / 0.08);
-	--color-surface-10: rgb(255 255 255 / 0.10);
-	--color-surface-12: rgb(255 255 255 / 0.12);
-	--color-surface-14: rgb(255 255 255 / 0.14);
-	--color-surface-16: rgb(255 255 255 / 0.16);
+	/* Surfaces — reference :root vars */
+	--color-surface-3: var(--surface-3);
+	--color-surface-4: var(--surface-4);
+	--color-surface-5: var(--surface-5);
+	--color-surface-7: var(--surface-7);
+	--color-surface-8: var(--surface-8);
+	--color-surface-10: var(--surface-10);
+	--color-surface-12: var(--surface-12);
+	--color-surface-14: var(--surface-14);
+	--color-surface-16: var(--surface-16);
 
 	/* Typography scale
 	   Tailwind defaults: xs(12) sm(14) base(16) lg(18) xl(20) 2xl(24) 3xl(30) 4xl(36) 5xl(48)
@@ -224,7 +299,7 @@
 	body {
 		height: 100%;
 		margin: 0;
-		background: #050508;
+		background: var(--bg);
 		font-family: var(--font);
 		font-weight: 400;
 		color: var(--text-hi);

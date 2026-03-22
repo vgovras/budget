@@ -42,7 +42,7 @@
 		destructive: 'bg-danger-bg border border-danger-border text-danger hover:bg-danger-hover',
 		accent: 'bg-accent-bg border border-accent-border text-accent hover:enabled:bg-accent-hover hover:enabled:border-accent-border-hi disabled:border-border',
 		soft: 'bg-soft border border-soft-border text-white font-semibold shadow-soft hover:enabled:bg-soft-hover hover:enabled:border-soft-hover-border disabled:shadow-none disabled:border-border',
-		primary: 'bg-primary-bg text-primary-fg hover:bg-white',
+		primary: 'bg-primary-bg text-primary-fg hover:opacity-85',
 		gradient: 'bg-gradient-to-br from-gradient-from to-gradient-to text-white shadow-gradient',
 		outline: 'bg-transparent border border-border-hi text-text-mid font-normal hover:border-text-muted'
 	};

@@ -28,22 +28,22 @@
 	.note-field {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--surface-8);
+		background: var(--surface-5);
 		font-size: 15px;
 		width: 100%;
 		transition: all 0.2s ease;
 		color: var(--text-hi);
 		font-family: var(--font);
 		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.1),
+			inset 0 1px 0 var(--border-hi),
 			inset 0 -1px 0 rgba(0, 0, 0, 0.12);
 	}
 	.note-field::placeholder {
 		color: var(--text-mid);
 	}
 	.note-field:focus {
-		border-color: rgba(255, 255, 255, 0.18);
+		border-color: var(--surface-16);
 		outline: none;
 	}
 
@@ -57,7 +57,7 @@
 		padding: 5px 12px;
 		border-radius: 99px;
 		border: 1px solid var(--border-hi);
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--surface-4);
 		font-size: 12px;
 		color: var(--text-mid);
 		cursor: pointer;
@@ -66,7 +66,7 @@
 		font-family: var(--font);
 	}
 	.note-sug:hover {
-		background: rgba(255, 255, 255, 0.08);
+		background: var(--surface-8);
 		color: var(--text-hi);
 	}
 </style>

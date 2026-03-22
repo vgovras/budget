@@ -40,8 +40,8 @@
 	</div>
 
 	<div class="flex items-baseline gap-1.5 mb-3.5 relative">
-		<span class="text-base font-light opacity-40 text-white">{currency}</span>
-		<span class="text-[28px] font-medium text-white tracking-tight">{fmt(spentAmount)}</span>
+		<span class="text-base font-light opacity-40 text-text-hi">{currency}</span>
+		<span class="text-[28px] font-medium text-text-hi tracking-tight">{fmt(spentAmount)}</span>
 		<span class="text-sm text-text-mid font-light">{m.account_of()}</span>
 		<span class="text-sm text-text-secondary">{currency} {fmt(totalBudget)}</span>
 	</div>

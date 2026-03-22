@@ -92,12 +92,12 @@
 	.month-label {
 		font-size: 14px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 		text-transform: capitalize;
 	}
 	.nav-arrow {
 		cursor: pointer;
-		color: rgba(255, 255, 255, 0.4);
+		color: var(--text-mid);
 		padding: 4px;
 		border-radius: 8px;
 		display: flex;
@@ -106,7 +106,7 @@
 		transition: color 0.15s;
 	}
 	.nav-arrow:hover {
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--text-primary);
 	}
 
 	.weekdays {
@@ -117,7 +117,7 @@
 	.wd {
 		font-size: 10px;
 		font-weight: 500;
-		color: rgba(255, 255, 255, 0.2);
+		color: var(--text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		padding: 4px 0;
@@ -135,7 +135,7 @@
 		justify-content: center;
 		font-size: 13px;
 		font-weight: 400;
-		color: rgba(255, 255, 255, 0.7);
+		color: var(--text-primary);
 		height: 36px;
 		border-radius: 8px;
 		cursor: pointer;
@@ -143,10 +143,10 @@
 		user-select: none;
 	}
 	.day:hover {
-		background: rgba(255, 255, 255, 0.06);
+		background: var(--surface-5);
 	}
 	.day.outside {
-		color: rgba(255, 255, 255, 0.15);
+		color: var(--surface-16);
 	}
 	.day.today {
 		color: var(--accent);

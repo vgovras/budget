@@ -71,8 +71,8 @@
 	.field-input {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--surface-8);
+		background: var(--surface-5);
 		font-size: 16px;
 		color: var(--text-hi);
 		font-family: var(--font);
@@ -102,7 +102,7 @@
 		transition: all 0.2s ease;
 	}
 	.color-dot.active {
-		box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(255, 255, 255, 0.3);
+		box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--text-lo);
 	}
 
 	.commission-row {

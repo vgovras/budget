@@ -143,7 +143,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		background: rgba(30, 30, 40, 0.95);
-		border: 1px solid rgba(255, 255, 255, 0.12);
+		border: 1px solid var(--surface-12);
 		border-radius: 10px;
 		padding: 8px 12px;
 		font-size: 12px;

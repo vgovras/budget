@@ -86,7 +86,7 @@
 		overscroll-behavior: contain;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
-		background: rgba(22, 22, 26, 0.92);
+		background: var(--card-elevated);
 		backdrop-filter: blur(24px) saturate(120%);
 		-webkit-backdrop-filter: blur(24px) saturate(120%);
 		border: 1px solid var(--border-hi);
@@ -94,8 +94,8 @@
 		padding: 6px;
 		z-index: 11;
 		box-shadow:
-			0 12px 40px rgba(0, 0, 0, 0.5),
-			0 0 0 1px rgba(255, 255, 255, 0.04);
+			0 12px 40px rgba(0, 0, 0, 0.15),
+			0 0 0 1px var(--surface-4);
 	}
 	.menu::-webkit-scrollbar {
 		display: none;

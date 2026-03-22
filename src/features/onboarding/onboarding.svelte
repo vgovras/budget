@@ -59,7 +59,7 @@
 			{#each segments as i (i)}
 				<div
 					class="flex-1 h-0.5 rounded-[1px] transition-colors duration-400
-						{i < vm.currentSlide ? 'bg-[rgba(255,255,255,0.7)]' : i === vm.currentSlide ? 'bg-text-mid' : 'bg-surface-10'}"
+						{i < vm.currentSlide ? 'bg-[var(--text-primary)]' : i === vm.currentSlide ? 'bg-text-mid' : 'bg-surface-10'}"
 				></div>
 			{/each}
 		</div>

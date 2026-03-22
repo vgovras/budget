@@ -21,7 +21,7 @@
 
 <div class="pt-5 px-1">
 	<div class="text-2xs tracking-[1.4px] uppercase text-text-muted font-medium mb-1.5">{m.home_remaining_budget()}</div>
-	<div class="text-[54px] font-light text-white tracking-[-3px] leading-none mb-1">
+	<div class="text-[54px] font-light text-text-hi tracking-[-3px] leading-none mb-1">
 		<span class="text-2xl opacity-35 align-super tracking-normal">{currency}</span>{fmt(remaining)}
 	</div>
 	<div class="text-xs text-text-lo font-light flex items-center gap-1.5 mb-4.5">

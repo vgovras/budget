@@ -63,7 +63,7 @@
 		contain: layout style;
 	}
 	.exp-row:hover {
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--surface-3);
 	}
 
 	.exp-icon {
@@ -75,9 +75,9 @@
 		justify-content: center;
 		flex-shrink: 0;
 		position: relative;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		color: rgba(255, 255, 255, 0.45);
+		background: var(--surface-5);
+		border: 1px solid var(--border);
+		color: var(--text-mid);
 	}
 
 	.exp-info {
@@ -91,12 +91,12 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		color: rgba(255, 255, 255, 0.85);
+		color: var(--text-hi);
 	}
 	.exp-note {
 		font-size: 13px;
 		font-weight: 300;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 	}
 	.exp-amount-wrap {
 		flex-shrink: 0;
@@ -105,12 +105,12 @@
 	.exp-amount {
 		font-size: 15px;
 		font-weight: 500;
-		color: rgba(255, 100, 100, 0.75);
+		color: var(--danger);
 	}
 	.exp-commission {
 		font-size: 11px;
 		font-weight: 300;
-		color: rgba(255, 255, 255, 0.25);
+		color: var(--text-lo);
 		display: block;
 		margin-top: 2px;
 	}

@@ -23,8 +23,8 @@
 		<div class="ready-content">
 			<div class="checkmark-circle" in:scale={{ duration: 500, start: 0, delay: 100 }}>
 				<svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-					<circle cx="18" cy="18" r="17" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-					<path d="M11 18.5L15.5 23L25 13" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+					<circle cx="18" cy="18" r="17" stroke="var(--surface-10)" stroke-width="1"/>
+					<path d="M11 18.5L15.5 23L25 13" stroke="var(--text-hi)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
 				</svg>
 			</div>
 
@@ -82,11 +82,11 @@
 	}
 	.glow-1 {
 		width: 280px; height: 280px; left: 50%; top: 50%; transform: translate(-50%,-50%);
-		background: radial-gradient(ellipse, rgba(60,100,255,0.2) 0%, transparent 60%);
+		background: radial-gradient(ellipse, rgba(60,100,255,0.3) 0%, transparent 60%);
 	}
 	.glow-2 {
 		width: 200px; height: 200px; left: 50%; top: 50%; transform: translate(-50%,-50%);
-		background: radial-gradient(ellipse, rgba(120,60,220,0.18) 0%, transparent 60%);
+		background: radial-gradient(ellipse, rgba(120,60,220,0.3) 0%, transparent 60%);
 		animation-delay: 2s;
 	}
 
@@ -97,22 +97,22 @@
 
 	.checkmark-circle {
 		width: 70px; height: 70px; border-radius: 50%;
-		background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+		background: var(--surface-5); border: 1px solid var(--border-hi);
 		display: flex; align-items: center; justify-content: center;
 	}
 
 	.mini-cards { display: flex; gap: 8px; }
 	.mini-card {
-		background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+		background: var(--surface-5); border: 1px solid var(--surface-8);
 		border-radius: 14px; padding: 8px 12px; text-align: center; flex: 1;
 		min-width: 65px;
 	}
 	.mini-card-val {
-		font-size: 15px; font-weight: 500; color: #fff; letter-spacing: -0.3px;
+		font-size: 15px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px;
 	}
-	.mini-card-val.green { color: rgba(80,200,120,0.85); }
+	.mini-card-val.green { color: var(--success); }
 	.mini-card-label {
-		font-size: 9px; color: rgba(255,255,255,0.25); font-weight: 300; margin-top: 2px;
+		font-size: 9px; color: var(--text-lo); font-weight: 300; margin-top: 2px;
 	}
 
 	.mini-bars {
@@ -120,26 +120,26 @@
 	}
 	.mini-bar {
 		width: 16px; border-radius: 3px 3px 0 0;
-		background: rgba(80,130,255,0.7);
+		background: var(--accent);
 	}
 	.mini-bar.active {
-		background: rgba(80,200,120,0.7);
+		background: var(--success);
 	}
 
 	.text-block { padding: 8px 28px 0; display: flex; flex-direction: column; }
 	.slide-num {
 		font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-		color: rgba(255,255,255,0.2); font-weight: 500; margin-bottom: 10px;
+		color: var(--text-muted); font-weight: 500; margin-bottom: 10px;
 	}
 	.slide-title {
-		font-size: 32px; font-weight: 500; color: #fff; letter-spacing: -0.8px;
+		font-size: 32px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.8px;
 		line-height: 1.15; margin-bottom: 10px;
 	}
 	.slide-title :global(em) {
-		font-style: normal; color: rgba(255,255,255,0.38); font-weight: 300;
+		font-style: normal; color: var(--text-mid); font-weight: 300;
 	}
 	.slide-desc {
-		font-size: 15px; color: rgba(255,255,255,0.38); font-weight: 300; line-height: 1.6;
+		font-size: 15px; color: var(--text-mid); font-weight: 300; line-height: 1.6;
 	}
 
 	.bottom { padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }

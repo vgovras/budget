@@ -9,6 +9,7 @@
 	import { navigationVM } from '$features/navigation/navigation.svelte.js';
 	import { fmt, getDateLabel } from '$lib/utils/format.js';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
+	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { onEdit, onAdd }: { onEdit?: (id: number) => void; onAdd?: () => void } = $props();
@@ -19,7 +20,17 @@
 <div class="content" use:scrollNav>
 	<!-- Hero Balance -->
 	<div class="hero">
-		<div class="hero-label">{m.account_balance()}</div>
+		<div class="flex justify-between items-start">
+			<div class="hero-label">{m.account_balance()}</div>
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
+				class="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0 bg-surface-5 border border-border text-text-mid cursor-pointer transition-all duration-200 active:scale-90"
+				onclick={() => settingsVM.toggleTheme()}
+			>
+				<Icon name={settingsVM.theme === 'dark' ? 'sun' : 'moon'} size={16} />
+			</div>
+		</div>
 		<div class="hero-balance">
 			<span class="curr">{vm.currency}</span>{fmt(vm.accountBalance)}
 		</div>
@@ -107,7 +118,7 @@
 	{#if !vm.hasExpenses}
 		<Card class="empty-card">
 			<div class="empty-icon">
-				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+				<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-text-mid">
 					<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
 				</svg>
 			</div>
@@ -147,22 +158,22 @@
 	.hero { padding: 0 4px; }
 	.hero-label {
 		font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase;
-		color: rgba(255,255,255,0.22); font-weight: 500; margin-bottom: 6px;
+		color: var(--text-muted); font-weight: 500; margin-bottom: 6px;
 	}
 	.hero-balance {
-		font-size: 54px; font-weight: 300; color: #fff;
+		font-size: 54px; font-weight: 300; color: var(--text-hi);
 		letter-spacing: -3px; line-height: 1; margin-bottom: 5px;
 	}
 	.hero-balance .curr { font-size: 26px; opacity: 0.35; vertical-align: super; letter-spacing: 0; }
 	.hero-sub {
-		font-size: 12px; color: rgba(255,255,255,0.25); font-weight: 300;
+		font-size: 12px; color: var(--text-lo); font-weight: 300;
 		display: flex; align-items: center; gap: 6px;
 	}
 	.sub-item { letter-spacing: 0.2px; }
 	.sub-item.spent { color: rgba(255,100,100,0.6); }
 	.sub-dot {
 		width: 3px; height: 3px; border-radius: 50%;
-		background: rgba(255,255,255,0.15);
+		background: var(--surface-16);
 	}
 
 	/* Shared card internals */
@@ -172,21 +183,21 @@
 	}
 	.card-label {
 		font-size: 10px; letter-spacing: 1.3px; text-transform: uppercase;
-		color: rgba(255,255,255,0.22); font-weight: 500;
+		color: var(--text-muted); font-weight: 500;
 	}
 	.card-sub {
-		font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; margin-top: 2px;
+		font-size: 13px; color: var(--text-primary); font-weight: 500; margin-top: 2px;
 	}
 
 	/* Period toggle */
 	.period-toggle { display: flex; gap: 4px; }
 	.ptab {
 		font-size: 10px; padding: 4px 8px; border-radius: 8px;
-		color: rgba(255,255,255,0.3); cursor: pointer; font-weight: 400;
+		color: var(--text-lo); cursor: pointer; font-weight: 400;
 		background: none; border: none; font-family: var(--font);
 	}
 	.ptab.active {
-		background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.75); font-weight: 500;
+		background: var(--border); color: var(--text-primary); font-weight: 500;
 	}
 
 	/* Stat cards */
@@ -195,31 +206,31 @@
 	.stat-icon-row { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
 	.s-icon {
 		width: 28px; height: 28px; border-radius: 9px;
-		background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07);
+		background: var(--surface-5); border: 1px solid var(--border);
 		display: flex; align-items: center; justify-content: center;
-		color: rgba(255,255,255,0.38);
+		color: var(--text-mid);
 	}
 	.stat-badge {
 		font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase;
-		color: rgba(255,255,255,0.2); font-weight: 500;
+		color: var(--text-muted); font-weight: 500;
 	}
-	.stat-val { font-size: 19px; font-weight: 500; color: #fff; letter-spacing: -0.5px; }
+	.stat-val { font-size: 19px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.5px; }
 	.stat-val .curr { font-size: 12px; font-weight: 300; opacity: 0.38; }
 	.days-unit { font-size: 12px; font-weight: 300; opacity: 0.35; }
-	.stat-sub { font-size: 10px; color: rgba(255,255,255,0.22); font-weight: 300; margin-top: 2px; }
+	.stat-sub { font-size: 10px; color: var(--text-muted); font-weight: 300; margin-top: 2px; }
 	.stat-danger { color: var(--danger); }
 
 	/* Section header */
 	.sec-hdr { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
-	.sec-title { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.8); }
-	.sec-link { font-size: 12px; color: rgba(255,255,255,0.25); font-weight: 300; cursor: pointer; }
+	.sec-title { font-size: 14px; font-weight: 500; color: var(--text-hi); }
+	.sec-link { font-size: 12px; color: var(--text-lo); font-weight: 300; cursor: pointer; }
 
 	/* Expense list inside card */
 	.exp-group-label {
 		font-size: 9px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
-		color: rgba(255,255,255,0.18); padding: 12px 14px 7px;
+		color: var(--text-muted); padding: 12px 14px 7px;
 	}
-	.exp-divider { height: 1px; background: rgba(255,255,255,0.04); margin: 0 14px; }
+	.exp-divider { height: 1px; background: var(--surface-4); margin: 0 14px; }
 
 	/* Empty expenses card */
 	:global(.empty-card) {
@@ -228,12 +239,12 @@
 	}
 	.empty-icon {
 		width: 52px; height: 52px; border-radius: 18px;
-		background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+		background: var(--surface-4); border: 1px solid var(--surface-8);
 		display: flex; align-items: center; justify-content: center;
 	}
-	.empty-title { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.65); }
+	.empty-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
 	.empty-sub {
-		font-size: 12px; color: rgba(255,255,255,0.25); font-weight: 300;
+		font-size: 12px; color: var(--text-lo); font-weight: 300;
 		text-align: center; line-height: 1.5; max-width: 200px;
 	}
 
@@ -247,5 +258,5 @@
 		font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase;
 		color: rgba(80,130,255,0.6); font-weight: 500; margin-bottom: 4px;
 	}
-	.tip-text { font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 300; line-height: 1.5; }
+	.tip-text { font-size: 12px; color: var(--text-secondary); font-weight: 300; line-height: 1.5; }
 </style>

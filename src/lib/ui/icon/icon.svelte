@@ -106,7 +106,9 @@
 		podcast: icons.Podcast,
 		radio: icons.Radio,
 		trophy: icons.Trophy,
-		infinity: icons.Infinity
+		infinity: icons.Infinity,
+		sun: icons.Sun,
+		moon: icons.Moon
 	};
 
 	const IconComponent = $derived(iconMap[name]);

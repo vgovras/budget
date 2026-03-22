@@ -13,7 +13,7 @@
 
 <BottomSheet bind:open={vm.isOpen}>
 	<div class="flex flex-col gap-4">
-		<div class="text-[11px] font-medium tracking-[1.4px] uppercase text-[rgba(255,255,255,0.25)] text-center">
+		<div class="text-[11px] font-medium tracking-[1.4px] uppercase text-[var(--text-lo)] text-center">
 			{vm.title}
 		</div>
 
@@ -40,8 +40,8 @@
 	.note-field {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.07);
-		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--border);
+		background: var(--surface-3);
 		font-size: 15px;
 		width: 100%;
 		transition: all 0.2s ease;
@@ -52,7 +52,7 @@
 		color: var(--text-lo);
 	}
 	.note-field:focus {
-		border-color: rgba(255, 255, 255, 0.16);
+		border-color: var(--surface-16);
 		outline: none;
 	}
 </style>

@@ -53,8 +53,8 @@
 	.field-input {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--surface-8);
+		background: var(--surface-5);
 		font-size: 16px;
 		color: var(--text-hi);
 		font-family: var(--font);
@@ -69,8 +69,8 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 12px 14px;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--surface-3);
+		border: 1px solid var(--surface-8);
 		border-radius: 14px;
 		cursor: pointer;
 	}
@@ -79,6 +79,6 @@
 		align-items: center;
 		gap: 8px;
 		font-size: 14px;
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--text-primary);
 	}
 </style>

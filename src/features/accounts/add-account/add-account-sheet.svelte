@@ -53,8 +53,8 @@
 	.field-input {
 		padding: 12px 16px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--surface-8);
+		background: var(--surface-5);
 		font-size: 16px;
 		color: var(--text-hi);
 		font-family: var(--font);
@@ -81,8 +81,8 @@
 		gap: 4px;
 		padding: 12px 8px;
 		border-radius: var(--r-sm);
-		border: 1px solid rgba(255, 255, 255, 0.09);
-		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid var(--surface-8);
+		background: var(--surface-4);
 		color: var(--text-lo);
 		font-size: 13px;
 		font-family: var(--font);
@@ -95,8 +95,8 @@
 		font-size: 14px;
 	}
 	.type-chip.active {
-		border-color: rgba(255, 255, 255, 0.2);
-		background: rgba(255, 255, 255, 0.08);
+		border-color: var(--text-muted);
+		background: var(--surface-8);
 		color: var(--text-hi);
 	}
 </style>

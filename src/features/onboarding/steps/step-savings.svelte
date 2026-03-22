@@ -50,7 +50,7 @@
 		<div class="glow glow-2"></div>
 		<div class="ill">
 			<svg width="100" height="100" viewBox="0 0 100 100">
-				<circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="9"/>
+				<circle cx="50" cy="50" r="38" fill="none" stroke="var(--surface-4)" stroke-width="9"/>
 				<circle cx="50" cy="50" r="38" fill="none" stroke="rgba(74,127,255,0.75)" stroke-width="9"
 					stroke-dasharray="{foodDash} {circ}" stroke-dashoffset="0"
 					stroke-linecap="round" transform="rotate(-90 50 50)"
@@ -63,10 +63,10 @@
 					stroke-dasharray="{savingsDash} {circ}" stroke-dashoffset="-{foodDash + transportDash}"
 					stroke-linecap="round" transform="rotate(-90 50 50)"
 					style="transition: all 0.4s ease"/>
-				<text x="50" y="47" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.85)" text-anchor="middle" font-weight="500">
+				<text x="50" y="47" font-family="DM Sans,sans-serif" font-size="11" fill="var(--text-hi)" text-anchor="middle" font-weight="500">
 					{savingsPercent}%
 				</text>
-				<text x="50" y="59" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(255,255,255,0.28)" text-anchor="middle" font-weight="300">{m.onboarding_savings_pill()}</text>
+				<text x="50" y="59" font-family="DM Sans,sans-serif" font-size="8" fill="var(--text-mid)" text-anchor="middle" font-weight="300">{m.onboarding_savings_pill()}</text>
 			</svg>
 			<div class="cat-pills">
 				<div class="cat-pill"><div class="pill-dot" style="background:rgba(74,127,255,0.8)"></div>{m.category_food()}</div>
@@ -110,11 +110,11 @@
 	}
 	.glow-1 {
 		width: 220px; height: 200px; left: 50%; top: -30px; transform: translateX(-50%);
-		background: radial-gradient(ellipse, rgba(80,200,120,0.16) 0%, transparent 70%);
+		background: radial-gradient(ellipse, rgba(80,200,120,0.3) 0%, transparent 70%);
 	}
 	.glow-2 {
 		width: 160px; height: 140px; right: 0; bottom: 0;
-		background: radial-gradient(ellipse, rgba(60,100,255,0.14) 0%, transparent 70%);
+		background: radial-gradient(ellipse, rgba(60,100,255,0.25) 0%, transparent 70%);
 		animation-delay: 2s;
 	}
 
@@ -128,23 +128,23 @@
 	}
 	.cat-pill {
 		display: flex; align-items: center; gap: 5px;
-		background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09);
+		background: var(--surface-5); border: 1px solid var(--surface-8);
 		border-radius: 16px; padding: 5px 10px;
-		font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 400;
+		font-size: 11px; color: var(--text-secondary); font-weight: 400;
 	}
 	.pill-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
 
 	.text-block { padding: 8px 24px 0; display: flex; flex-direction: column; }
 	.slide-num {
 		font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-		color: rgba(255,255,255,0.2); font-weight: 500; margin-bottom: 8px;
+		color: var(--text-muted); font-weight: 500; margin-bottom: 8px;
 	}
 	.slide-title {
-		font-size: 32px; font-weight: 500; color: #fff; letter-spacing: -0.8px;
+		font-size: 32px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.8px;
 		line-height: 1.15;
 	}
 	.slide-title :global(em) {
-		font-style: normal; color: rgba(255,255,255,0.38); font-weight: 300;
+		font-style: normal; color: var(--text-mid); font-weight: 300;
 	}
 
 	.savings-area {

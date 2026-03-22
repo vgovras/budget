@@ -42,7 +42,7 @@
 				y="68"
 				text-anchor="middle"
 				font-size="10"
-				fill="rgba(255,255,255,0.35)"
+				fill="var(--text-mid)"
 				font-family="DM Sans"
 				letter-spacing="1">{m.analytics_donut_total()}</text
 			>
@@ -51,7 +51,7 @@
 				y="86"
 				text-anchor="middle"
 				font-size="18"
-				fill="rgba(255,255,255,0.85)"
+				fill="var(--text-hi)"
 				font-family="DM Sans"
 				font-weight="300"
 				letter-spacing="-1">{totalLabel}</text
