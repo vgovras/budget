@@ -16,7 +16,8 @@ export class SettingsViewModel {
 	currency = $state(DEFAULT_SETTINGS.currency);
 	notifications = $state(DEFAULT_SETTINGS.notifications);
 	warning = $state(DEFAULT_SETTINGS.warning);
-	onboardingDone = $state(false);
+	onboardingCompletedAt = $state<string | null>(null);
+	readonly onboardingDone = $derived(this.onboardingCompletedAt !== null);
 	lastPayday = $state('');
 	fiatViewEnabled = $state(false);
 	fiatCurrency = $state(DEFAULT_SETTINGS.fiatCurrency);
@@ -62,7 +63,7 @@ export class SettingsViewModel {
 			this.currency = saved.currency;
 			this.notifications = saved.notifications;
 			this.warning = saved.warning;
-			this.onboardingDone = saved.onboardingDone ?? false;
+			this.onboardingCompletedAt = (saved as any).onboardingCompletedAt ?? (saved.onboardingDone ? new Date().toISOString() : null);
 			this.lastPayday = saved.lastPayday ?? '';
 			this.fiatViewEnabled = saved.fiatViewEnabled ?? false;
 			this.fiatCurrency = (saved as any).fiatCurrency ?? saved.currency ?? DEFAULT_SETTINGS.fiatCurrency;
@@ -125,7 +126,7 @@ export class SettingsViewModel {
 	}
 
 	completeOnboarding() {
-		this.onboardingDone = true;
+		this.onboardingCompletedAt = new Date().toISOString();
 		this.#save();
 	}
 
@@ -134,7 +135,7 @@ export class SettingsViewModel {
 		this.currency = DEFAULT_SETTINGS.currency;
 		this.notifications = DEFAULT_SETTINGS.notifications;
 		this.warning = DEFAULT_SETTINGS.warning;
-		this.onboardingDone = false;
+		this.onboardingCompletedAt = null;
 		this.lastPayday = '';
 		this.fiatViewEnabled = false;
 		this.fiatCurrency = DEFAULT_SETTINGS.fiatCurrency;
@@ -154,7 +155,7 @@ export class SettingsViewModel {
 			currency: this.currency,
 			notifications: this.notifications,
 			warning: this.warning,
-			onboardingDone: this.onboardingDone,
+			onboardingCompletedAt: this.onboardingCompletedAt,
 			lastPayday: this.lastPayday,
 			fiatViewEnabled: this.fiatViewEnabled,
 			fiatCurrency: this.fiatCurrency,

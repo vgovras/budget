@@ -37,7 +37,7 @@ export interface Settings {
 	currency: string;
 	notifications: boolean;
 	warning: boolean;
-	onboardingDone: boolean;
+	onboardingCompletedAt: string | null;
 	lastPayday: string;
 	fiatViewEnabled: boolean;
 	fiatCurrency: string;

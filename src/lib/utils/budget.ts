@@ -117,27 +117,29 @@ export function getDailyRemainingWithRollover(
 	totalSpent: number,
 	periodStart: Date,
 	periodEnd: Date,
-	accountCreatedAt?: string
+	firstExpenseDate?: string
 ): number {
 	const now = new Date();
 	now.setHours(0, 0, 0, 0);
 	const msPerDay = 1000 * 60 * 60 * 24;
 	const totalDays = Math.max(1, Math.round((periodEnd.getTime() - periodStart.getTime()) / msPerDay));
+	const baseDailyBudget = totalBudget / totalDays;
 
-	let effectiveStart = periodStart;
-	if (accountCreatedAt) {
-		const created = new Date(accountCreatedAt);
-		created.setHours(0, 0, 0, 0);
-		if (created > periodStart) effectiveStart = created;
+	if (!firstExpenseDate) {
+		return Math.floor(baseDailyBudget);
 	}
 
-	const daysElapsed = Math.min(
+	const firstDate = new Date(firstExpenseDate);
+	firstDate.setHours(0, 0, 0, 0);
+
+	const rolloverStart = firstDate < periodStart ? periodStart : firstDate;
+
+	const daysWithRollover = Math.min(
 		totalDays,
-		Math.max(1, Math.floor((now.getTime() - effectiveStart.getTime()) / msPerDay) + 1)
+		Math.max(1, Math.floor((now.getTime() - rolloverStart.getTime()) / msPerDay) + 1)
 	);
-	const baseDailyBudget = totalBudget / totalDays;
-	const accumulatedAllowance = baseDailyBudget * daysElapsed;
-	return Math.max(0, Math.floor(accumulatedAllowance - totalSpent));
+	const accumulatedAllowance = baseDailyBudget * daysWithRollover;
+	return Math.floor(accumulatedAllowance - totalSpent);
 }
 
 export function getTodaySpent(expenses: Expense[], accId: string): number {
