@@ -41,6 +41,8 @@
 	"home_financial_month_end": "кінець фін. місяця",
 	"home_days_until_month_end": "днів до кінця фін. місяця",
 	"home_recent_expenses": "Останні витрати",
+	"home_quick_repeat": "Швидкий повтор",
+	"home_quick_repeat_empty": "Додайте витрату для швидкого повтору",
 	"home_no_expenses": "Витрат поки немає",
 	"home_no_expenses_hint_before": "Натисни",
 	"home_no_expenses_hint_after": "щоб додати першу витрату",

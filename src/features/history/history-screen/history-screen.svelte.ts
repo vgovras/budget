@@ -104,11 +104,11 @@ export class HistoryScreenViewModel {
 
 	readonly byCategory = $derived(
 		Object.entries(
-			this.filtered.reduce<Record<string, { icon: string; label: string; sum: number }>>(
+			this.filtered.reduce<Record<string, { icon: string; label: string; sum: number; color: string }>>(
 				(acc, e) => {
 					if (!acc[e.icon]) {
 						const cat = categoriesVM.getByIcon(e.icon);
-						acc[e.icon] = { icon: e.icon, label: cat?.label ?? e.label, sum: 0 };
+						acc[e.icon] = { icon: e.icon, label: cat?.label ?? e.label, sum: 0, color: cat?.border ?? '' };
 					}
 					acc[e.icon].sum += this.#toDisplay(e.amount);
 					return acc;

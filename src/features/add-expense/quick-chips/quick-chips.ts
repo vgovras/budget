@@ -1,20 +1,28 @@
-import type { Expense } from '$lib/types.js';
+import type { Expense, Category } from '$lib/types.js';
 
 export interface QuickChip {
 	icon: string;
 	note: string;
 	amount: number;
+	bg: string;
+	border: string;
 }
 
-export function getRecentUnique(expenses: Expense[], limit = 3): QuickChip[] {
+export function getRecentUnique(expenses: Expense[], categories: Category[], limit = 5): QuickChip[] {
 	const seen = new Set<string>();
 	const result: QuickChip[] = [];
 	for (const e of expenses) {
 		if (e.type === 'income') continue;
-		const key = `${e.icon}:${e.note}:${e.amount}`;
-		if (seen.has(key)) continue;
-		seen.add(key);
-		result.push({ icon: e.icon, note: e.note, amount: e.amount });
+		if (seen.has(e.icon)) continue;
+		seen.add(e.icon);
+		const cat = categories.find((c) => c.icon === e.icon);
+		result.push({
+			icon: e.icon,
+			note: e.note,
+			amount: e.amount,
+			bg: cat?.bg ?? '',
+			border: cat?.border ?? ''
+		});
 		if (result.length >= limit) break;
 	}
 	return result;

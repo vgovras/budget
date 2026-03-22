@@ -16,7 +16,7 @@
 		<div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
 			<div
 				class="w-full rounded-t min-h-1 transition-[height] duration-600 ease-out
-					{i === 6 ? 'bg-accent-dim shadow-[0_0_8px_var(--accent-glow)]' : 'bg-accent-bg'}"
+					{i === 6 ? 'bg-accent shadow-[0_0_8px_var(--accent-glow)]' : 'bg-accent-border'}"
 				style="height:{barHeight(val)}px"
 			></div>
 			<div class="text-2xs text-text-lo font-medium">{days[i]}</div>

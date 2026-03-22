@@ -75,7 +75,7 @@ export class AddExpenseSheetViewModel {
 			: (this.selectedAccount?.currency ?? settingsVM.currency)
 	);
 
-	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, 3));
+	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, categoriesVM.categories, 3));
 
 	#prevToAccountId = '';
 

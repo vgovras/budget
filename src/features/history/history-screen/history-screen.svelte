@@ -125,6 +125,8 @@
 		<button
 			class="filter-pill"
 			class:active={vm.isCategorySelected(cat.icon)}
+			style:background={vm.isCategorySelected(cat.icon) ? cat.bg : ''}
+			style:border-color={vm.isCategorySelected(cat.icon) ? cat.border : ''}
 			onclick={() => vm.toggleCategory(cat.icon)}
 		>
 			<Icon name={cat.icon} size={14} />

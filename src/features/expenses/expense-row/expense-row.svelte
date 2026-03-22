@@ -4,6 +4,7 @@
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
+	import { categoriesVM } from '$features/categories/categories.svelte.js';
 
 	let {
 		expense,
@@ -22,6 +23,7 @@
 			? expense.displayAmount
 			: settingsVM.toDisplay(expense.amount, nativeCurrency)
 	);
+	const cat = $derived(categoriesVM.categories.find((c) => c.icon === expense.icon));
 	const commissionAmount = $derived(
 		expense.commission ? Math.round(displayAmount * expense.commission / 100) : 0
 	);
@@ -33,7 +35,7 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="exp-row" class:new-entry={isNew} {onclick}>
-	<div class="exp-icon">
+	<div class="exp-icon" style:background={cat?.bg || ''} style:border-color={cat?.border || ''}>
 		<Icon name={expense.icon} size={20} />
 	</div>
 	<div class="exp-info">

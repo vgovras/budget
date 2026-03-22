@@ -55,6 +55,13 @@
 	--text-lo: rgba(255, 255, 255, 0.25);
 	--text-muted: rgba(255, 255, 255, 0.2);
 
+	/* Soft — prominent CTA buttons */
+	--soft: rgba(221, 232, 240, 0.09);
+	--soft-border: rgba(221, 232, 240, 0.25);
+	--soft-hover: rgba(221, 232, 240, 0.14);
+	--soft-hover-border: rgba(221, 232, 240, 0.4);
+	--shadow-soft: inset 0 1px 0 rgba(221, 232, 240, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.2), 0 0 24px rgba(221, 232, 240, 0.12), 0 6px 20px rgba(0, 0, 0, 0.35);
+
 	/* Primary — high-contrast CTA */
 	--primary-bg: rgba(255, 255, 255, 0.95);
 	--primary-fg: #08080f;
@@ -138,6 +145,12 @@
 	--text-lo: rgba(0, 0, 0, 0.38);
 	--text-muted: rgba(0, 0, 0, 0.3);
 
+	--soft: rgba(100, 150, 220, 0.18);
+	--soft-border: rgba(100, 150, 220, 0.35);
+	--soft-hover: rgba(100, 150, 220, 0.25);
+	--soft-hover-border: rgba(100, 150, 220, 0.45);
+	--shadow-soft: 0 2px 8px rgba(80, 130, 220, 0.2), 0 4px 16px rgba(80, 130, 220, 0.1);
+
 	--primary-bg: rgba(0, 0, 0, 0.9);
 	--primary-fg: #ffffff;
 
@@ -187,17 +200,17 @@
 	--color-accent-glow: var(--accent-glow);
 
 	/* Soft — prominent CTA buttons */
-	--color-soft: rgb(221 232 240 / 0.09);
-	--color-soft-border: rgb(221 232 240 / 0.25);
-	--color-soft-hover: rgb(221 232 240 / 0.14);
-	--color-soft-hover-border: rgb(221 232 240 / 0.4);
+	--color-soft: var(--soft);
+	--color-soft-border: var(--soft-border);
+	--color-soft-hover: var(--soft-hover);
+	--color-soft-hover-border: var(--soft-hover-border);
 
 	/* Gradient */
 	--color-gradient-from: rgb(60 100 255 / 0.8);
 	--color-gradient-to: rgb(120 60 220 / 0.8);
 
 	/* Shadows */
-	--shadow-soft: inset 0 1px 0 rgb(221 232 240 / 0.35), inset 0 -1px 0 rgb(0 0 0 / 0.2), 0 0 24px rgb(221 232 240 / 0.12), 0 6px 20px rgb(0 0 0 / 0.35);
+	--shadow-soft: var(--shadow-soft);
 	--shadow-gradient: 0 8px 24px rgb(60 100 255 / 0.25);
 
 	/* Income */

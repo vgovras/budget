@@ -1,18 +1,17 @@
 <script lang="ts">
 	import { HomeScreenViewModel } from './home-screen.svelte.js';
 	import DonutChart from '$features/analytics/donut-chart/donut-chart.svelte';
-	import ExpenseRow from '$features/expenses/expense-row/expense-row.svelte';
 	import Button from '$lib/ui/button/button.svelte';
 	import Card from '$lib/ui/card/card.svelte';
 	import WeeklyBars from '$features/analytics/weekly-bars/weekly-bars.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
-	import { navigationVM } from '$features/navigation/navigation.svelte.js';
-	import { fmt, getDateLabel } from '$lib/utils/format.js';
+	import { fmt } from '$lib/utils/format.js';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
+	import type { QuickChip } from '$features/add-expense/quick-chips/quick-chips.js';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { onEdit, onAdd }: { onEdit?: (id: number) => void; onAdd?: () => void } = $props();
+	let { onEdit, onAdd, onQuickAdd }: { onEdit?: (id: number) => void; onAdd?: () => void; onQuickAdd?: (chip: QuickChip) => void } = $props();
 
 	const vm = new HomeScreenViewModel();
 </script>
@@ -71,6 +70,39 @@
 		</Card>
 	</div>
 
+	<!-- Quick repeat -->
+	<Card class="card-padding">
+		<div class="card-label" style="margin-bottom:10px">{m.home_quick_repeat()}</div>
+		{#if vm.quickChips.length > 0}
+			<div class="flex gap-2 overflow-x-auto no-scrollbar">
+				{#each vm.quickChips as chip (chip.note + chip.amount + chip.icon)}
+					<!-- svelte-ignore a11y_click_events_have_key_events -->
+					<!-- svelte-ignore a11y_no_static_element_interactions -->
+					<div
+						class="flex items-center gap-2.5 px-3.5 py-3 rounded-md border border-border bg-surface-3 shrink-0 cursor-pointer transition-all duration-150 active:scale-[0.97] hover:bg-surface-5"
+						onclick={() => onQuickAdd?.(chip)}
+					>
+						<div
+							class="w-8 h-8 rounded-[10px] flex items-center justify-center text-text-mid"
+							style:background={chip.bg || 'var(--surface-5)'}
+							style:border-color={chip.border || 'var(--border)'}
+							style:border-width="1px"
+							style:border-style="solid"
+						>
+							<Icon name={chip.icon} size={15} />
+						</div>
+						<div class="flex flex-col">
+							<span class="text-sm text-text-hi font-medium leading-tight">{chip.note}</span>
+							<span class="text-xs text-text-lo font-mono">{vm.currency}{fmt(chip.amount)}</span>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<div class="text-sm text-text-lo font-light">{m.home_quick_repeat_empty()}</div>
+		{/if}
+	</Card>
+
 	<!-- Donut -->
 	{#if vm.hasExpenses}
 		<Card variant="led" class="card-padding">
@@ -94,25 +126,6 @@
 		<div class="card-label" style="margin-bottom:12px">{m.analytics_expenses_by_week()}</div>
 		<WeeklyBars weeklyAmounts={vm.weeklyAmounts} />
 	</Card>
-
-	<!-- Recent Expenses -->
-	{#if vm.hasExpenses}
-		<div class="sec-hdr">
-			<span class="sec-title">{m.home_recent_expenses()}</span>
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<span class="sec-link" onclick={() => navigationVM.goTo('history')}>{m.home_view_all()} →</span>
-		</div>
-		<Card>
-			{#each Object.entries(vm.recentExpenses) as [dateKey, items] (dateKey)}
-				<div class="exp-group-label">{getDateLabel(dateKey)}</div>
-				{#each items as expense, i (expense.id)}
-					{#if i > 0}<div class="exp-divider"></div>{/if}
-					<ExpenseRow {expense} onclick={() => onEdit?.(expense.id)} />
-				{/each}
-			{/each}
-		</Card>
-	{/if}
 
 	<!-- Empty + Tips — внизу якщо немає витрат -->
 	{#if !vm.hasExpenses}

@@ -115,8 +115,6 @@
 				{m.button_transfer()}
 			</Button>
 		{:else}
-			<QuickChips chips={vm.quickChips} currency={vm.displayCurrency} onSelect={(chip) => vm.quickFill(chip)} />
-
 			<AmountField>
 				<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
 			</AmountField>

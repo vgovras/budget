@@ -62,7 +62,7 @@
 		-webkit-overflow-scrolling: touch;
 		overscroll-behavior: contain;
 		scrollbar-width: none;
-		padding: 0 0 calc(36px + env(safe-area-inset-bottom));
+		padding: 0 4px calc(36px + env(safe-area-inset-bottom));
 		display: flex;
 		flex-direction: column;
 		gap: 18px;

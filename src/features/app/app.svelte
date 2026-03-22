@@ -62,6 +62,10 @@
 			<HomeScreen
 				onEdit={(id: number) => editExpenseVM.open(id)}
 				onAdd={() => addExpenseVM.open()}
+				onQuickAdd={(chip) => {
+					addExpenseVM.open();
+					addExpenseVM.quickFill(chip);
+				}}
 			/>
 		</div>
 		<div class="screen">
@@ -76,15 +80,20 @@
 
 	<AddExpenseSheet vm={addExpenseVM} />
 	<AddAccountSheet vm={addAccountVM} />
-	<EditAccountSheet vm={editAccountVM} onDelete={(id, name) => {
-		confirmVM.show({
-			title: m.button_delete(),
-			message: name,
-			okLabel: m.button_delete(),
-			okStyle: 'danger',
-			onConfirm() { editAccountVM.delete(); }
-		});
-	}} />
+	<EditAccountSheet
+		vm={editAccountVM}
+		onDelete={(id, name) => {
+			confirmVM.show({
+				title: m.button_delete(),
+				message: name,
+				okLabel: m.button_delete(),
+				okStyle: 'danger',
+				onConfirm() {
+					editAccountVM.delete();
+				}
+			});
+		}}
+	/>
 	<EditExpense vm={editExpenseVM} />
 	<SubscriptionEditorSheet vm={subEditorVM} />
 	<ConfirmDialog vm={confirmVM} />
@@ -120,11 +129,7 @@
 				rgba(60, 100, 220, 0.03) 0%,
 				transparent 100%
 			),
-			radial-gradient(
-				ellipse 500px 500px at 70% 80%,
-				rgba(120, 50, 180, 0.02) 0%,
-				transparent 100%
-			);
+			radial-gradient(ellipse 500px 500px at 70% 80%, rgba(120, 50, 180, 0.02) 0%, transparent 100%);
 	}
 
 	.screen {

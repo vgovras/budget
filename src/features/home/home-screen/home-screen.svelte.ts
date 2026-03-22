@@ -5,6 +5,7 @@ import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
 import { getTodaySpent, getWeeklyAmounts, getPeriodStart, getDailyRemainingWithRollover } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
+import { getRecentUnique } from '$features/add-expense/quick-chips/quick-chips.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
 
@@ -133,6 +134,8 @@ export class HomeScreenViewModel {
 
 	readonly hasExpenses = $derived(this.accountExpenses.length > 0);
 
+	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, categoriesVM.categories, 5));
+
 	readonly isNewMonth = $derived(this.spentAmount === 0);
 
 	readonly byCategory = $derived(
@@ -144,7 +147,7 @@ export class HomeScreenViewModel {
 		)
 			.map(([icon, sum]: [string, number]) => {
 				const cat = categoriesVM.categories.find((c) => c.icon === icon);
-				return { icon, label: cat?.label ?? icon, sum: this.#toDisplay(sum) };
+				return { icon, label: cat?.label ?? icon, sum: this.#toDisplay(sum), color: cat?.border ?? '' };
 			})
 			.sort((a, b) => b.sum - a.sum)
 	);

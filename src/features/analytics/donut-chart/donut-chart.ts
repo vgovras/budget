@@ -1,5 +1,11 @@
 import { CAT_COLORS, CAT_GLOWS } from '$lib/constants.js';
 
+function boostOpacity(rgba: string, target = 0.7): string {
+	const m = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+	if (!m) return rgba;
+	return `rgba(${m[1]}, ${m[2]}, ${m[3]}, ${target})`;
+}
+
 export interface DonutSlice {
 	icon: string;
 	label: string;
@@ -12,7 +18,7 @@ export interface DonutSlice {
 }
 
 export function buildSlices(
-	byCategory: { icon: string; label: string; sum: number }[],
+	byCategory: { icon: string; label: string; sum: number; color?: string }[],
 	total: number
 ): DonutSlice[] {
 	const r = 58;
@@ -23,12 +29,13 @@ export function buildSlices(
 	return byCategory.map((cat, i) => {
 		const pct = total > 0 ? cat.sum / total : 0;
 		const dash = Math.max(0, pct * circ - GAP);
+		const color = cat.color ? boostOpacity(cat.color) : CAT_COLORS[i % CAT_COLORS.length];
 		const slice: DonutSlice = {
 			icon: cat.icon,
 			label: cat.label ?? cat.icon,
 			sum: cat.sum,
 			pct: Math.round(pct * 100),
-			color: CAT_COLORS[i % CAT_COLORS.length],
+			color,
 			glow: CAT_GLOWS[i % CAT_GLOWS.length],
 			dash,
 			offset: offset * circ
