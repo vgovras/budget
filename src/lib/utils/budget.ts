@@ -103,6 +103,43 @@ export function checkPayday(
 	return { shouldCredit: true, newPaydayDate: paydayThisMonth.toISOString() };
 }
 
+export function getPeriodStart(nextPayday: Date, payday: number): Date {
+	const start = new Date(nextPayday);
+	start.setHours(0, 0, 0, 0);
+	start.setMonth(start.getMonth() - 1);
+	const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
+	start.setDate(Math.min(payday, daysInMonth));
+	return start;
+}
+
+export function getDailyRemainingWithRollover(
+	totalBudget: number,
+	totalSpent: number,
+	periodStart: Date,
+	periodEnd: Date,
+	accountCreatedAt?: string
+): number {
+	const now = new Date();
+	now.setHours(0, 0, 0, 0);
+	const msPerDay = 1000 * 60 * 60 * 24;
+	const totalDays = Math.max(1, Math.round((periodEnd.getTime() - periodStart.getTime()) / msPerDay));
+
+	let effectiveStart = periodStart;
+	if (accountCreatedAt) {
+		const created = new Date(accountCreatedAt);
+		created.setHours(0, 0, 0, 0);
+		if (created > periodStart) effectiveStart = created;
+	}
+
+	const daysElapsed = Math.min(
+		totalDays,
+		Math.max(1, Math.floor((now.getTime() - effectiveStart.getTime()) / msPerDay) + 1)
+	);
+	const baseDailyBudget = totalBudget / totalDays;
+	const accumulatedAllowance = baseDailyBudget * daysElapsed;
+	return Math.max(0, Math.floor(accumulatedAllowance - totalSpent));
+}
+
 export function getTodaySpent(expenses: Expense[], accId: string): number {
 	return expenses
 		.filter(

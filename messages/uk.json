@@ -119,6 +119,8 @@
 	"daily_hint_available_today": "можна сьогодні:",
 	"income_label": "Поповнення",
 	"label_category": "Категорія",
+	"label_date": "Дата",
+	"label_primary_account": "Основний рахунок",
 
 	"transfer_title": "Переказ",
 	"transfer_from": "З рахунку",
@@ -174,6 +176,7 @@
 	"onboarding_payday_desc": "Якого числа тобі приходить зарплата?",
 	"onboarding_savings_title": "Скільки<br><em>заощаджувати?</em>",
 	"onboarding_savings_pill": "Заощадження",
+	"onboarding_savings_percentage": "Відсоток заощаджень",
 	"onboarding_per_month": "на місяць",
 	"onboarding_remaining_for_expenses": "На витрати",
 	"onboarding_start": "Почати",

@@ -27,14 +27,12 @@ export interface Account {
 	spent: number;
 	currency: string;
 	label: string;
-	savingsPercent?: number;
+	createdAt?: string;
 	goalAmount?: number;
-	goalDeadline?: string;
+	isPrimary?: boolean;
 }
 
 export interface Settings {
-	budget: number;
-	salary: number;
 	payday: number;
 	currency: string;
 	notifications: boolean;
@@ -43,6 +41,7 @@ export interface Settings {
 	lastPayday: string;
 	fiatViewEnabled: boolean;
 	fiatCurrency: string;
+	savingsPercent: number;
 }
 
 export type CategoryType = 'expense' | 'income';

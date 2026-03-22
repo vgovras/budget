@@ -119,6 +119,8 @@
 	"daily_hint_available_today": "available today:",
 	"income_label": "Income",
 	"label_category": "Category",
+	"label_date": "Date",
+	"label_primary_account": "Primary account",
 
 	"transfer_title": "Transfer",
 	"transfer_from": "From account",
@@ -174,6 +176,7 @@
 	"onboarding_payday_desc": "What day of the month do you get paid?",
 	"onboarding_savings_title": "How much<br><em>to save?</em>",
 	"onboarding_savings_pill": "Savings",
+	"onboarding_savings_percentage": "Savings percentage",
 	"onboarding_per_month": "per month",
 	"onboarding_remaining_for_expenses": "For expenses",
 	"onboarding_start": "Get Started",

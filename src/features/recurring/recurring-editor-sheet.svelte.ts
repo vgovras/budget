@@ -80,6 +80,7 @@ export class RecurringEditorSheetViewModel {
 		} else {
 			recurringVM.add(data);
 		}
+
 		this.close();
 	}
 

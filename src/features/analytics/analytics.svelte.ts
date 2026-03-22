@@ -23,7 +23,7 @@ export class AnalyticsViewModel {
 		accountsVM.accounts
 			.filter((a) => a.balance > 0)
 			.map((a) => ({
-				icon: a.type === 'savings' ? 'landmark' : a.type === 'card' ? 'credit-card' : a.type === 'cash' ? 'banknote' : 'wallet',
+				icon: 'wallet',
 				label: a.name,
 				sum: this.#convertBalance(a.balance, a.currency)
 			}))

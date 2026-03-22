@@ -10,6 +10,8 @@
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
 	import SubscriptionList from '$features/subscriptions/subscription-list/subscription-list.svelte';
+	import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
+	import SavingsEditor from '$lib/ui/savings-editor/savings-editor.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { onAddAccount, onEditAccount, onAddSubscription, onEditSubscription }: {
@@ -21,11 +23,12 @@
 
 	const vm = new AnalyticsViewModel();
 
-	const typeIcon: Record<string, string> = {
-		savings: 'landmark',
-		card: 'credit-card',
-		cash: 'banknote'
-	};
+	const hasSavings = $derived(settingsVM.salary > 0);
+	const savingsCurrency = $derived(settingsVM.displayCurrency);
+
+	function setSavingsPercent(pct: number) {
+		settingsVM.updateSavingsPercent(pct);
+	}
 </script>
 
 <div class="top-bar">
@@ -50,7 +53,6 @@
 		{#each accountsVM.accounts as acc, i (acc.id)}
 			{@const spent = getAccStats(expensesVM.expenses, acc.id)}
 			{@const pct = acc.budget > 0 ? Math.min(Math.round((spent / acc.budget) * 100), 100) : 0}
-			{@const goalPct = acc.goalAmount && acc.goalAmount > 0 ? Math.min(Math.round((acc.balance / acc.goalAmount) * 100), 100) : 0}
 			{@const cur = vm.isFiat ? settingsVM.fiatCurrency : acc.currency}
 			{#if i > 0}
 				<div class="acc-divider"></div>
@@ -58,14 +60,12 @@
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="acc-row" onclick={() => onEditAccount?.(acc.id)}>
-				<div class="acc-icon">
-					<Icon name={typeIcon[acc.type] ?? 'wallet'} size={18} />
+				<div class="acc-icon" class:primary={acc.isPrimary}>
+					<Icon name={acc.isPrimary ? 'star' : 'wallet'} size={18} />
 				</div>
 				<div class="acc-info">
 					<div class="acc-name">{acc.name}</div>
-					{#if acc.goalAmount && acc.goalAmount > 0}
-						<div class="acc-budget-line">{cur} {fmt(settingsVM.toDisplay(acc.balance, acc.currency))} / {cur} {fmt(settingsVM.toDisplay(acc.goalAmount, acc.currency))} ({goalPct}%)</div>
-					{:else if acc.budget > 0 && spent > 0}
+					{#if acc.budget > 0 && spent > 0}
 						<div class="acc-budget-line">{cur} {fmt(settingsVM.toDisplay(spent, acc.currency))} / {cur} {fmt(settingsVM.toDisplay(acc.budget, acc.currency))}</div>
 					{/if}
 				</div>
@@ -78,11 +78,7 @@
 					{/if}
 				</div>
 			</div>
-			{#if acc.goalAmount && acc.goalAmount > 0}
-				<div class="acc-prog-track">
-					<div class="acc-prog-fill goal-fill" style="width:{goalPct}%"></div>
-				</div>
-			{:else if acc.budget > 0 && spent > 0}
+			{#if acc.budget > 0 && spent > 0}
 				<div class="acc-prog-track">
 					<div class="acc-prog-fill" style="width:{pct}%"></div>
 				</div>
@@ -102,6 +98,20 @@
 		onAdd={() => onAddSubscription?.()}
 		onEdit={(id) => onEditSubscription?.(id)}
 	/>
+
+	{#if hasSavings}
+		<div class="analytics-card">
+			<div class="analytics-title">{m.onboarding_savings_pill()}</div>
+			<SavingsEditor
+				savingsPercent={settingsVM.savingsPercent}
+				savingsAmount={settingsVM.toDisplay(settingsVM.savingsAmount, settingsVM.currency)}
+				subscriptionsTotal={subscriptionsVM.monthlyTotal}
+				budget={settingsVM.toDisplay(settingsVM.budget, settingsVM.currency)}
+				currency={savingsCurrency}
+				onSetPercent={setSavingsPercent}
+			/>
+		</div>
+	{/if}
 
 </div>
 
@@ -195,6 +205,11 @@
 		border: 1px solid rgba(255, 255, 255, 0.07);
 		color: rgba(255, 255, 255, 0.4);
 	}
+	.acc-icon.primary {
+		background: rgba(80, 200, 120, 0.12);
+		border-color: rgba(80, 200, 120, 0.25);
+		color: rgba(80, 200, 120, 0.8);
+	}
 	.acc-info {
 		flex: 1;
 		min-width: 0;
@@ -237,9 +252,7 @@
 		background: rgba(80, 130, 255, 0.5);
 		transition: width 0.8s var(--ease-out);
 	}
-	.acc-prog-fill.goal-fill {
-		background: var(--income-dim);
-	}
+
 
 	.add-acc-row {
 		display: flex;

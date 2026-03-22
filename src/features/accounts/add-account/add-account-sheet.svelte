@@ -3,16 +3,10 @@
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import type { AddAccountSheetViewModel } from './add-account-sheet.svelte.js';
-	import Icon from '$lib/ui/icon/icon.svelte';
 	import { CURRENCIES, CURRENCY_CODES } from '$lib/constants.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm }: { vm: AddAccountSheetViewModel } = $props();
-
-	const TYPES = [
-		{ value: 'cash', label: m.add_account_type_cash(), icon: 'banknote' },
-		{ value: 'card', label: m.add_account_type_card(), icon: 'credit-card' }
-	];
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
@@ -27,22 +21,6 @@
 				placeholder={m.placeholder_account_name()}
 				bind:value={vm.name}
 			/>
-		</div>
-
-		<div class="field">
-			<span class="field-label">{m.field_label_type()}</span>
-			<div class="type-chips">
-				{#each TYPES as t (t.value)}
-					<button
-						class="type-chip"
-						class:active={vm.type === t.value}
-						onclick={() => (vm.type = t.value)}
-					>
-						<Icon name={t.icon} size={18} />
-						<span>{t.label}</span>
-					</button>
-				{/each}
-			</div>
 		</div>
 
 		<div class="field">
@@ -66,16 +44,6 @@
 				<MoneyInput bind:value={vm.budget} size="lg" />
 			</div>
 		</div>
-
-		{#if vm.type === 'savings'}
-			<div class="field">
-				<span class="field-label">{m.goal_amount_label()}</span>
-				<div class="amount-field">
-					<MoneyInput bind:value={vm.goalAmount} currency={vm.currency} placeholder="0" />
-				</div>
-				<span class="field-hint">{m.goal_amount_hint()}</span>
-			</div>
-		{/if}
 
 		<Button variant="soft" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
 			{m.button_create()}

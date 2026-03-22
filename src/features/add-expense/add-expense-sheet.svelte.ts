@@ -6,7 +6,7 @@ import { getAccStats, getTodaySpent } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { getRate, convert } from '$lib/utils/currency.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
-import { nowISO } from '$lib/utils/format.js';
+import { nowISO, isoToDateInput, dateInputToISO } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
 
 export class AddExpenseSheetViewModel {
@@ -15,21 +15,28 @@ export class AddExpenseSheetViewModel {
 	note = $state('');
 	sheetType = $state<'expense' | 'income' | 'transfer'>('expense');
 	selectedCategory = $state<string | null>(null);
+	selectedDate = $state('');
+	selectedAccountId = $state('');
 	toAccountId = $state('');
 	exchangeRate = $state(1);
+
+	readonly selectedAccount = $derived(
+		accountsVM.accounts.find((a) => a.id === this.selectedAccountId) ?? accountsVM.active
+	);
+
 	readonly toAccount = $derived(
 		accountsVM.accounts.find((a) => a.id === this.toAccountId)
 	);
 
 	readonly isCrossCurrency = $derived(
-		this.sheetType === 'transfer' && accountsVM.active && this.toAccount
-			? accountsVM.active.currency !== this.toAccount.currency
+		this.sheetType === 'transfer' && this.selectedAccount && this.toAccount
+			? this.selectedAccount.currency !== this.toAccount.currency
 			: false
 	);
 
 	readonly autoRate = $derived(
-		accountsVM.active && this.toAccount
-			? getRate(accountsVM.active.currency, this.toAccount.currency)
+		this.selectedAccount && this.toAccount
+			? getRate(this.selectedAccount.currency, this.toAccount.currency)
 			: 1
 	);
 
@@ -39,11 +46,11 @@ export class AddExpenseSheetViewModel {
 
 	readonly canSave = $derived(
 		this.amount !== null && this.amount > 0 &&
-		(this.sheetType !== 'transfer' || (this.toAccountId !== '' && this.toAccountId !== accountsVM.active?.id))
+		(this.sheetType !== 'transfer' || (this.toAccountId !== '' && this.toAccountId !== this.selectedAccountId))
 	);
 
 	readonly dailyRemaining = $derived.by(() => {
-		const acc = accountsVM.active;
+		const acc = this.selectedAccount;
 		if (!acc) return 0;
 		const budget = acc.budget || settingsVM.budget;
 		const spent = getAccStats(expensesVM.expenses, acc.id);
@@ -65,7 +72,7 @@ export class AddExpenseSheetViewModel {
 	readonly displayCurrency = $derived(
 		settingsVM.fiatViewEnabled
 			? settingsVM.fiatCurrency
-			: (accountsVM.active?.currency ?? settingsVM.currency)
+			: (this.selectedAccount?.currency ?? settingsVM.currency)
 	);
 
 	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, 3));
@@ -83,7 +90,9 @@ export class AddExpenseSheetViewModel {
 		this.isOpen = true;
 		this.amount = null;
 		this.note = '';
+		this.selectedDate = isoToDateInput(nowISO());
 		this.selectedCategory = null;
+		this.selectedAccountId = accountsVM.active?.id ?? '';
 		this.sheetType = 'expense';
 		this.toAccountId = '';
 		this.exchangeRate = 1;
@@ -107,26 +116,25 @@ export class AddExpenseSheetViewModel {
 		this.selectedCategory = chip.icon;
 	}
 
-	/** Convert entered amount from display currency to account's native currency */
 	private toAccountCurrency(entered: number): number {
 		if (!settingsVM.fiatViewEnabled) return entered;
-		const acc = accountsVM.active;
+		const acc = this.selectedAccount;
 		if (!acc || acc.currency === settingsVM.fiatCurrency) return entered;
 		return convert(entered, settingsVM.fiatCurrency, acc.currency);
 	}
 
 	private get isFiatConversion(): boolean {
-		const acc = accountsVM.active;
+		const acc = this.selectedAccount;
 		return settingsVM.fiatViewEnabled && !!acc && acc.currency !== settingsVM.fiatCurrency;
 	}
 
 	save() {
 		if (!this.canSave || !this.amount) return;
-		const acc = accountsVM.active;
+		const acc = this.selectedAccount;
 		if (!acc) return;
 		const entered = this.amount;
 		const nativeAmount = this.sheetType === 'transfer' ? entered : this.toAccountCurrency(entered);
-		const isoDate = nowISO();
+		const isoDate = this.selectedDate ? dateInputToISO(this.selectedDate) : nowISO();
 		const fiatFields = this.isFiatConversion
 			? { displayAmount: entered, displayCurrency: settingsVM.fiatCurrency }
 			: {};

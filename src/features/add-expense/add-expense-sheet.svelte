@@ -15,6 +15,7 @@
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
+	import DatePicker from '$lib/ui/date-picker/date-picker.svelte';
 
 	let { vm }: { vm: AddExpenseSheetViewModel } = $props();
 
@@ -23,9 +24,14 @@
 		vm.syncExchangeRate();
 	});
 
+	const accountOptions = $derived(
+		accountsVM.accounts
+			.map((a) => ({ value: a.id, label: `${a.name} (${a.currency} ${fmt(a.balance)})` }))
+	);
+
 	const transferAccountOptions = $derived(
 		accountsVM.accounts
-			.filter((a) => a.id !== accountsVM.active?.id)
+			.filter((a) => a.id !== vm.selectedAccountId)
 			.map((a) => ({ value: a.id, label: `${a.name} (${a.currency} ${fmt(a.balance)})` }))
 	);
 
@@ -72,6 +78,13 @@
 			</div>
 		</div>
 
+		{#if accountsVM.accounts.length > 1}
+			<div class="field">
+				<span class="field-label">{m.recurring_account()}</span>
+				<Dropdown bind:value={vm.selectedAccountId} options={accountOptions} />
+			</div>
+		{/if}
+
 		{#if vm.sheetType === 'transfer'}
 			<!-- Transfer content -->
 			<div class="field">
@@ -80,7 +93,7 @@
 			</div>
 
 			<div class="amount-field">
-				<MoneyInput bind:value={vm.amount} currency={accountsVM.active?.currency ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
+				<MoneyInput bind:value={vm.amount} currency={vm.selectedAccount?.currency ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
 			</div>
 
 			{#if vm.isCrossCurrency}
@@ -94,6 +107,11 @@
 			{/if}
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
+
+			<div class="field">
+				<span class="field-label">{m.label_date()}</span>
+				<DatePicker bind:value={vm.selectedDate} />
+			</div>
 
 			<Button variant="accent" size="lg" class="gap-2" disabled={!vm.canSave} onclick={() => vm.save()}>
 				<Icon name="arrow-left-right" size={18} />
@@ -111,9 +129,11 @@
 
 			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
 
-			{#if vm.dailyRemaining > 0 && vm.sheetType === 'expense'}
-				<div class="daily-hint">{m.daily_hint_available_today()} {vm.displayCurrency}{fmt(vm.dailyRemaining)}</div>
-			{/if}
+			<div class="field">
+				<span class="field-label">{m.label_date()}</span>
+				<DatePicker bind:value={vm.selectedDate} />
+			</div>
+
 
 			<Button variant="accent" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
 				{vm.sheetType === 'expense' ? m.button_save() : m.button_add_income()}

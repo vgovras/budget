@@ -3,6 +3,7 @@
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
+	import NumberInput from '$lib/ui/number-input/number-input.svelte';
 	import CategoryPicker from '$features/add-expense/category-picker/category-picker.svelte';
 	import type { RecurringEditorSheetViewModel } from './recurring-editor-sheet.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
@@ -69,23 +70,10 @@
 		/>
 
 		<!-- Frequency + Day -->
-		<div class="row">
-			<div class="field flex-1">
-				<Dropdown bind:value={vm.frequency} options={frequencyOptions} />
-			</div>
-			{#if vm.frequency === 'monthly'}
-				<div class="field day-field">
-					<input
-						class="day-input"
-						type="number"
-						min="1"
-						max="31"
-						bind:value={vm.dayOfMonth}
-					/>
-					<span class="day-hint">{m.sub_billing_day()}</span>
-				</div>
-			{/if}
-		</div>
+		<Dropdown bind:value={vm.frequency} options={frequencyOptions} />
+		{#if vm.frequency === 'monthly'}
+			<NumberInput bind:value={vm.dayOfMonth} min={1} max={31} label={m.sub_billing_day()} />
+		{/if}
 
 		<!-- Account -->
 		{#if accountsVM.accounts.length > 1}

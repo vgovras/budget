@@ -85,7 +85,28 @@
 		twitch: icons.Twitch,
 		search: icons.Search,
 		'search-x': icons.SearchX,
-		'sliders-horizontal': icons.SlidersHorizontal
+		'sliders-horizontal': icons.SlidersHorizontal,
+		star: icons.Star,
+		zap: icons.Zap,
+		droplets: icons.Droplets,
+		flame: icons.Flame,
+		'washing-machine': icons.WashingMachine,
+		monitor: icons.Monitor,
+		headphones: icons.Headphones,
+		camera: icons.Camera,
+		printer: icons.Printer,
+		key: icons.Key,
+		lock: icons.Lock,
+		mail: icons.Mail,
+		'message-circle': icons.MessageCircle,
+		'map-pin': icons.MapPin,
+		stethoscope: icons.Stethoscope,
+		brush: icons.Brush,
+		scan: icons.Scan,
+		podcast: icons.Podcast,
+		radio: icons.Radio,
+		trophy: icons.Trophy,
+		infinity: icons.Infinity
 	};
 
 	const IconComponent = $derived(iconMap[name]);

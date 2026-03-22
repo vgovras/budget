@@ -4,6 +4,7 @@
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
+	import NumberInput from '$lib/ui/number-input/number-input.svelte';
 	import type { SubscriptionEditorSheetViewModel } from './subscription-editor-sheet.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
@@ -31,24 +32,6 @@
 	<div class="sheet-body">
 		<h3 class="sheet-title">{vm.isEditing ? m.sub_edit_title() : m.sub_add_title()}</h3>
 
-		<!-- Service icon presets -->
-		<div class="field">
-			<span class="field-label">{m.sub_service()}</span>
-			<div class="preset-grid">
-				{#each vm.presets as preset (preset.icon)}
-					<button
-						class="preset-chip"
-						class:active={vm.icon === preset.icon}
-						onclick={() => vm.selectPreset(preset)}
-						title={preset.label}
-					>
-						<Icon name={preset.icon} size={18} />
-					</button>
-				{/each}
-			</div>
-		</div>
-
-		<!-- Name -->
 		<div class="field">
 			<span class="field-label">{m.field_label_name()}</span>
 			<input
@@ -59,7 +42,21 @@
 			/>
 		</div>
 
-		<!-- Amount + Currency -->
+		<div class="field">
+			<span class="field-label">{m.sub_service()}</span>
+			<div class="icon-grid">
+				{#each vm.presets as preset (preset.icon)}
+					<button
+						class="icon-btn"
+						class:active={vm.icon === preset.icon}
+						onclick={() => vm.selectPreset(preset)}
+					>
+						<Icon name={preset.icon} size={18} />
+					</button>
+				{/each}
+			</div>
+		</div>
+
 		<div class="field">
 			<span class="field-label">{m.sub_amount()}</span>
 			<div class="amount-row">
@@ -70,29 +67,19 @@
 			</div>
 		</div>
 
-		<!-- Account -->
+		{#if accountOptions.length > 1}
+			<div class="field">
+				<span class="field-label">{m.recurring_account()}</span>
+				<Dropdown bind:value={vm.accountId} options={accountOptions} />
+			</div>
+		{/if}
+
 		<div class="field">
-			<span class="field-label">{m.recurring_account()}</span>
-			<Dropdown bind:value={vm.accountId} options={accountOptions} />
+			<span class="field-label">{m.sub_cycle()}</span>
+			<Dropdown bind:value={vm.cycle} options={cycleOptions} />
 		</div>
 
-		<!-- Cycle + Day of month -->
-		<div class="flex gap-2.5 items-stretch">
-			<div class="field flex-1">
-				<span class="field-label">{m.sub_cycle()}</span>
-				<Dropdown bind:value={vm.cycle} options={cycleOptions} />
-			</div>
-			<div class="field w-[110px] shrink-0">
-				<span class="field-label whitespace-nowrap">{m.sub_billing_day()}</span>
-				<input
-					class="field-input"
-					type="number"
-					min="1"
-					max="31"
-					bind:value={vm.dayOfMonth}
-				/>
-			</div>
-		</div>
+		<NumberInput bind:value={vm.dayOfMonth} min={1} max={31} label={m.sub_billing_day()} />
 
 		<div class="actions">
 			{#if vm.isEditing}
@@ -169,33 +156,35 @@
 		border-color: rgba(221, 232, 240, 0.28);
 	}
 
-	.preset-grid {
-		display: flex;
-		flex-wrap: wrap;
+	.icon-grid {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
 		gap: 8px;
+		max-height: 160px;
+		overflow-y: auto;
+		scrollbar-width: none;
+	}
+	.icon-grid::-webkit-scrollbar {
+		display: none;
 	}
 
-	.preset-chip {
-		width: 42px;
-		height: 42px;
+	.icon-btn {
+		aspect-ratio: 1;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		border-radius: 12px;
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		border: 1px solid rgba(255, 255, 255, 0.09);
 		background: rgba(255, 255, 255, 0.04);
 		color: var(--text-lo);
 		cursor: pointer;
 		transition: all 0.2s ease;
 		font-family: var(--font);
 	}
-	.preset-chip:hover {
-		background: rgba(255, 255, 255, 0.06);
-	}
-	.preset-chip.active {
+	.icon-btn.active {
 		border-color: var(--accent);
 		background: rgba(80, 130, 255, 0.12);
-		color: var(--accent);
+		color: var(--text-hi);
 	}
 
 	.actions {

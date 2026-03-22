@@ -3,6 +3,7 @@ import { expensesVM } from '../expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { convert } from '$lib/utils/currency.js';
+import { isoToDateInput, dateInputToISO } from '$lib/utils/format.js';
 
 function findAccount(id: string | undefined) {
 	if (!id) return undefined;
@@ -23,6 +24,7 @@ export class EditExpenseViewModel {
 	editingId = $state<number | null>(null);
 	amount = $state(0);
 	note = $state('');
+	editDate = $state('');
 	title = $state('');
 	isOpen = $state(false);
 
@@ -46,6 +48,7 @@ export class EditExpenseViewModel {
 			? exp.displayAmount
 			: this.#toDisplay(exp.amount, exp.accountId);
 		this.note = exp.note;
+		this.editDate = exp.date ? isoToDateInput(exp.date) : '';
 		this.title = exp.label;
 		this.isOpen = true;
 	}
@@ -88,7 +91,7 @@ export class EditExpenseViewModel {
 			accountsVM.update(acc.id, { balance: acc.balance - diff });
 		}
 
-		const patch: Partial<Expense> = { amount: nativeAmount, note: this.note };
+		const patch: Partial<Expense> = { amount: nativeAmount, note: this.note, date: this.editDate ? dateInputToISO(this.editDate) : undefined };
 		if (exp.type === 'income' && exp.commission && exp.commission > 0) {
 			patch.netAmount = getNetAmount(nativeAmount, exp.commission);
 		}

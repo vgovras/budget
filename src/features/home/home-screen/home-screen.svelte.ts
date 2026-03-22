@@ -3,7 +3,7 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getTodaySpent, getWeeklyAmounts } from '$lib/utils/budget.js';
+import { getTodaySpent, getWeeklyAmounts, getPeriodStart } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
@@ -43,17 +43,30 @@ export class HomeScreenViewModel {
 
 	readonly accountBalance = $derived(this.#toDisplay(accountsVM.active?.balance ?? 0));
 
+	readonly #effectiveBudget = $derived.by(() => {
+		const created = accountsVM.active?.createdAt;
+		if (!created) return this.totalBudget;
+		const createdDate = new Date(created);
+		createdDate.setHours(0, 0, 0, 0);
+		const periodStart = getPeriodStart(this.#nextPayday, settingsVM.payday);
+		if (createdDate <= periodStart) return this.totalBudget;
+		const msPerDay = 1000 * 60 * 60 * 24;
+		const totalDays = Math.max(1, Math.round((this.#nextPayday.getTime() - periodStart.getTime()) / msPerDay));
+		const daysFromCreation = Math.max(1, Math.round((this.#nextPayday.getTime() - createdDate.getTime()) / msPerDay));
+		return Math.round(this.totalBudget * daysFromCreation / totalDays);
+	});
+
 	readonly remainingBudget = $derived(
-		this.#toDisplay(Math.max(0, this.totalBudget - this.#rawSpentAmount))
+		this.#toDisplay(Math.max(0, this.#effectiveBudget - this.#rawSpentAmount))
 	);
 
 	readonly spentPercent = $derived(
-		this.totalBudget > 0 ? Math.round((this.#rawSpentAmount / this.totalBudget) * 100) : 0
+		this.#effectiveBudget > 0 ? Math.round((this.#rawSpentAmount / this.#effectiveBudget) * 100) : 0
 	);
 
 	readonly changePercent = $derived(
-		this.totalBudget > 0
-			? `–${((this.#rawSpentAmount / this.totalBudget) * 100).toFixed(1)}%`
+		this.#effectiveBudget > 0
+			? `–${((this.#rawSpentAmount / this.#effectiveBudget) * 100).toFixed(1)}%`
 			: '0%'
 	);
 
@@ -80,8 +93,14 @@ export class HomeScreenViewModel {
 		return d.toLocaleDateString(locale(), { day: 'numeric', month: 'long' });
 	});
 
+	readonly #totalPeriodDays = $derived.by(() => {
+		const start = getPeriodStart(this.#nextPayday, settingsVM.payday);
+		const msPerDay = 1000 * 60 * 60 * 24;
+		return Math.max(1, Math.round((this.#nextPayday.getTime() - start.getTime()) / msPerDay));
+	});
+
 	readonly dailyBudget = $derived(
-		Math.floor(this.remainingBudget / Math.max(this.daysUntilEnd, 1))
+		Math.floor(this.#toDisplay(this.totalBudget) / this.#totalPeriodDays)
 	);
 
 	readonly todaySpent = $derived(

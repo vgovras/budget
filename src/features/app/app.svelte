@@ -21,6 +21,7 @@
 	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { recurringVM } from '$features/recurring/recurring.svelte.js';
+	import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	const addExpenseVM = new AddExpenseSheetViewModel();
@@ -30,10 +31,20 @@
 	const subEditorVM = new SubscriptionEditorSheetViewModel();
 	const confirmVM = new ConfirmDialogViewModel();
 
+	// Sync subscriptions total → settings
 	$effect(() => {
-		const acc = accountsVM.active;
-		if (!acc || !settingsVM.loaded) return;
-		recurringVM.syncSalary(settingsVM.salary, settingsVM.payday, acc.id);
+		settingsVM.setSubscriptionsTotal(subscriptionsVM.monthlyTotal);
+	});
+
+	// Sync account budgets when settings budget changes
+	$effect(() => {
+		const budget = settingsVM.budget;
+		if (!settingsVM.loaded || budget <= 0) return;
+		for (const acc of accountsVM.accounts) {
+			if (acc.budget !== budget) {
+				accountsVM.update(acc.id, { budget });
+			}
+		}
 	});
 </script>
 

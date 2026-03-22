@@ -43,6 +43,18 @@ export function nowISO(): string {
 	return new Date().toISOString();
 }
 
+export function isoToDateInput(iso: string): string {
+	const d = new Date(iso);
+	const y = d.getFullYear();
+	const m = String(d.getMonth() + 1).padStart(2, '0');
+	const day = String(d.getDate()).padStart(2, '0');
+	return `${y}-${m}-${day}`;
+}
+
+export function dateInputToISO(dateStr: string): string {
+	return new Date(dateStr + 'T12:00:00').toISOString();
+}
+
 export function getDateLabel(key: string): string {
 	if (key === 'today') return m.date_today();
 	if (key === 'yesterday') return m.date_yesterday();

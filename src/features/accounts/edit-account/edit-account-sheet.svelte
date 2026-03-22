@@ -3,9 +3,9 @@
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
+	import Toggle from '$lib/ui/toggle/toggle.svelte';
 	import type { EditAccountSheetViewModel } from './edit-account-sheet.svelte.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
-	import { fmt } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm, onDelete }: { vm: EditAccountSheetViewModel; onDelete?: (id: string, name: string) => void } = $props();
@@ -29,55 +29,23 @@
 			</div>
 		</div>
 
-		<div class="field">
-			<span class="field-label">{m.account_budget_label()}</span>
-			<div class="amount-field">
-				<MoneyInput bind:value={vm.budget} {currency} />
+		<div class="primary-row" onclick={() => vm.togglePrimary()}>
+			<div class="primary-info">
+				<Icon name="star" size={16} />
+				<span>{m.label_primary_account()}</span>
 			</div>
+			<Toggle checked={vm.isPrimary} />
 		</div>
 
-		{#if vm.isMain && settingsVM.salary > 0}
-			<div class="field">
-				<span class="field-label">{m.onboarding_savings_pill()} ({vm.currentSavingsPercent}%)</span>
-				<div class="track">
-					<div class="track-fill" style="width:{vm.sliderPosition}%"></div>
-					{#each vm.displaySteps as step, i (step.pct)}
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<div
-							class="stop"
-							class:reached={vm.sliderPosition >= step.pos}
-							class:active={Math.abs(vm.sliderPosition - step.pos) < 1}
-							style="left:{step.pos}%"
-							onclick={() => vm.setSavingsIdx(i)}
-						>
-							<div class="stop-dot"></div>
-							<span class="stop-label">{step.label}</span>
-						</div>
-					{/each}
-				</div>
-			</div>
-		{/if}
-
-		{#if vm.account?.type === 'savings'}
-			<div class="field">
-				<span class="field-label">{m.goal_amount_label()}</span>
-				<div class="amount-field">
-					<MoneyInput bind:value={vm.goalAmount} {currency} />
-				</div>
-			</div>
-		{/if}
-
-		<Button variant="soft" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
-			{m.button_save()}
-		</Button>
-
-		{#if !vm.isMain}
-			<Button variant="destructive" size="lg" class="gap-2" onclick={() => { vm.close(); onDelete?.(vm.accountId, vm.name); }}>
+		<div class="flex gap-2.5">
+			<Button variant="destructive" size="lg" class="flex-1 gap-2" onclick={() => { vm.close(); onDelete?.(vm.accountId, vm.name); }}>
 				<Icon name="trash" size={16} />
 				{m.button_delete()}
 			</Button>
-		{/if}
+			<Button variant="soft" size="lg" class="flex-1" disabled={!vm.canSave} onclick={() => vm.save()}>
+				{m.button_save()}
+			</Button>
+		</div>
 	</div>
 </BottomSheet>
 
@@ -133,72 +101,21 @@
 		border-color: rgba(221, 232, 240, 0.28);
 	}
 
-	.track {
-		position: relative;
-		height: 4px;
-		background: rgba(255,255,255,0.08);
-		border-radius: 99px;
-		margin: 16px 8px 28px;
-	}
-
-	.track-fill {
-		position: absolute;
-		top: 0;
-		left: 0;
-		height: 100%;
-		border-radius: 99px;
-		background: rgba(80,200,120,0.6);
-		transition: width 0.25s ease;
-	}
-
-	.stop {
-		position: absolute;
-		top: 50%;
-		transform: translate(-50%, -50%);
+	.primary-row {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
+		justify-content: space-between;
+		padding: 12px 14px;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 14px;
 		cursor: pointer;
-		z-index: 1;
 	}
-
-	.stop-dot {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background: rgba(255,255,255,0.06);
-		border: 2px solid rgba(255,255,255,0.12);
-		transition: all 0.2s ease;
-	}
-
-	.stop.reached .stop-dot {
-		background: rgba(80,200,120,0.3);
-		border-color: rgba(80,200,120,0.5);
-	}
-
-	.stop.active .stop-dot {
-		background: rgba(80,200,120,0.9);
-		border-color: rgba(80,200,120,1);
-		box-shadow: 0 0 10px rgba(80,200,120,0.4);
-	}
-
-	.stop-label {
-		position: absolute;
-		top: 22px;
-		font-size: 10px;
-		color: rgba(255,255,255,0.2);
-		font-weight: 300;
-		white-space: nowrap;
-	}
-
-	.stop.active .stop-label {
-		color: rgba(80,200,120,0.85);
-		font-weight: 500;
-	}
-
-	.savings-summary {
-		font-size: 12px;
-		color: rgba(255,255,255,0.35);
-		text-align: center;
+	.primary-info {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		color: rgba(255, 255, 255, 0.6);
 	}
 </style>

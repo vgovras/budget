@@ -6,9 +6,7 @@ export class AddAccountSheetViewModel {
 	isOpen = $state(false);
 	name = $state('');
 	budget = $state<number | null>(null);
-	type = $state('cash');
 	currency = $state(settingsVM.currency);
-	goalAmount = $state<number | null>(null);
 
 	readonly canSave = $derived(this.name.trim().length > 0);
 
@@ -16,9 +14,7 @@ export class AddAccountSheetViewModel {
 		this.isOpen = true;
 		this.name = '';
 		this.budget = null;
-		this.type = 'cash';
 		this.currency = settingsVM.currency;
-		this.goalAmount = null;
 	}
 
 	close() {
@@ -29,15 +25,13 @@ export class AddAccountSheetViewModel {
 		if (!this.canSave) return;
 		const budget = this.budget ?? 0;
 		accountsVM.add({
-			type: this.type,
+			type: 'card',
 			name: this.name.trim(),
 			balance: budget,
 			budget: budget,
 			spent: 0,
 			currency: this.currency,
-			label:
-				this.type === 'savings' ? m.add_account_type_savings() : m.account_label_monthly_budget(),
-			goalAmount: this.type === 'savings' && this.goalAmount ? this.goalAmount : undefined
+			label: m.account_label_monthly_budget()
 		});
 		this.close();
 	}

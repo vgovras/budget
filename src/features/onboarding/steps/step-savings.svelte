@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/ui/button/button.svelte';
-	import { fmt } from '$lib/utils/format.js';
+	import SavingsEditor from '$lib/ui/savings-editor/savings-editor.svelte';
 	import { convert } from '$lib/utils/currency.js';
 	import * as m from '$lib/paraglide/messages.js';
 
@@ -9,22 +9,20 @@
 		currency = '₴',
 		fiatViewEnabled = false,
 		fiatCurrency = '₴',
-		steps,
-		activeIdx,
+		savingsPercent,
 		savingsAmount,
 		budget,
-		onSelectIdx,
+		onSetPercent,
 		onNext
 	}: {
 		salary: number;
 		currency?: string;
 		fiatViewEnabled?: boolean;
 		fiatCurrency?: string;
-		steps: number[];
-		activeIdx: number | null;
+		savingsPercent: number;
 		savingsAmount: number;
 		budget: number;
-		onSelectIdx: (idx: number) => void;
+		onSetPercent: (pct: number) => void;
 		onNext: () => void;
 	} = $props();
 
@@ -35,28 +33,7 @@
 		return isFiat ? convert(amount, currency, fiatCurrency) : amount;
 	}
 
-	const dailyBudget = $derived(Math.floor(toDisplay(budget) / 30));
-
-	let trackEl: HTMLElement;
-
-	function idxFromX(clientX: number) {
-		if (!trackEl) return 0;
-		const rect = trackEl.getBoundingClientRect();
-		const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-		const ratio = x / rect.width;
-		return Math.round(ratio * (steps.length - 1));
-	}
-
-	function onTrackTouch(e: TouchEvent) {
-		e.preventDefault();
-		onSelectIdx(idxFromX(e.touches[0].clientX));
-	}
-
-	function onTrackClick(e: MouseEvent) {
-		onSelectIdx(idxFromX(e.clientX));
-	}
-
-	// Donut proportions: Food (blue) + Transport (purple) + Savings (green)
+	// Donut proportions
 	const savingsPct = $derived(salary > 0 ? savingsAmount / salary : 0);
 	const expensesPct = $derived(1 - savingsPct);
 	const foodPct = $derived(expensesPct * 0.55);
@@ -87,7 +64,7 @@
 					stroke-linecap="round" transform="rotate(-90 50 50)"
 					style="transition: all 0.4s ease"/>
 				<text x="50" y="47" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,0.85)" text-anchor="middle" font-weight="500">
-					{activeIdx !== null ? `${steps[activeIdx]}%` : ''}
+					{savingsPercent}%
 				</text>
 				<text x="50" y="59" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(255,255,255,0.28)" text-anchor="middle" font-weight="300">{m.onboarding_savings_pill()}</text>
 			</svg>
@@ -105,41 +82,13 @@
 	</div>
 
 	<div class="savings-area">
-		<div class="slider-wrap">
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div
-				class="track"
-				bind:this={trackEl}
-				ontouchstart={onTrackTouch}
-				ontouchmove={onTrackTouch}
-				onclick={onTrackClick}
-			>
-				<div class="track-fill" style="width:{((activeIdx ?? 0) / (steps.length - 1)) * 100}%"></div>
-				{#each steps as pct, i (pct)}
-					<div
-						class="stop"
-						class:reached={activeIdx !== null && i <= activeIdx}
-						class:active={activeIdx === i}
-						style="left:{(i / (steps.length - 1)) * 100}%"
-					>
-						<div class="stop-dot"></div>
-						<span class="stop-label">{pct}%</span>
-					</div>
-				{/each}
-				<div class="track-touch-area"></div>
-			</div>
-		</div>
-
-		<div class="summary">
-			<div class="summary-row">
-				<span class="summary-label">{m.onboarding_savings_pill()}</span>
-				<span class="summary-val green">{cur}{fmt(toDisplay(savingsAmount))} <span class="dim">{m.onboarding_per_month()}</span></span>
-			</div>
-			<div class="summary-row">
-				<span class="summary-label">{m.onboarding_remaining_for_expenses()}</span>
-				<span class="summary-val">{cur}{fmt(toDisplay(budget))} <span class="dim">≈ {cur}{fmt(dailyBudget)}/{m.home_days_short()}</span></span>
-			</div>
-		</div>
+		<SavingsEditor
+			{savingsPercent}
+			savingsAmount={toDisplay(savingsAmount)}
+			budget={toDisplay(budget)}
+			currency={cur}
+			{onSetPercent}
+		/>
 	</div>
 
 	<div class="bottom">
@@ -200,121 +149,6 @@
 
 	.savings-area {
 		padding: 20px 24px 0;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
-
-	.slider-wrap {
-		padding: 10px 0 20px;
-		user-select: none;
-		-webkit-user-select: none;
-	}
-
-	.track {
-		position: relative;
-		height: 4px;
-		background: rgba(255,255,255,0.08);
-		border-radius: 99px;
-		margin: 0 8px;
-	}
-
-	.track-fill {
-		position: absolute;
-		top: 0;
-		left: 0;
-		height: 100%;
-		border-radius: 99px;
-		background: rgba(80,200,120,0.6);
-		transition: width 0.25s ease;
-	}
-
-	.stop {
-		position: absolute;
-		top: 50%;
-		transform: translate(-50%, -50%);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		cursor: pointer;
-		z-index: 1;
-	}
-
-	.stop-dot {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background: rgba(255,255,255,0.06);
-		border: 2px solid rgba(255,255,255,0.12);
-		transition: all 0.2s ease;
-	}
-
-	.stop.reached .stop-dot {
-		background: rgba(80,200,120,0.3);
-		border-color: rgba(80,200,120,0.5);
-	}
-
-	.stop.active .stop-dot {
-		background: rgba(80,200,120,0.9);
-		border-color: rgba(80,200,120,1);
-		box-shadow: 0 0 10px rgba(80,200,120,0.4);
-	}
-
-	.track-touch-area {
-		position: absolute;
-		top: -20px;
-		bottom: -20px;
-		left: 0;
-		right: 0;
-		cursor: pointer;
-	}
-
-	.stop-label {
-		position: absolute;
-		top: 24px;
-		font-size: 11px;
-		color: rgba(255,255,255,0.2);
-		font-weight: 300;
-		white-space: nowrap;
-		transition: color 0.2s ease;
-	}
-
-	.stop.active .stop-label {
-		color: rgba(80,200,120,0.85);
-		font-weight: 500;
-	}
-
-	.summary {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		padding: 14px;
-		background: rgba(255,255,255,0.03);
-		border: 1px solid rgba(255,255,255,0.06);
-		border-radius: 16px;
-	}
-	.summary-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-	.summary-label {
-		font-size: 13px;
-		color: rgba(255,255,255,0.35);
-		font-weight: 300;
-	}
-	.summary-val {
-		font-size: 14px;
-		color: rgba(255,255,255,0.8);
-		font-weight: 500;
-	}
-	.summary-val.green {
-		color: rgba(80,200,120,0.85);
-	}
-	.dim {
-		font-size: 11px;
-		color: rgba(255,255,255,0.25);
-		font-weight: 300;
 	}
 
 	.bottom { padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }

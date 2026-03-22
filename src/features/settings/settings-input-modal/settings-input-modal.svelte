@@ -13,22 +13,13 @@
 		{#if vm.config.currency}
 			<span class="settings-input-cur">{vm.currencySymbol}</span>
 		{/if}
-		{#if vm.config.isText}
-			<input
-				class="settings-input-field"
-				type="text"
-				placeholder={m.placeholder_enter_name()}
-				bind:value={vm.value}
-			/>
-		{:else}
-			<input
-				class="settings-input-field"
-				type="number"
-				inputmode="decimal"
-				placeholder="0"
-				bind:value={vm.value}
-			/>
-		{/if}
+		<input
+			class="settings-input-field"
+			type="number"
+			inputmode="decimal"
+			placeholder="0"
+			bind:value={vm.value}
+		/>
 	</div>
 	{#if vm.config.subtitle}
 		<div class="settings-input-sub">{vm.config.subtitle}</div>

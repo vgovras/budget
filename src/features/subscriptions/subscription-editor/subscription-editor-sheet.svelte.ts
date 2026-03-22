@@ -43,6 +43,7 @@ export class SubscriptionEditorSheetViewModel {
 		this.editingId = null;
 		this.icon = 'tv';
 		this.label = '';
+		this.#lastPresetLabel = '';
 		this.amount = null;
 		this.currency = accountsVM.active?.currency ?? settingsVM.currency;
 		this.accountId = accountsVM.active?.id ?? '';
@@ -70,11 +71,14 @@ export class SubscriptionEditorSheetViewModel {
 		this.editingId = null;
 	}
 
+	#lastPresetLabel = '';
+
 	selectPreset(preset: { icon: string; label: string }) {
-		this.icon = preset.icon;
-		if (!this.label.trim()) {
+		if (!this.label.trim() || this.label === this.#lastPresetLabel) {
 			this.label = preset.label;
 		}
+		this.icon = preset.icon;
+		this.#lastPresetLabel = preset.label;
 	}
 
 	save() {

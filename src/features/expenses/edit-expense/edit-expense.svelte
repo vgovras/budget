@@ -3,6 +3,7 @@
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import type { EditExpenseViewModel } from './edit-expense.svelte.js';
+	import DatePicker from '$lib/ui/date-picker/date-picker.svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { vm }: { vm: EditExpenseViewModel } = $props();
@@ -19,6 +20,8 @@
 		</div>
 
 		<input class="note-field" type="text" placeholder={m.placeholder_note()} bind:value={vm.note} />
+
+		<DatePicker bind:value={vm.editDate} />
 
 		<div class="flex gap-2.5">
 			<Button variant="destructive" size="md" class="flex-1" onclick={() => vm.delete()}>

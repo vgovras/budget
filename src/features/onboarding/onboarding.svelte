@@ -84,11 +84,10 @@
 							currency={vm.currency}
 							fiatViewEnabled={vm.fiatViewEnabled}
 							fiatCurrency={vm.fiatCurrency}
-							steps={vm.savingsSteps}
-							activeIdx={vm.savingsIdx}
+							savingsPercent={vm.savingsPercent}
 							savingsAmount={vm.savingsAmount}
 							budget={vm.budget}
-							onSelectIdx={(i) => vm.setSavingsIdx(i)}
+							onSetPercent={(pct) => vm.setSavingsPercent(pct)}
 							onNext={() => vm.next()}
 						/>
 					{:else if vm.currentSlide === 4}
@@ -108,6 +107,8 @@
 		background: var(--bg);
 		display: flex;
 		flex-direction: column;
+		max-width: 600px;
+		margin: 0 auto;
 	}
 
 	.progress-bar {

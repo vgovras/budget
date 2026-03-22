@@ -22,15 +22,6 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		isDefault: true
 	},
 	{
-		id: 'cat-subscriptions',
-		icon: 'tv',
-		label: m.category_subscriptions(),
-		bg: 'rgba(150,90,255,0.12)',
-		border: 'rgba(150,90,255,0.25)',
-		type: 'expense',
-		isDefault: true
-	},
-	{
 		id: 'cat-entertainment',
 		icon: 'gamepad',
 		label: m.category_entertainment(),
@@ -130,6 +121,21 @@ export const SUBSCRIPTION_ICON_PRESETS: { icon: string; label: string }[] = [
 	{ icon: 'book-open', label: 'Notion' },
 	{ icon: 'phone', label: 'Mobile' },
 	{ icon: 'wifi', label: 'Internet' },
+	{ icon: 'house', label: 'Rent' },
+	{ icon: 'zap', label: 'Electricity' },
+	{ icon: 'droplets', label: 'Water' },
+	{ icon: 'flame', label: 'Gas' },
+	{ icon: 'car', label: 'Car Insurance' },
+	{ icon: 'stethoscope', label: 'Health Insurance' },
+	{ icon: 'monitor', label: 'Apple TV' },
+	{ icon: 'headphones', label: 'Apple Music' },
+	{ icon: 'mail', label: 'Email' },
+	{ icon: 'message-circle', label: 'Messenger' },
+	{ icon: 'map-pin', label: 'Maps' },
+	{ icon: 'podcast', label: 'Podcast' },
+	{ icon: 'key', label: 'Password Manager' },
+	{ icon: 'brush', label: 'Canva' },
+	{ icon: 'infinity', label: 'Other' },
 ];
 
 export const CURRENCIES = ['₴', '$', '€', '£', 'zł'] as const;
@@ -153,8 +159,6 @@ export const CURRENCY_LABELS: Record<string, string> = {
 export const SCREEN_ORDER: ScreenId[] = ['analytics', 'home', 'history', 'settings'];
 
 export const DEFAULT_SETTINGS: Settings = {
-	budget: 0,
-	salary: 0,
 	payday: 1,
 	currency: '₴',
 	notifications: false,
@@ -162,5 +166,6 @@ export const DEFAULT_SETTINGS: Settings = {
 	onboardingDone: false,
 	lastPayday: '',
 	fiatViewEnabled: false,
-	fiatCurrency: '₴'
+	fiatCurrency: '₴',
+	savingsPercent: 0
 };
