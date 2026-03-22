@@ -3,7 +3,7 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getTodaySpent, getWeeklyAmounts, getPeriodStart, getDailyRemainingWithRollover } from '$lib/utils/budget.js';
+import { getTodaySpent, getWeeklyAmounts, getPeriodStart } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { getRecentUnique } from '$features/add-expense/quick-chips/quick-chips.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
@@ -108,27 +108,9 @@ export class HomeScreenViewModel {
 		accountsVM.active ? this.#toDisplay(getTodaySpent(expensesVM.expenses, accountsVM.active.id)) : 0
 	);
 
-	readonly #trackingStartDate = $derived.by(() => {
-		const firstExpense = this.accountExpenses.length > 0
-			? this.accountExpenses.reduce((min, e) => (e.date && e.date < min ? e.date : min), this.accountExpenses[0]?.date ?? '')
-			: null;
-		const onboarding = settingsVM.onboardingCompletedAt;
-		if (!firstExpense && !onboarding) return undefined;
-		if (!firstExpense) return onboarding!;
-		if (!onboarding) return firstExpense;
-		return firstExpense < onboarding ? firstExpense : onboarding;
-	});
-
-	readonly dailyRemaining = $derived.by(() => {
-		const periodStart = getPeriodStart(this.#nextPayday, settingsVM.payday);
-		return this.#toDisplay(getDailyRemainingWithRollover(
-			this.#effectiveBudget,
-			this.#rawSpentAmount,
-			periodStart,
-			this.#nextPayday,
-			this.#trackingStartDate
-		));
-	});
+	readonly dailyRemaining = $derived(
+		Math.floor(this.remainingBudget / Math.max(1, this.daysUntilEnd))
+	);
 
 	readonly monthlyRemaining = $derived(this.remainingBudget);
 
