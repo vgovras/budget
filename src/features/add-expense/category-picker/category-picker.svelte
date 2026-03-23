@@ -13,9 +13,7 @@
 	const filtered = $derived(categoriesVM.byType(type));
 </script>
 
-<div>
-	<div class="text-xs font-semibold tracking-[0.06em] uppercase text-text-lo mb-2">{m.label_category()}</div>
-	<div class="grid grid-cols-3 gap-2">
+<div class="grid grid-cols-3 gap-2">
 		{#each filtered as cat (cat.icon)}
 			<button
 				class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-sm border font-sans text-xs font-medium transition-all duration-150
@@ -30,5 +28,4 @@
 				{cat.label}
 			</button>
 		{/each}
-	</div>
 </div>

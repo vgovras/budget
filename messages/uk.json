@@ -43,6 +43,7 @@
 	"home_recent_expenses": "Останні витрати",
 	"home_quick_repeat": "Швидкий повтор",
 	"home_quick_repeat_empty": "Додайте витрату для швидкого повтору",
+	"home_this_week": "Цього тижня",
 	"home_no_expenses": "Витрат поки немає",
 	"home_no_expenses_hint_before": "Натисни",
 	"home_no_expenses_hint_after": "щоб додати першу витрату",
@@ -121,6 +122,8 @@
 	"daily_hint_available_today": "можна сьогодні:",
 	"income_label": "Поповнення",
 	"label_category": "Категорія",
+	"label_amount": "Сума",
+	"label_note": "Нотатка",
 	"label_date": "Дата",
 	"label_primary_account": "Основний рахунок",
 

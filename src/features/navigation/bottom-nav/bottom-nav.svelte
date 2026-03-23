@@ -8,7 +8,7 @@
 </script>
 
 <nav
-	class="fixed bottom-[calc(16px+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-3 py-2 rounded-xl bg-card border border-border transition-all duration-500 ease-out
+	class="fixed bottom-[calc(16px+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-3 py-2 rounded-xl border border-border transition-all duration-500 ease-out backdrop-blur-xl backdrop-saturate-[1.2] bg-[var(--card)]/80
 		{vm.navVisible ? '' : '-translate-y-0 translate-y-[calc(100%+32px)] opacity-0 pointer-events-none'}"
 >
 	{#each vm.tabs as tab, i (tab.id)}

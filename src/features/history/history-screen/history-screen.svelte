@@ -8,17 +8,22 @@
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
 	import Card from '$lib/ui/card/card.svelte';
-	import DateRangePicker from '../date-range-picker/date-range-picker.svelte';
-	import { DateRangePickerViewModel } from '../date-range-picker/date-range-picker.svelte.js';
+	import DatePicker from '$lib/ui/date-picker/date-picker.svelte';
 	import { slide } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let { onEdit }: { onEdit?: (id: number) => void } = $props();
 
 	const vm = new HistoryScreenViewModel();
-	const calendarVM = new DateRangePickerViewModel();
 
-	let calendarOpen = $state(false);
+	let rangeStart = $state('');
+	let rangeEnd = $state('');
+
+	$effect(() => {
+		const from = rangeStart ? new Date(rangeStart + 'T00:00:00') : null;
+		const to = rangeEnd ? new Date(rangeEnd + 'T23:59:59') : null;
+		vm.setDateRange(from, to);
+	});
 
 	const typeOptions = [
 		{ value: 'all', label: m.filter_type_all() },
@@ -32,10 +37,6 @@
 		{ value: 'amount-asc', label: m.filter_sort_smallest() }
 	];
 
-	function formatDateShort(d: Date | null): string {
-		if (!d) return '—';
-		return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-	}
 </script>
 
 <div class="top-bar">
@@ -82,34 +83,10 @@
 			</div>
 		</div>
 
-		<div class="date-range-row">
-			<div class="date-labels">
-				<span class="date-label">{m.filter_date_from()}: <strong>{formatDateShort(vm.dateFrom)}</strong></span>
-				<span class="date-sep">—</span>
-				<span class="date-label">{m.filter_date_to()}: <strong>{formatDateShort(vm.dateTo)}</strong></span>
-			</div>
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<span class="calendar-toggle" onclick={() => (calendarOpen = !calendarOpen)}>
-				<Icon name="calendar" size={18} />
-			</span>
+		<div class="filter-field">
+			<span class="filter-label">{m.label_date()}</span>
+			<DatePicker mode="range" bind:rangeStart bind:rangeEnd />
 		</div>
-
-		{#if calendarOpen}
-			<div transition:slide={{ duration: 200 }}>
-			<DateRangePicker
-				vm={calendarVM}
-				onApply={(from, to) => {
-					vm.setDateRange(from, to);
-					calendarOpen = false;
-				}}
-				onReset={() => {
-					vm.setDateRange(null, null);
-					calendarOpen = false;
-				}}
-			/>
-			</div>
-		{/if}
 	</div>
 {/if}
 
@@ -183,6 +160,9 @@
 		max-width: 600px;
 		margin: 0 auto;
 		width: 100%;
+		backdrop-filter: blur(20px) saturate(1.2);
+		-webkit-backdrop-filter: blur(20px) saturate(1.2);
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
 	}
 	.top-bar-title {
 		font-size: 20px;

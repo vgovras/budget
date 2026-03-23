@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { HomeScreenViewModel } from './home-screen.svelte.js';
 	import DonutChart from '$features/analytics/donut-chart/donut-chart.svelte';
+	import ExpenseRow from '$features/expenses/expense-row/expense-row.svelte';
 	import Button from '$lib/ui/button/button.svelte';
 	import Card from '$lib/ui/card/card.svelte';
 	import WeeklyBars from '$features/analytics/weekly-bars/weekly-bars.svelte';
 	import Icon from '$lib/ui/icon/icon.svelte';
-	import { fmt } from '$lib/utils/format.js';
+	import { fmt, getDateLabel } from '$lib/utils/format.js';
 	import { scrollNav } from '$lib/utils/scroll-nav.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
 	import type { QuickChip } from '$features/add-expense/quick-chips/quick-chips.js';
@@ -127,6 +128,22 @@
 		<WeeklyBars weeklyAmounts={vm.weeklyAmounts} />
 	</Card>
 
+	<!-- Week history -->
+	{#if Object.keys(vm.weekExpenses).length > 0}
+		<div>
+			<div class="card-label" style="margin-bottom:8px">{m.home_this_week()}</div>
+			{#each Object.entries(vm.weekExpenses) as [dateKey, items] (dateKey)}
+				<Card class="mb-2">
+					<div class="exp-group-label">{getDateLabel(dateKey)}</div>
+					{#each items as expense, i (expense.id)}
+						{#if i > 0}<div class="exp-divider"></div>{/if}
+						<ExpenseRow {expense} onclick={() => onEdit?.(expense.id)} />
+					{/each}
+				</Card>
+			{/each}
+		</div>
+	{/if}
+
 	<!-- Empty + Tips — внизу якщо немає витрат -->
 	{#if !vm.hasExpenses}
 		<Card class="empty-card">
@@ -156,6 +173,7 @@
 		flex: 1;
 		min-height: 0;
 		overflow-y: auto;
+		overflow-x: hidden;
 		padding: 0 16px calc(100px + env(safe-area-inset-bottom));
 		display: flex;
 		flex-direction: column;

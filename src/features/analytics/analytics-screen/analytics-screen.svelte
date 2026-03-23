@@ -125,6 +125,12 @@
 		max-width: 600px;
 		margin: 0 auto;
 		width: 100%;
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		backdrop-filter: blur(20px) saturate(1.2);
+		-webkit-backdrop-filter: blur(20px) saturate(1.2);
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
 	}
 
 	.top-bar-title {
@@ -137,6 +143,7 @@
 		flex: 1;
 		min-height: 0;
 		overflow-y: auto;
+		overflow-x: hidden;
 		padding: 12px 16px calc(100px + env(safe-area-inset-bottom));
 		display: flex;
 		flex-direction: column;

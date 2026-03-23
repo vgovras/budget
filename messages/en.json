@@ -43,6 +43,7 @@
 	"home_recent_expenses": "Recent expenses",
 	"home_quick_repeat": "Quick repeat",
 	"home_quick_repeat_empty": "Add an expense to enable quick repeat",
+	"home_this_week": "This week",
 	"home_no_expenses": "No expenses yet",
 	"home_no_expenses_hint_before": "Press",
 	"home_no_expenses_hint_after": "to add your first expense",
@@ -121,6 +122,8 @@
 	"daily_hint_available_today": "available today:",
 	"income_label": "Income",
 	"label_category": "Category",
+	"label_amount": "Amount",
+	"label_note": "Note",
 	"label_date": "Date",
 	"label_primary_account": "Primary account",
 

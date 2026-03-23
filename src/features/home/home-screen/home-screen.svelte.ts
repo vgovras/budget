@@ -138,9 +138,12 @@ export class HomeScreenViewModel {
 		getWeeklyAmounts(this.accountExpenses).map((v) => this.#toDisplay(v))
 	);
 
-	readonly recentExpenses = $derived.by(() => {
-		const limited = this.accountExpenses.slice(0, 5);
-		return groupByDate(limited);
+	readonly weekExpenses = $derived.by(() => {
+		const now = new Date();
+		now.setHours(0, 0, 0, 0);
+		const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+		const filtered = this.accountExpenses.filter((e) => e.date && new Date(e.date) >= weekAgo);
+		return groupByDate(filtered);
 	});
 
 	setPeriod(p: 'week' | 'month' | 'year') {

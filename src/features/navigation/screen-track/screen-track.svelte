@@ -19,7 +19,9 @@
 	function isScrollableX(el: EventTarget | null): boolean {
 		let node = el as HTMLElement | null;
 		while (node && node !== trackEl) {
-			if (node.scrollWidth > node.clientWidth + 1) return true;
+			const style = getComputedStyle(node);
+			const ox = style.overflowX;
+			if ((ox === 'auto' || ox === 'scroll') && node.scrollWidth > node.clientWidth + 1) return true;
 			node = node.parentElement;
 		}
 		return false;

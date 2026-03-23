@@ -115,13 +115,19 @@
 				{m.button_transfer()}
 			</Button>
 		{:else}
-			<AmountField>
-				<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
-			</AmountField>
+			<FormField label={m.label_category()}>
+				<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} type={vm.sheetType === 'income' ? 'income' : 'expense'} />
+			</FormField>
 
-			<CategoryPicker selected={vm.selectedCategory} onSelect={(e) => vm.selectCategory(e)} type={vm.sheetType === 'income' ? 'income' : 'expense'} />
+			<FormField label={m.label_amount()}>
+				<AmountField>
+					<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
+				</AmountField>
+			</FormField>
 
-			<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
+			<FormField label={m.label_note()}>
+				<NoteInput bind:value={vm.note} expenses={expensesVM.expenses} />
+			</FormField>
 
 			<FormField label={m.label_date()}>
 				<DatePicker bind:value={vm.selectedDate} />

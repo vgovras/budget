@@ -35,9 +35,6 @@
 		transition: all 0.2s ease;
 		color: var(--text-hi);
 		font-family: var(--font);
-		box-shadow:
-			inset 0 1px 0 var(--border-hi),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.12);
 	}
 	.note-field::placeholder {
 		color: var(--text-mid);
