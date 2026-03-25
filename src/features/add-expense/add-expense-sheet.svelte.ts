@@ -128,6 +128,13 @@ export class AddExpenseSheetViewModel {
 		return settingsVM.fiatViewEnabled && !!acc && acc.currency !== settingsVM.fiatCurrency;
 	}
 
+	#syncActiveAccount(accountId: string) {
+		const idx = accountsVM.accounts.findIndex((a) => a.id === accountId);
+		if (idx >= 0 && idx !== accountsVM.activeIdx) {
+			accountsVM.setActive(idx);
+		}
+	}
+
 	save() {
 		if (!this.canSave || !this.amount) return;
 		const acc = this.selectedAccount;
@@ -138,6 +145,8 @@ export class AddExpenseSheetViewModel {
 		const fiatFields = this.isFiatConversion
 			? { displayAmount: entered, displayCurrency: settingsVM.fiatCurrency }
 			: {};
+
+		this.#syncActiveAccount(acc.id);
 
 		if (this.sheetType === 'transfer') {
 			const to = this.toAccount;

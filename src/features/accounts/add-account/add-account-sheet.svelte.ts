@@ -33,6 +33,7 @@ export class AddAccountSheetViewModel {
 			currency: this.currency,
 			label: m.account_label_monthly_budget()
 		});
+		accountsVM.setActive(accountsVM.accounts.length - 1);
 		this.close();
 	}
 }
