@@ -1,11 +1,84 @@
 import { authClient } from '$lib/auth-client.js';
 
 let isLoggedIn = false;
+let wasLoggedIn = false;
 
 authClient.useSession().subscribe((session) => {
-	isLoggedIn = !!session.data;
-	console.log('[sync] session changed, isLoggedIn:', isLoggedIn);
+	const nowLoggedIn = !!session.data;
+	console.log('[sync] session changed, isLoggedIn:', nowLoggedIn);
+
+	// First login on this device — push all local data
+	if (nowLoggedIn && !wasLoggedIn) {
+		isLoggedIn = true;
+		initialMerge();
+	}
+
+	isLoggedIn = nowLoggedIn;
+	wasLoggedIn = nowLoggedIn;
 });
+
+// --- Initial merge: push all localStorage data to server ---
+
+async function initialMerge() {
+	console.log('[sync] initial merge — pushing all local data');
+
+	try {
+		const load = (key: string) => {
+			try {
+				const raw = localStorage.getItem(key);
+				return raw ? JSON.parse(raw) : null;
+			} catch {
+				return null;
+			}
+		};
+
+		const expData = load('budget:expenses');
+		const accounts = load('budget:accounts');
+		const settings = load('budget:settings');
+		const categories = load('budget:categories');
+		const subscriptions = load('budget:subscriptions');
+		const recurring = load('budget:recurring');
+
+		// Map local expenses to transaction format
+		const transactions = (expData?.expenses ?? []).map((exp: any) => ({
+			accountId: exp.accountId,
+			type: exp.type === 'income' ? 'IN' : 'OUT',
+			subtype: exp.type.toUpperCase(),
+			amount: exp.amount,
+			icon: exp.icon,
+			label: exp.label,
+			note: exp.note,
+			createdAt: exp.date || new Date().toISOString(),
+			meta: {
+				localId: exp.id,
+				commission: exp.commission,
+				netAmount: exp.netAmount,
+				toAccountId: exp.toAccountId,
+				exchangeRate: exp.exchangeRate,
+				displayAmount: exp.displayAmount,
+				displayCurrency: exp.displayCurrency
+			}
+		}));
+
+		const res = await fetch('/api/merge', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				accounts,
+				transactions,
+				settings,
+				categories,
+				subscriptions,
+				recurring
+			})
+		});
+
+		if (res.ok) console.log('[sync] initial merge ok');
+		else console.warn('[sync] initial merge failed:', res.status);
+	} catch (e) {
+		console.warn('[sync] initial merge error:', (e as Error).message);
+	}
+}
 
 // --- IndexedDB for pending sync queue (SW-accessible) ---
 
@@ -32,7 +105,6 @@ async function queueForSync(url: string, method: string, body?: unknown) {
 		db.close();
 		console.log('[sync] queued for background sync:', method, url);
 
-		// Register Background Sync if available
 		const reg = await navigator.serviceWorker?.ready;
 		if (reg?.sync) {
 			await reg.sync.register('push-pending');
@@ -67,7 +139,6 @@ export function syncToServer(
 			else console.log('[sync] ok:', method, url);
 		})
 		.catch(() => {
-			// Offline or network error — queue for background sync
 			console.log('[sync] offline, queuing:', method, url);
 			queueForSync(url, method, body);
 		});

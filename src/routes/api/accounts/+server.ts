@@ -18,17 +18,19 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	if (!locals.user) return error(401);
 
 	const body = await request.json();
-	if (typeof body.createdAt === 'string') body.createdAt = new Date(body.createdAt);
 
-	try {
-		const [row] = await db
-			.insert(balanceAccounts)
-			.values({ ...body, userId: locals.user.id })
-			.onConflictDoNothing({ target: balanceAccounts.id })
-			.returning();
-		return json(row, { status: 201 });
-	} catch (e) {
-		console.warn('[api/accounts] POST error:', (e as Error).message?.slice(0, 100));
-		return json(null, { status: 200 });
-	}
+	const [row] = await db
+		.insert(balanceAccounts)
+		.values({
+			id: body.id,
+			userId: locals.user.id,
+			name: body.name,
+			currencyCode: body.currency ?? body.currencyCode,
+			balance: String(body.balance ?? 0),
+			isPrimary: body.isPrimary ?? false,
+			createdAt: body.createdAt ? new Date(body.createdAt) : new Date()
+		})
+		.onConflictDoNothing({ target: balanceAccounts.id })
+		.returning();
+	return json(row, { status: 201 });
 };

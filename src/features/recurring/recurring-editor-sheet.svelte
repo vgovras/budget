@@ -15,12 +15,12 @@
 
 	let { vm }: { vm: RecurringEditorSheetViewModel } = $props();
 
-	const currency = $derived(accountsVM.active?.currency ?? settingsVM.currency);
+	const currency = $derived(accountsVM.active?.currencyCode ?? settingsVM.currency);
 
 	const accountOptions = $derived(
 		accountsVM.accounts.map((a) => ({
 			value: a.id,
-			label: `${a.name} (${a.currency} ${fmt(a.balance)})`
+			label: `${a.name} (${a.currencyCode} ${fmt(a.balance)})`
 		}))
 	);
 

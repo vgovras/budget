@@ -15,7 +15,7 @@
 	const accountOptions = $derived(
 		accountsVM.accounts.map((a) => ({
 			value: a.id,
-			label: `${a.name} (${a.currency} ${fmt(a.balance)})`
+			label: `${a.name} (${a.currencyCode} ${fmt(a.balance)})`
 		}))
 	);
 </script>
@@ -39,7 +39,7 @@
 			<div class="amount-field">
 				<MoneyInput
 					bind:value={vm.amount}
-					currency={vm.fromAccount?.currency ?? settingsVM.currency}
+					currency={vm.fromAccount?.currencyCode ?? settingsVM.currency}
 					size="lg"
 				/>
 			</div>
@@ -57,7 +57,7 @@
 				/>
 				{#if vm.amount && vm.amount > 0}
 					<span class="field-hint">
-						= {vm.toAccount?.currency} {fmt(vm.convertedAmount)}
+						= {vm.toAccount?.currencyCode} {fmt(vm.convertedAmount)}
 					</span>
 				{/if}
 			</div>

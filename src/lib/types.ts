@@ -20,16 +20,18 @@ export interface Expense {
 
 export interface Account {
 	id: string;
-	type: string;
 	name: string;
 	balance: number;
-	budget: number;
-	spent: number;
-	currency: string;
-	label: string;
-	createdAt?: string;
-	goalAmount?: number;
+	currencyCode: string;
 	isPrimary?: boolean;
+	createdAt?: string;
+	// Derived/legacy — not in DB, computed on client
+	budget?: number;
+	spent?: number;
+	currency?: string;
+	label?: string;
+	type?: string;
+	goalAmount?: number;
 }
 
 export interface Settings {

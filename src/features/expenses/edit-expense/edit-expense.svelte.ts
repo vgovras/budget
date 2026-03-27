@@ -37,7 +37,7 @@ export class EditExpenseViewModel {
 	get #accountCurrency() {
 		if (this.editingId === null) return undefined;
 		const exp = expensesVM.expenses.find((e) => e.id === this.editingId);
-		return exp ? findAccount(exp.accountId)?.currency : undefined;
+		return exp ? findAccount(exp.accountId)?.currencyCode : undefined;
 	}
 
 	open(id: string) {
@@ -55,14 +55,14 @@ export class EditExpenseViewModel {
 
 	#toDisplay(amount: number, accountId: string): number {
 		if (!settingsVM.fiatViewEnabled) return amount;
-		const accCurrency = findAccount(accountId)?.currency;
+		const accCurrency = findAccount(accountId)?.currencyCode;
 		if (!accCurrency || accCurrency === settingsVM.fiatCurrency) return amount;
 		return convert(amount, accCurrency, settingsVM.fiatCurrency);
 	}
 
 	#toAccountCurrency(displayAmount: number, accountId: string): number {
 		if (!settingsVM.fiatViewEnabled) return displayAmount;
-		const accCurrency = findAccount(accountId)?.currency;
+		const accCurrency = findAccount(accountId)?.currencyCode;
 		if (!accCurrency || accCurrency === settingsVM.fiatCurrency) return displayAmount;
 		return convert(displayAmount, settingsVM.fiatCurrency, accCurrency);
 	}

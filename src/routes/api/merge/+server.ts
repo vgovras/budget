@@ -16,36 +16,36 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 		.values({ id: userId, name: locals.user.name ?? '' })
 		.onConflictDoNothing({ target: schema.profiles.id });
 
-	// Merge accounts (ON CONFLICT DO NOTHING — client-generated IDs)
+	// Merge accounts
 	if (data.accounts?.length) {
 		for (const acc of data.accounts) {
 			await db
 				.insert(schema.balanceAccounts)
-				.values({ ...acc, userId })
+				.values({
+					id: acc.id,
+					userId,
+					name: acc.name,
+					currencyCode: acc.currency ?? acc.currencyCode,
+					balance: String(acc.balance ?? 0),
+					isPrimary: acc.isPrimary ?? false,
+					createdAt: acc.createdAt ? new Date(acc.createdAt) : new Date()
+				})
 				.onConflictDoNothing({ target: schema.balanceAccounts.id });
 		}
 	}
 
-	// Merge transactions (append-only, ON CONFLICT DO NOTHING)
+	// Merge transactions
 	if (data.transactions?.length) {
 		for (const tx of data.transactions) {
-			const result = await db
-				.insert(schema.transactions)
-				.values({ ...tx, userId })
-				.onConflictDoNothing({ target: schema.transactions.id })
-				.returning({ id: schema.transactions.id });
+			delete tx.id;
+			if (typeof tx.createdAt === 'string') tx.createdAt = new Date(tx.createdAt);
+			await db.insert(schema.transactions).values({ ...tx, userId });
 
-			if (result.length > 0) {
-				try {
-					const signedAmount = tx.type === 'IN' ? tx.amount : `-${tx.amount}`;
-					await db
-						.update(schema.balanceAccounts)
-						.set({ balance: sql`${schema.balanceAccounts.balance} + ${signedAmount}` })
-						.where(eq(schema.balanceAccounts.id, tx.accountId));
-				} catch {
-					// Account may not exist
-				}
-			}
+			const signedAmount = tx.type === 'IN' ? tx.amount : `-${tx.amount}`;
+			await db
+				.update(schema.balanceAccounts)
+				.set({ balance: sql`${schema.balanceAccounts.balance} + ${signedAmount}` })
+				.where(eq(schema.balanceAccounts.id, tx.accountId));
 		}
 	}
 
@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const patch: Record<string, any> = { updatedAt: sql`now()` };
 
 	if (data.settings) {
-		patch.settings = data.settings; // local wins
+		patch.settings = data.settings;
 	}
 	if (data.categories) {
 		patch.categories = mergeArraysById((existing?.categories as any[]) ?? [], data.categories);

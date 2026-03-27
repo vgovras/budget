@@ -32,21 +32,17 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	const items = Array.isArray(body) ? body : [body];
 
 	for (const tx of items) {
-		try {
-			tx.userId = locals.user.id;
-			delete tx.id; // server generates UUID via uuidv7() default
-			if (typeof tx.createdAt === 'string') tx.createdAt = new Date(tx.createdAt);
+		tx.userId = locals.user.id;
+		delete tx.id;
+		if (typeof tx.createdAt === 'string') tx.createdAt = new Date(tx.createdAt);
 
-			await db.insert(transactions).values(tx);
+		await db.insert(transactions).values(tx);
 
-			const signedAmount = tx.type === 'IN' ? tx.amount : `-${tx.amount}`;
-			await db
-				.update(balanceAccounts)
-				.set({ balance: sql`${balanceAccounts.balance} + ${signedAmount}` })
-				.where(eq(balanceAccounts.id, tx.accountId));
-		} catch (e) {
-			console.warn('[api/transactions] skipping tx:', tx.subtype, 'accountId:', tx.accountId, (e as Error).message?.slice(0, 120));
-		}
+		const signedAmount = tx.type === 'IN' ? tx.amount : `-${tx.amount}`;
+		await db
+			.update(balanceAccounts)
+			.set({ balance: sql`${balanceAccounts.balance} + ${signedAmount}` })
+			.where(eq(balanceAccounts.id, tx.accountId));
 	}
 
 	return json({ ok: true }, { status: 201 });

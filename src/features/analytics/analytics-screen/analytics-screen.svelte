@@ -53,7 +53,7 @@
 		{#each accountsVM.accounts as acc, i (acc.id)}
 			{@const spent = getAccStats(expensesVM.expenses, acc.id)}
 			{@const pct = acc.budget > 0 ? Math.min(Math.round((spent / acc.budget) * 100), 100) : 0}
-			{@const cur = vm.isFiat ? settingsVM.fiatCurrency : acc.currency}
+			{@const cur = vm.isFiat ? settingsVM.fiatCurrency : acc.currencyCode}
 			{#if i > 0}
 				<div class="acc-divider"></div>
 			{/if}
@@ -66,15 +66,15 @@
 				<div class="acc-info">
 					<div class="acc-name">{acc.name}</div>
 					{#if acc.budget > 0 && spent > 0}
-						<div class="acc-budget-line">{cur} {fmt(settingsVM.toDisplay(spent, acc.currency))} / {cur} {fmt(settingsVM.toDisplay(acc.budget, acc.currency))}</div>
+						<div class="acc-budget-line">{cur} {fmt(settingsVM.toDisplay(spent, acc.currencyCode))} / {cur} {fmt(settingsVM.toDisplay(acc.budget, acc.currencyCode))}</div>
 					{/if}
 				</div>
 				<div class="acc-balance-wrap">
-					{#if vm.isFiat && acc.currency !== settingsVM.fiatCurrency}
-						<div class="acc-balance">{settingsVM.fiatCurrency} {fmt(convert(acc.balance, acc.currency, settingsVM.fiatCurrency))}</div>
-						<div class="acc-balance-original">{acc.currency} {fmt(acc.balance)}</div>
+					{#if vm.isFiat && acc.currencyCode !== settingsVM.fiatCurrency}
+						<div class="acc-balance">{settingsVM.fiatCurrency} {fmt(convert(acc.balance, acc.currencyCode, settingsVM.fiatCurrency))}</div>
+						<div class="acc-balance-original">{acc.currencyCode} {fmt(acc.balance)}</div>
 					{:else}
-						<div class="acc-balance">{acc.currency} {fmt(acc.balance)}</div>
+						<div class="acc-balance">{acc.currencyCode} {fmt(acc.balance)}</div>
 					{/if}
 				</div>
 			</div>

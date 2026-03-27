@@ -110,9 +110,9 @@ export class SubscriptionsViewModel {
 		const acc = accountsVM.accounts.find((a) => a.id === sub.accountId);
 		if (!acc) return;
 
-		const chargeAmount = acc.currency === sub.currency
+		const chargeAmount = acc.currencyCode === sub.currency
 			? sub.amount
-			: convert(sub.amount, sub.currency, acc.currency);
+			: convert(sub.amount, sub.currency, acc.currencyCode);
 
 		accountsVM.update(acc.id, { balance: acc.balance - chargeAmount });
 

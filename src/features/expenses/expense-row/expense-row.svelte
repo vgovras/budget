@@ -13,7 +13,7 @@
 	}: { expense: Expense; onclick?: () => void; isNew?: boolean } = $props();
 
 	const nativeCurrency = $derived(
-		accountsVM.accounts.find((a) => a.id === expense.accountId)?.currency ?? settingsVM.currency
+		accountsVM.accounts.find((a) => a.id === expense.accountId)?.currencyCode ?? settingsVM.currency
 	);
 	const currency = $derived(
 		settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : nativeCurrency

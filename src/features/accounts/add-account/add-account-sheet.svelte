@@ -39,7 +39,7 @@
 
 		<FormField label={m.field_label_budget_balance()}>
 			<AmountField>
-				<MoneyInput bind:value={vm.budget} size="lg" />
+				<MoneyInput bind:value={vm.balance} size="lg" />
 			</AmountField>
 		</FormField>
 

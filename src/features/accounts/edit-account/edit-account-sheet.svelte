@@ -14,7 +14,7 @@
 
 	let { vm, onDelete }: { vm: EditAccountSheetViewModel; onDelete?: (id: string, name: string) => void } = $props();
 
-	const currency = $derived(vm.account?.currency ?? settingsVM.currency);
+	const currency = $derived(vm.account?.currencyCode ?? settingsVM.currency);
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
