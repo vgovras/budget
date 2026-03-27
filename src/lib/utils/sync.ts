@@ -7,6 +7,44 @@ authClient.useSession().subscribe((session) => {
 	console.log('[sync] session changed, isLoggedIn:', isLoggedIn);
 });
 
+// --- IndexedDB for pending sync queue (SW-accessible) ---
+
+function openSyncDB(): Promise<IDBDatabase> {
+	return new Promise((resolve, reject) => {
+		const req = indexedDB.open('budget-sync', 1);
+		req.onupgradeneeded = () => {
+			req.result.createObjectStore('pending', { autoIncrement: true });
+		};
+		req.onsuccess = () => resolve(req.result);
+		req.onerror = () => reject(req.error);
+	});
+}
+
+async function queueForSync(url: string, method: string, body?: unknown) {
+	try {
+		const db = await openSyncDB();
+		const tx = db.transaction('pending', 'readwrite');
+		tx.objectStore('pending').add({ url, method, body, timestamp: Date.now() });
+		await new Promise((res, rej) => {
+			tx.oncomplete = res;
+			tx.onerror = rej;
+		});
+		db.close();
+		console.log('[sync] queued for background sync:', method, url);
+
+		// Register Background Sync if available
+		const reg = await navigator.serviceWorker?.ready;
+		if (reg?.sync) {
+			await reg.sync.register('push-pending');
+			console.log('[sync] background sync registered');
+		}
+	} catch (e) {
+		console.warn('[sync] failed to queue:', (e as Error).message);
+	}
+}
+
+// --- Main sync function ---
+
 export function syncToServer(
 	url: string,
 	method: 'POST' | 'PATCH' | 'PUT' | 'DELETE' = 'POST',
@@ -28,7 +66,9 @@ export function syncToServer(
 			if (!res.ok) console.warn('[sync] failed:', res.status, method, url);
 			else console.log('[sync] ok:', method, url);
 		})
-		.catch((err) => {
-			console.warn('[sync] error:', method, url, err.message);
+		.catch(() => {
+			// Offline or network error — queue for background sync
+			console.log('[sync] offline, queuing:', method, url);
+			queueForSync(url, method, body);
 		});
 }

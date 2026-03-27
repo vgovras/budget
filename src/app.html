@@ -24,7 +24,12 @@
 		<div style="display: contents" data-vaul-drawer-wrapper>%sveltekit.body%</div>
 		<script>
 			if ('serviceWorker' in navigator) {
-				navigator.serviceWorker.register('/sw.js');
+				navigator.serviceWorker.register('/sw.js').then(function (reg) {
+					// Register periodic sync for installed PWA (Chrome)
+					if (reg.periodicSync) {
+						reg.periodicSync.register('sync-periodic', { minInterval: 60 * 60 * 1000 });
+					}
+				});
 			}
 		</script>
 	</body>
