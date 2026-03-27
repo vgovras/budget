@@ -1,5 +1,6 @@
 import type { Account } from '$lib/types.js';
 import { AccountsRepository } from './accounts.js';
+import { syncToServer } from '$lib/utils/sync.js';
 
 export class AccountsViewModel {
 	#repo: AccountsRepository;
@@ -26,16 +27,21 @@ export class AccountsViewModel {
 		const acc = { ...data, id: 'acc-' + Date.now(), createdAt: new Date().toISOString() };
 		this.accounts = [...this.accounts, acc];
 		this.#repo.save(this.accounts);
+		syncToServer('/api/accounts', 'POST', acc);
 	}
 
 	update(id: string, patch: Partial<Account>) {
 		this.accounts = this.accounts.map((a) => (a.id === id ? { ...a, ...patch } : a));
 		this.#repo.save(this.accounts);
+		syncToServer(`/api/accounts/${id}`, 'PATCH', patch);
 	}
 
 	setPrimary(id: string) {
 		this.accounts = this.accounts.map((a) => ({ ...a, isPrimary: a.id === id }));
 		this.#repo.save(this.accounts);
+		for (const acc of this.accounts) {
+			syncToServer(`/api/accounts/${acc.id}`, 'PATCH', { isPrimary: acc.id === id });
+		}
 	}
 
 	remove(id: string) {
@@ -44,9 +50,13 @@ export class AccountsViewModel {
 			this.activeIdx = Math.max(0, this.accounts.length - 1);
 		}
 		this.#repo.save(this.accounts);
+		syncToServer(`/api/accounts/${id}`, 'DELETE');
 	}
 
 	resetAll() {
+		for (const acc of this.accounts) {
+			syncToServer(`/api/accounts/${acc.id}`, 'DELETE');
+		}
 		this.accounts = [];
 		this.activeIdx = 0;
 		this.#repo.clear();

@@ -3,6 +3,7 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { nowISO } from '$lib/utils/format.js';
 import { RecurringRepository } from './recurring.js';
+import { syncToServer } from '$lib/utils/sync.js';
 
 const SALARY_ID = 'rec-salary';
 
@@ -24,17 +25,17 @@ export class RecurringViewModel {
 	add(data: Omit<RecurringTransaction, 'id'>): void {
 		const item: RecurringTransaction = { ...data, id: 'rec-' + Date.now() };
 		this.items = [...this.items, item];
-		this.#repo.save(this.items);
+		this.#save();
 	}
 
 	update(id: string, patch: Partial<RecurringTransaction>): void {
 		this.items = this.items.map((r) => (r.id === id ? { ...r, ...patch } : r));
-		this.#repo.save(this.items);
+		this.#save();
 	}
 
 	remove(id: string): void {
 		this.items = this.items.filter((r) => r.id !== id);
-		this.#repo.save(this.items);
+		this.#save();
 	}
 
 	toggle(id: string): void {
@@ -80,7 +81,7 @@ export class RecurringViewModel {
 			enabled: true
 		};
 		this.items = [...this.items, item];
-		this.#repo.save(this.items);
+		this.#save();
 	}
 
 	#computeNextPayday(payday: number): Date {
@@ -94,6 +95,12 @@ export class RecurringViewModel {
 	resetAll(): void {
 		this.items = [];
 		this.#repo.clear();
+		syncToServer('/api/user', 'PATCH', { recurring: this.items });
+	}
+
+	#save(): void {
+		this.#repo.save(this.items);
+		syncToServer('/api/user', 'PATCH', { recurring: this.items });
 	}
 
 	#processdue(): void {
@@ -117,7 +124,7 @@ export class RecurringViewModel {
 
 		if (changed) {
 			this.items = [...this.items];
-			this.#repo.save(this.items);
+			this.#save();
 		}
 	}
 

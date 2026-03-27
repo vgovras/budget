@@ -20,6 +20,8 @@
 	import { getLocale, setLocale, locales } from '$lib/paraglide/runtime.js';
 	import { LANG_OPTIONS } from '$lib/utils/locale.js';
 	import { CURRENCIES, CURRENCY_LABELS } from '$lib/constants.js';
+	import { authClient } from '$lib/auth-client.js';
+	import GoogleIcon from '$lib/ui/icon/google-icon.svelte';
 
 	let { confirmVM }: { confirmVM: ConfirmDialogViewModel } = $props();
 
@@ -48,6 +50,17 @@
 
 	const catEditorVM = new CategoryEditorSheetViewModel();
 	const recEditorVM = new RecurringEditorSheetViewModel();
+
+	const session = authClient.useSession();
+	const isLoggedIn = $derived(!!$session.data);
+
+	async function toggleGoogle() {
+		if (isLoggedIn) {
+			await authClient.signOut();
+		} else {
+			await authClient.signIn.social({ provider: 'google' });
+		}
+	}
 
 	function deleteCategory(id: string) {
 		categoriesVM.remove(id);
@@ -249,6 +262,31 @@
 						]}
 						position="top"
 					/>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Socials -->
+	<div>
+		<div class="settings-section-title">Socials</div>
+		<div class="settings-group">
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="settings-row" onclick={toggleGoogle}>
+				<div class="settings-row-icon google-icon">
+					<GoogleIcon size={18} />
+				</div>
+				<div class="settings-row-info">
+					<div class="settings-row-label">Google</div>
+					{#if isLoggedIn && $session.data?.user?.email}
+						<div class="settings-row-value">{$session.data.user.email}</div>
+					{/if}
+				</div>
+				<div class="settings-row-right">
+					<div class="toggle" class:on={isLoggedIn}>
+						<div class="toggle-handle"></div>
+					</div>
 				</div>
 			</div>
 		</div>

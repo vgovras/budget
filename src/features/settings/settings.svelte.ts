@@ -3,6 +3,7 @@ import { DEFAULT_SETTINGS } from '$lib/constants.js';
 import { convert } from '$lib/utils/currency.js';
 import { SettingsRepository } from './settings.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
+import { syncToServer } from '$lib/utils/sync.js';
 
 export class SettingsViewModel {
 	#repo: SettingsRepository;
@@ -143,10 +144,12 @@ export class SettingsViewModel {
 		this.theme = 'dark';
 		this.#applyTheme();
 		this.#repo.clear();
+		syncToServer('/api/user', 'PATCH', { settings: this.#snapshot() });
 	}
 
 	#save() {
 		this.#repo.save(this.#snapshot());
+		syncToServer('/api/user', 'PATCH', { settings: this.#snapshot() });
 	}
 
 	#snapshot(): Settings {
