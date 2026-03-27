@@ -12,7 +12,7 @@
 	import { slide } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { onEdit }: { onEdit?: (id: number) => void } = $props();
+	let { onEdit }: { onEdit?: (id: string) => void } = $props();
 
 	const vm = new HistoryScreenViewModel();
 

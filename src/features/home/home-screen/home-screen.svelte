@@ -12,7 +12,7 @@
 	import type { QuickChip } from '$features/add-expense/quick-chips/quick-chips.js';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { onEdit, onAdd, onQuickAdd }: { onEdit?: (id: number) => void; onAdd?: () => void; onQuickAdd?: (chip: QuickChip) => void } = $props();
+	let { onEdit, onAdd, onQuickAdd }: { onEdit?: (id: string) => void; onAdd?: () => void; onQuickAdd?: (chip: QuickChip) => void } = $props();
 
 	const vm = new HomeScreenViewModel();
 </script>

@@ -2,6 +2,7 @@ import type { Category, CategoryType } from '$lib/types.js';
 import { DEFAULT_CATEGORIES } from '$lib/constants.js';
 import { CategoriesRepository } from './categories.js';
 import { syncToServer } from '$lib/utils/sync.js';
+import { uuidv7 } from 'uuidv7';
 
 export class CategoriesViewModel {
 	#repo: CategoriesRepository;
@@ -45,7 +46,7 @@ export class CategoriesViewModel {
 	}
 
 	add(data: Omit<Category, 'id'>): Category {
-		const cat: Category = { ...data, id: 'cat-' + Date.now() };
+		const cat: Category = { ...data, id: uuidv7() };
 		this.categories = [...this.categories, cat];
 		this.#save();
 		return cat;

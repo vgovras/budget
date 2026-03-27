@@ -60,7 +60,7 @@
 		</div>
 		<div class="screen">
 			<HomeScreen
-				onEdit={(id: number) => editExpenseVM.open(id)}
+				onEdit={(id: string) => editExpenseVM.open(id)}
 				onAdd={() => addExpenseVM.open()}
 				onQuickAdd={(chip) => {
 					addExpenseVM.open();
@@ -69,7 +69,7 @@
 			/>
 		</div>
 		<div class="screen">
-			<HistoryScreen onEdit={(id: number) => editExpenseVM.open(id)} />
+			<HistoryScreen onEdit={(id: string) => editExpenseVM.open(id)} />
 		</div>
 		<div class="screen">
 			<SettingsScreen {confirmVM} />

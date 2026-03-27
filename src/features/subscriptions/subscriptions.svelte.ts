@@ -6,6 +6,7 @@ import { convert } from '$lib/utils/currency.js';
 import { nowISO } from '$lib/utils/format.js';
 import { SubscriptionsRepository } from './subscriptions.js';
 import { syncToServer } from '$lib/utils/sync.js';
+import { uuidv7 } from 'uuidv7';
 
 function advanceDate(date: Date, cycle: Subscription['cycle']): Date {
 	const next = new Date(date);
@@ -52,7 +53,7 @@ export class SubscriptionsViewModel {
 	}
 
 	add(data: Omit<Subscription, 'id'>) {
-		const sub: Subscription = { ...data, id: 'sub-' + Date.now() };
+		const sub: Subscription = { ...data, id: uuidv7() };
 		this.items = [...this.items, sub];
 		this.#save();
 	}

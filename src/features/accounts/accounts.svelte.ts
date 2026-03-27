@@ -1,6 +1,7 @@
 import type { Account } from '$lib/types.js';
 import { AccountsRepository } from './accounts.js';
 import { syncToServer } from '$lib/utils/sync.js';
+import { uuidv7 } from 'uuidv7';
 
 export class AccountsViewModel {
 	#repo: AccountsRepository;
@@ -24,7 +25,7 @@ export class AccountsViewModel {
 	}
 
 	add(data: Omit<Account, 'id'>) {
-		const acc = { ...data, id: 'acc-' + Date.now(), createdAt: new Date().toISOString() };
+		const acc = { ...data, id: uuidv7(), createdAt: new Date().toISOString() };
 		this.accounts = [...this.accounts, acc];
 		this.#repo.save(this.accounts);
 		syncToServer('/api/accounts', 'POST', acc);

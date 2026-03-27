@@ -1,6 +1,7 @@
 import type { Expense } from '$lib/types.js';
 import { ExpensesRepository } from './expenses.js';
 import { syncToServer } from '$lib/utils/sync.js';
+import { uuidv7 } from 'uuidv7';
 
 function expenseToTransaction(exp: Expense) {
 	const isIncome = exp.type === 'income';
@@ -29,7 +30,6 @@ export class ExpensesViewModel {
 	#repo: ExpensesRepository;
 
 	expenses = $state<Expense[]>([]);
-	nextId = $state(1);
 
 	readonly total = $derived(
 		this.expenses.filter((e) => e.type === 'expense').reduce((s, e) => s + e.amount, 0)
@@ -39,20 +39,19 @@ export class ExpensesViewModel {
 		this.#repo = repo;
 		const saved = this.#repo.load();
 		if (saved) {
-			this.expenses = saved.expenses;
-			this.nextId = saved.nextId;
+			this.expenses = saved.expenses ?? saved;
 		}
 	}
 
 	add(data: Omit<Expense, 'id'>) {
-		const exp = { ...data, id: this.nextId++ };
+		const exp = { ...data, id: uuidv7() };
 		this.expenses = [exp, ...this.expenses];
 		this.#save();
 		syncToServer('/api/transactions', 'POST', expenseToTransaction(exp));
 		return exp;
 	}
 
-	update(id: number, patch: Partial<Expense>) {
+	update(id: string, patch: Partial<Expense>) {
 		this.expenses = this.expenses.map((e) => (e.id === id ? { ...e, ...patch } : e));
 		this.#save();
 		// Transactions are append-only on server — update creates adjustment
@@ -60,7 +59,7 @@ export class ExpensesViewModel {
 		if (updated) syncToServer('/api/transactions', 'POST', expenseToTransaction(updated));
 	}
 
-	remove(id: number) {
+	remove(id: string) {
 		const removed = this.expenses.find((e) => e.id === id);
 		this.expenses = this.expenses.filter((e) => e.id !== id);
 		this.#save();
@@ -82,12 +81,11 @@ export class ExpensesViewModel {
 
 	resetAll() {
 		this.expenses = [];
-		this.nextId = 1;
 		this.#repo.clear();
 	}
 
 	#save() {
-		this.#repo.save({ expenses: this.expenses, nextId: this.nextId });
+		this.#repo.save({ expenses: this.expenses });
 	}
 }
 

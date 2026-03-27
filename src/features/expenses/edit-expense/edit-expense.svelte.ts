@@ -21,7 +21,7 @@ function getNetAmount(amount: number, commission: number | undefined) {
 }
 
 export class EditExpenseViewModel {
-	editingId = $state<number | null>(null);
+	editingId = $state<string | null>(null);
 	amount = $state(0);
 	note = $state('');
 	editDate = $state('');
@@ -40,7 +40,7 @@ export class EditExpenseViewModel {
 		return exp ? findAccount(exp.accountId)?.currency : undefined;
 	}
 
-	open(id: number) {
+	open(id: string) {
 		const exp = expensesVM.expenses.find((e) => e.id === id);
 		if (!exp) return;
 		this.editingId = id;

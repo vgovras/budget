@@ -83,7 +83,6 @@ export class OnboardingViewModel {
 		const budget = this.budget > 0 ? this.budget : sal > 0 ? sal : 10000;
 		const { proratedBudget } = prorateForCurrentMonth(budget);
 
-		const accId = 'acc-' + Date.now();
 		accountsVM.add({
 			type: 'card',
 			name: m.default_account_name(),

@@ -4,6 +4,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { nowISO } from '$lib/utils/format.js';
 import { RecurringRepository } from './recurring.js';
 import { syncToServer } from '$lib/utils/sync.js';
+import { uuidv7 } from 'uuidv7';
 
 const SALARY_ID = 'rec-salary';
 
@@ -23,7 +24,7 @@ export class RecurringViewModel {
 	}
 
 	add(data: Omit<RecurringTransaction, 'id'>): void {
-		const item: RecurringTransaction = { ...data, id: 'rec-' + Date.now() };
+		const item: RecurringTransaction = { ...data, id: uuidv7() };
 		this.items = [...this.items, item];
 		this.#save();
 	}

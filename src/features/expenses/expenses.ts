@@ -3,7 +3,7 @@ import type { Expense } from '$lib/types.js';
 export class ExpensesRepository {
 	readonly #key = 'budget:expenses';
 
-	load(): { expenses: Expense[]; nextId: number } | null {
+	load(): { expenses: Expense[] } | null {
 		try {
 			const raw = localStorage.getItem(this.#key);
 			return raw ? JSON.parse(raw) : null;
@@ -12,7 +12,7 @@ export class ExpensesRepository {
 		}
 	}
 
-	save(data: { expenses: Expense[]; nextId: number }): void {
+	save(data: { expenses: Expense[] }): void {
 		try {
 			localStorage.setItem(this.#key, JSON.stringify(data));
 		} catch {
