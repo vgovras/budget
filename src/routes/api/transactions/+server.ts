@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 				.set({ balance: sql`${balanceAccounts.balance} + ${signedAmount}` })
 				.where(eq(balanceAccounts.id, tx.accountId));
 		} catch (e) {
-			console.warn('[api/transactions] skipping tx:', (e as Error).message?.slice(0, 100));
+			console.warn('[api/transactions] skipping tx:', tx.subtype, 'accountId:', tx.accountId, (e as Error).message?.slice(0, 120));
 		}
 	}
 
