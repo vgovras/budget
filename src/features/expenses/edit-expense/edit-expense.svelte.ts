@@ -21,7 +21,7 @@ function getNetAmount(amount: number, commission: number | undefined) {
 }
 
 export class EditExpenseViewModel {
-	editingId = $state<number | null>(null);
+	editingId = $state<string | null>(null);
 	amount = $state(0);
 	note = $state('');
 	editDate = $state('');
@@ -37,10 +37,10 @@ export class EditExpenseViewModel {
 	get #accountCurrency() {
 		if (this.editingId === null) return undefined;
 		const exp = expensesVM.expenses.find((e) => e.id === this.editingId);
-		return exp ? findAccount(exp.accountId)?.currency : undefined;
+		return exp ? findAccount(exp.accountId)?.currencyCode : undefined;
 	}
 
-	open(id: number) {
+	open(id: string) {
 		const exp = expensesVM.expenses.find((e) => e.id === id);
 		if (!exp) return;
 		this.editingId = id;
@@ -55,14 +55,14 @@ export class EditExpenseViewModel {
 
 	#toDisplay(amount: number, accountId: string): number {
 		if (!settingsVM.fiatViewEnabled) return amount;
-		const accCurrency = findAccount(accountId)?.currency;
+		const accCurrency = findAccount(accountId)?.currencyCode;
 		if (!accCurrency || accCurrency === settingsVM.fiatCurrency) return amount;
 		return convert(amount, accCurrency, settingsVM.fiatCurrency);
 	}
 
 	#toAccountCurrency(displayAmount: number, accountId: string): number {
 		if (!settingsVM.fiatViewEnabled) return displayAmount;
-		const accCurrency = findAccount(accountId)?.currency;
+		const accCurrency = findAccount(accountId)?.currencyCode;
 		if (!accCurrency || accCurrency === settingsVM.fiatCurrency) return displayAmount;
 		return convert(displayAmount, settingsVM.fiatCurrency, accCurrency);
 	}

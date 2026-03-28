@@ -19,7 +19,7 @@
 	const accountOptions = $derived(
 		accountsVM.accounts.map((a) => ({
 			value: a.id,
-			label: `${a.name} (${a.currency} ${fmt(a.balance)})`
+			label: `${a.name} (${a.currencyCode} ${fmt(a.balance)})`
 		}))
 	);
 
@@ -29,7 +29,7 @@
 		{ value: 'yearly', label: m.sub_cycle_yearly() },
 	];
 
-	const currencyOptions = vm.currencies.map((c) => ({ value: c, label: c }));
+	const currencyOptions = $derived(vm.currencies.map((c) => ({ value: c, label: c })));
 
 	function handleIconSelect(icon: string) {
 		const preset = vm.presets.find((p) => p.icon === icon);

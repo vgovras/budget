@@ -1,8 +1,10 @@
 import type { Account } from '$lib/types.js';
 import { AccountsRepository } from './accounts.js';
+import { markDirty } from '$lib/utils/sync.js';
+import { uuidv7 } from 'uuidv7';
 
 export class AccountsViewModel {
-	#repo: AccountsRepository;
+	#repo = new AccountsRepository();
 
 	accounts = $state<Account[]>([]);
 	activeIdx = $state(0);
@@ -10,32 +12,39 @@ export class AccountsViewModel {
 	readonly active = $derived(this.accounts[this.activeIdx]);
 	readonly primary = $derived(this.accounts.find((a) => a.isPrimary) ?? this.accounts[0]);
 
-	constructor(repo: AccountsRepository) {
-		this.#repo = repo;
-		const saved = this.#repo.load();
-		if (saved) {
-			this.accounts = saved;
-		}
+	constructor() {
+		this.accounts = this.#repo.load();
 	}
 
 	setActive(idx: number) {
 		this.activeIdx = idx;
 	}
 
-	add(data: Omit<Account, 'id'>) {
-		const acc = { ...data, id: 'acc-' + Date.now(), createdAt: new Date().toISOString() };
+	add(data: Omit<Account, 'id' | 'updatedAt'>) {
+		const now = new Date().toISOString();
+		const acc: Account = { ...data, id: uuidv7(), updatedAt: now, createdAt: now };
 		this.accounts = [...this.accounts, acc];
-		this.#repo.save(this.accounts);
+		this.#repo.upsert(acc);
+		markDirty();
 	}
 
 	update(id: string, patch: Partial<Account>) {
-		this.accounts = this.accounts.map((a) => (a.id === id ? { ...a, ...patch } : a));
-		this.#repo.save(this.accounts);
+		this.accounts = this.accounts.map((a) =>
+			a.id === id ? { ...a, ...patch, updatedAt: new Date().toISOString() } : a
+		);
+		const updated = this.accounts.find((a) => a.id === id);
+		if (updated) this.#repo.upsert(updated);
+		markDirty();
 	}
 
 	setPrimary(id: string) {
-		this.accounts = this.accounts.map((a) => ({ ...a, isPrimary: a.id === id }));
-		this.#repo.save(this.accounts);
+		this.accounts = this.accounts.map((a) => ({
+			...a,
+			isPrimary: a.id === id,
+			updatedAt: new Date().toISOString()
+		}));
+		for (const acc of this.accounts) this.#repo.upsert(acc);
+		markDirty();
 	}
 
 	remove(id: string) {
@@ -43,14 +52,16 @@ export class AccountsViewModel {
 		if (this.activeIdx >= this.accounts.length) {
 			this.activeIdx = Math.max(0, this.accounts.length - 1);
 		}
-		this.#repo.save(this.accounts);
+		this.#repo.softDelete(id);
+		markDirty();
 	}
 
 	resetAll() {
+		for (const a of this.accounts) this.#repo.softDelete(a.id);
 		this.accounts = [];
 		this.activeIdx = 0;
-		this.#repo.clear();
+		markDirty();
 	}
 }
 
-export const accountsVM = new AccountsViewModel(new AccountsRepository());
+export const accountsVM = new AccountsViewModel();

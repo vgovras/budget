@@ -14,7 +14,7 @@ export class AnalyticsViewModel {
 
 	readonly totalBalance = $derived(
 		accountsVM.accounts.reduce(
-			(s: number, a) => s + this.#convertBalance(a.balance, a.currency),
+			(s: number, a) => s + this.#convertBalance(a.balance, a.currencyCode),
 			0
 		)
 	);
@@ -25,7 +25,7 @@ export class AnalyticsViewModel {
 			.map((a) => ({
 				icon: 'wallet',
 				label: a.name,
-				sum: this.#convertBalance(a.balance, a.currency)
+				sum: this.#convertBalance(a.balance, a.currencyCode)
 			}))
 			.sort((a, b) => b.sum - a.sum)
 	);

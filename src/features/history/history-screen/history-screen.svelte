@@ -12,7 +12,7 @@
 	import { slide } from 'svelte/transition';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let { onEdit }: { onEdit?: (id: number) => void } = $props();
+	let { onEdit }: { onEdit?: (id: string) => void } = $props();
 
 	const vm = new HistoryScreenViewModel();
 
@@ -273,39 +273,6 @@
 		text-transform: uppercase;
 		color: var(--text-muted);
 	}
-	.date-range-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 10px 0;
-		border-top: 1px solid var(--surface-5);
-	}
-	.date-labels {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 13px;
-		color: var(--text-secondary);
-	}
-	.date-labels strong {
-		color: var(--text-hi);
-		font-weight: 500;
-	}
-	.date-sep {
-		color: var(--text-muted);
-	}
-	.calendar-toggle {
-		cursor: pointer;
-		color: var(--text-mid);
-		display: flex;
-		align-items: center;
-		padding: 4px;
-		transition: color 0.15s;
-	}
-	.calendar-toggle:hover {
-		color: var(--accent);
-	}
-
 	/* Category chips */
 	.filters {
 		display: flex;
@@ -386,46 +353,6 @@
 		margin-top: 2px;
 		text-transform: capitalize;
 	}
-	.period-toggle {
-		display: flex;
-		gap: 4px;
-	}
-	.ptab {
-		font-size: 10px;
-		padding: 4px 8px;
-		border-radius: 8px;
-		color: var(--text-lo);
-		cursor: pointer;
-		font-weight: 400;
-		background: none;
-		border: none;
-		font-family: var(--font);
-	}
-	.ptab.active {
-		background: var(--border);
-		color: var(--text-primary);
-		font-weight: 500;
-	}
-
-	/* Total */
-	.month-total {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 4px 2px;
-	}
-	.month-total-label {
-		font-size: 15px;
-		font-weight: 500;
-		color: var(--text-hi);
-	}
-	.month-total-amount {
-		font-family: var(--font-mono);
-		font-size: 17px;
-		font-weight: 500;
-		color: var(--text-mid);
-	}
-
 	/* Transaction cards */
 	.card {
 		background: var(--card);

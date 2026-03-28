@@ -28,7 +28,7 @@ export class HistoryScreenViewModel {
 	);
 
 	readonly nativeCurrency = $derived(
-		accountsVM.active?.currency ?? settingsVM.currency
+		accountsVM.active?.currencyCode ?? settingsVM.currency
 	);
 
 	readonly displayCurrency = $derived(

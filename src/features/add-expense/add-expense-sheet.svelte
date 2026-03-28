@@ -28,13 +28,13 @@
 
 	const accountOptions = $derived(
 		accountsVM.accounts
-			.map((a) => ({ value: a.id, label: `${a.name} (${a.currency} ${fmt(a.balance)})` }))
+			.map((a) => ({ value: a.id, label: `${a.name} (${a.currencyCode} ${fmt(a.balance)})` }))
 	);
 
 	const transferAccountOptions = $derived(
 		accountsVM.accounts
 			.filter((a) => a.id !== vm.selectedAccountId)
-			.map((a) => ({ value: a.id, label: `${a.name} (${a.currency} ${fmt(a.balance)})` }))
+			.map((a) => ({ value: a.id, label: `${a.name} (${a.currencyCode} ${fmt(a.balance)})` }))
 	);
 
 	const canTransfer = $derived(accountsVM.accounts.length > 1);
@@ -92,14 +92,14 @@
 			</FormField>
 
 			<AmountField>
-				<MoneyInput bind:value={vm.amount} currency={vm.selectedAccount?.currency ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
+				<MoneyInput bind:value={vm.amount} currency={vm.selectedAccount?.currencyCode ?? settingsVM.currency} size="lg" autofocus={vm.isOpen} />
 			</AmountField>
 
 			{#if vm.isCrossCurrency}
 				<FormField label={m.transfer_exchange_rate()}>
 					<input class="px-4 py-3 rounded-sm border border-surface-8 bg-surface-5 text-base text-text-hi font-sans" type="number" step="0.01" min="0" bind:value={vm.exchangeRate} />
 					{#if vm.amount && vm.amount > 0}
-						<span class="text-sm text-accent pl-0.5">= {vm.toAccount?.currency} {fmt(vm.convertedAmount)}</span>
+						<span class="text-sm text-accent pl-0.5">= {vm.toAccount?.currencyCode} {fmt(vm.convertedAmount)}</span>
 					{/if}
 				</FormField>
 			{/if}

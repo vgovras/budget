@@ -14,7 +14,7 @@
 
 	let { vm, onDelete }: { vm: EditAccountSheetViewModel; onDelete?: (id: string, name: string) => void } = $props();
 
-	const currency = $derived(vm.account?.currency ?? settingsVM.currency);
+	const currency = $derived(vm.account?.currencyCode ?? settingsVM.currency);
 </script>
 
 <BottomSheet bind:open={vm.isOpen}>
@@ -29,6 +29,8 @@
 			</AmountField>
 		</FormField>
 
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div class="primary-row" onclick={() => vm.togglePrimary()}>
 			<div class="primary-info">
 				<Icon name="star" size={16} />

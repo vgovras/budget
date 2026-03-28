@@ -1,26 +1,22 @@
 import type { RecurringTransaction } from '$lib/types.js';
+import { getLocalData, saveLocalData } from '$lib/utils/store.js';
 
 export class RecurringRepository {
-	readonly #key = 'budget:recurring';
-
-	load(): RecurringTransaction[] | null {
-		try {
-			const raw = localStorage.getItem(this.#key);
-			return raw ? JSON.parse(raw) : null;
-		} catch {
-			return null;
-		}
+	load(): RecurringTransaction[] {
+		return Object.values(getLocalData().recurring).filter((r) => !r.deleted);
 	}
 
-	save(data: RecurringTransaction[]): void {
-		try {
-			localStorage.setItem(this.#key, JSON.stringify(data));
-		} catch {
-			/* quota exceeded */
-		}
+	upsert(item: RecurringTransaction): void {
+		const data = getLocalData();
+		data.recurring[item.id] = item;
+		saveLocalData(data);
 	}
 
-	clear(): void {
-		localStorage.removeItem(this.#key);
+	softDelete(id: string): void {
+		const data = getLocalData();
+		if (data.recurring[id]) {
+			data.recurring[id] = { ...data.recurring[id], deleted: true, updatedAt: new Date().toISOString() };
+			saveLocalData(data);
+		}
 	}
 }

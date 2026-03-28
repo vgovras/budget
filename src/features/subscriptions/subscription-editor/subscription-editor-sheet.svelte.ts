@@ -45,7 +45,7 @@ export class SubscriptionEditorSheetViewModel {
 		this.label = '';
 		this.#lastPresetLabel = '';
 		this.amount = null;
-		this.currency = accountsVM.active?.currency ?? settingsVM.currency;
+		this.currency = accountsVM.active?.currencyCode ?? settingsVM.currency;
 		this.accountId = accountsVM.active?.id ?? '';
 		this.cycle = 'monthly';
 		this.dayOfMonth = 1;

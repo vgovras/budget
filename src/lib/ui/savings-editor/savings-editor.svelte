@@ -26,7 +26,7 @@
 	const dailyBudget = $derived(Math.floor(budget / 30));
 	const barPercent = $derived(Math.min(100, savingsPercent));
 
-	let pctValue = $state(savingsPercent);
+	let pctValue = $state(0);
 	$effect(() => { pctValue = savingsPercent; });
 	$effect(() => { onSetPercent(pctValue); });
 </script>

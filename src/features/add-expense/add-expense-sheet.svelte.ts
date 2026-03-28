@@ -30,13 +30,13 @@ export class AddExpenseSheetViewModel {
 
 	readonly isCrossCurrency = $derived(
 		this.sheetType === 'transfer' && this.selectedAccount && this.toAccount
-			? this.selectedAccount.currency !== this.toAccount.currency
+			? this.selectedAccount.currencyCode !== this.toAccount.currencyCode
 			: false
 	);
 
 	readonly autoRate = $derived(
 		this.selectedAccount && this.toAccount
-			? getRate(this.selectedAccount.currency, this.toAccount.currency)
+			? getRate(this.selectedAccount.currencyCode, this.toAccount.currencyCode)
 			: 1
 	);
 
@@ -64,15 +64,15 @@ export class AddExpenseSheetViewModel {
 		now.setHours(0, 0, 0, 0);
 		const daysLeft = Math.max(1, Math.ceil((nextPayday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
 
-		const dailyBudget = Math.floor(settingsVM.toDisplay(remaining, acc.currency) / daysLeft);
-		const todaySpent = settingsVM.toDisplay(getTodaySpent(expensesVM.expenses, acc.id), acc.currency);
+		const dailyBudget = Math.floor(settingsVM.toDisplay(remaining, acc.currencyCode) / daysLeft);
+		const todaySpent = settingsVM.toDisplay(getTodaySpent(expensesVM.expenses, acc.id), acc.currencyCode);
 		return Math.max(0, dailyBudget - todaySpent);
 	});
 
 	readonly displayCurrency = $derived(
 		settingsVM.fiatViewEnabled
 			? settingsVM.fiatCurrency
-			: (this.selectedAccount?.currency ?? settingsVM.currency)
+			: (this.selectedAccount?.currencyCode ?? settingsVM.currency)
 	);
 
 	readonly quickChips = $derived(getRecentUnique(expensesVM.expenses, categoriesVM.categories, 3));
@@ -119,13 +119,13 @@ export class AddExpenseSheetViewModel {
 	private toAccountCurrency(entered: number): number {
 		if (!settingsVM.fiatViewEnabled) return entered;
 		const acc = this.selectedAccount;
-		if (!acc || acc.currency === settingsVM.fiatCurrency) return entered;
-		return convert(entered, settingsVM.fiatCurrency, acc.currency);
+		if (!acc || acc.currencyCode === settingsVM.fiatCurrency) return entered;
+		return convert(entered, settingsVM.fiatCurrency, acc.currencyCode);
 	}
 
 	private get isFiatConversion(): boolean {
 		const acc = this.selectedAccount;
-		return settingsVM.fiatViewEnabled && !!acc && acc.currency !== settingsVM.fiatCurrency;
+		return settingsVM.fiatViewEnabled && !!acc && acc.currencyCode !== settingsVM.fiatCurrency;
 	}
 
 	#syncActiveAccount(accountId: string) {

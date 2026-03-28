@@ -19,7 +19,7 @@ export class HomeScreenViewModel {
 		return m.home_greeting_evening();
 	});
 
-	readonly nativeCurrency = $derived(accountsVM.active?.currency ?? settingsVM.currency);
+	readonly nativeCurrency = $derived(accountsVM.active?.currencyCode ?? settingsVM.currency);
 	readonly currency = $derived(
 		settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : this.nativeCurrency
 	);

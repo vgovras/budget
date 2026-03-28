@@ -23,12 +23,12 @@
 	</div>
 
 	<div class="amount">
-		<span class="cur">{account.currency}</span>{fmt(budget)}
+		<span class="cur">{account.currencyCode}</span>{fmt(budget)}
 	</div>
 
 	{#if budget > 0}
 		<div class="budget-line">
-			<span class="budget-nums">{m.account_spent_of()} {account.currency} {fmt(spent)} {m.account_of()} {account.currency} {fmt(account.balance)}</span>
+			<span class="budget-nums">{m.account_spent_of()} {account.currencyCode} {fmt(spent)} {m.account_of()} {account.currencyCode} {fmt(account.balance)}</span>
 			<span class="budget-pct">{pct}%</span>
 		</div>
 		<div class="prog-track">

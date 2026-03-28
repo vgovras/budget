@@ -21,7 +21,7 @@ export class TransferSheetViewModel {
 
 	readonly isCrossCurrency = $derived(
 		this.fromAccount && this.toAccount
-			? this.fromAccount.currency !== this.toAccount.currency
+			? this.fromAccount.currencyCode !== this.toAccount.currencyCode
 			: false
 	);
 

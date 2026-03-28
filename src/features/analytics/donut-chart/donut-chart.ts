@@ -1,4 +1,5 @@
 import { CAT_COLORS, CAT_GLOWS } from '$lib/constants.js';
+import { uuidv7 } from 'uuidv7';
 
 function boostOpacity(rgba: string, target = 0.7): string {
 	const m = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
@@ -7,6 +8,7 @@ function boostOpacity(rgba: string, target = 0.7): string {
 }
 
 export interface DonutSlice {
+	id: string;
 	icon: string;
 	label: string;
 	sum: number;
@@ -31,6 +33,7 @@ export function buildSlices(
 		const dash = Math.max(0, pct * circ - GAP);
 		const color = cat.color ? boostOpacity(cat.color) : CAT_COLORS[i % CAT_COLORS.length];
 		const slice: DonutSlice = {
+			id: uuidv7(),
 			icon: cat.icon,
 			label: cat.label ?? cat.icon,
 			sum: cat.sum,

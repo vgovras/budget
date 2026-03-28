@@ -1,26 +1,31 @@
 import type { Category } from '$lib/types.js';
+import { getLocalData, saveLocalData } from '$lib/utils/store.js';
 
 export class CategoriesRepository {
-	readonly #key = 'budget:categories';
-
-	load(): Category[] | null {
-		try {
-			const raw = localStorage.getItem(this.#key);
-			return raw ? JSON.parse(raw) : null;
-		} catch {
-			return null;
-		}
+	load(): Category[] {
+		return Object.values(getLocalData().categories).filter((c) => !c.deleted);
 	}
 
-	save(data: Category[]): void {
-		try {
-			localStorage.setItem(this.#key, JSON.stringify(data));
-		} catch {
-			/* quota exceeded */
-		}
+	upsert(cat: Category): void {
+		const data = getLocalData();
+		data.categories[cat.id] = cat;
+		saveLocalData(data);
 	}
 
-	clear(): void {
-		localStorage.removeItem(this.#key);
+	saveAll(categories: Category[]): void {
+		const data = getLocalData();
+		const now = new Date().toISOString();
+		for (const c of categories) {
+			data.categories[c.id] = { ...c, updatedAt: c.updatedAt ?? now };
+		}
+		saveLocalData(data);
+	}
+
+	softDelete(id: string): void {
+		const data = getLocalData();
+		if (data.categories[id]) {
+			data.categories[id] = { ...data.categories[id], deleted: true, updatedAt: new Date().toISOString() };
+			saveLocalData(data);
+		}
 	}
 }
