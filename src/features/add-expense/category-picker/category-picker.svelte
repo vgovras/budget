@@ -14,7 +14,7 @@
 </script>
 
 <div class="grid grid-cols-3 gap-2">
-		{#each filtered as cat (cat.icon)}
+		{#each filtered as cat (cat.id)}
 			<button
 				class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-sm border font-sans text-xs font-medium transition-all duration-150
 					{selected === cat.icon

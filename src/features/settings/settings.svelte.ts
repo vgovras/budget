@@ -3,10 +3,10 @@ import { DEFAULT_SETTINGS } from '$lib/constants.js';
 import { convert } from '$lib/utils/currency.js';
 import { SettingsRepository } from './settings.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
-import { syncToServer } from '$lib/utils/sync.js';
+import { syncWithServer } from '$lib/utils/sync.js';
 
 export class SettingsViewModel {
-	#repo: SettingsRepository;
+	#repo = new SettingsRepository();
 
 	#systemTheme(): 'dark' | 'light' {
 		if (typeof window === 'undefined') return 'dark';
@@ -50,8 +50,7 @@ export class SettingsViewModel {
 		return convert(amount, fromCurrency, this.fiatCurrency);
 	}
 
-	constructor(repo: SettingsRepository) {
-		this.#repo = repo;
+	constructor() {
 		if (typeof window !== 'undefined') {
 			this.#hydrate();
 		}
@@ -60,35 +59,24 @@ export class SettingsViewModel {
 	#hydrate() {
 		const saved = this.#repo.load();
 		if (saved) {
-			this.payday = saved.payday;
-			this.currency = saved.currency;
-			this.notifications = saved.notifications;
-			this.warning = saved.warning;
-			this.onboardingCompletedAt = (saved as any).onboardingCompletedAt ?? (saved.onboardingDone ? new Date().toISOString() : null);
+			this.payday = saved.payday ?? DEFAULT_SETTINGS.payday;
+			this.currency = saved.currency ?? DEFAULT_SETTINGS.currency;
+			this.notifications = saved.notifications ?? DEFAULT_SETTINGS.notifications;
+			this.warning = saved.warning ?? DEFAULT_SETTINGS.warning;
+			this.onboardingCompletedAt = saved.onboardingCompletedAt ?? null;
 			this.lastPayday = saved.lastPayday ?? '';
 			this.fiatViewEnabled = saved.fiatViewEnabled ?? false;
-			this.fiatCurrency = (saved as any).fiatCurrency ?? saved.currency ?? DEFAULT_SETTINGS.fiatCurrency;
-			this.savingsPercent = (saved as any).savingsPercent ?? 0;
-			this.theme = (saved as any).theme ?? this.#systemTheme();
+			this.fiatCurrency = saved.fiatCurrency ?? DEFAULT_SETTINGS.fiatCurrency;
+			this.savingsPercent = saved.savingsPercent ?? 0;
+			this.theme = saved.theme ?? this.#systemTheme();
 		}
 		this.loaded = true;
 		this.#applyTheme();
 	}
 
-	updatePayday(val: number) {
-		this.payday = val;
-		this.#save();
-	}
-
-	toggleNotifications() {
-		this.notifications = !this.notifications;
-		this.#save();
-	}
-
-	toggleWarning() {
-		this.warning = !this.warning;
-		this.#save();
-	}
+	updatePayday(val: number) { this.payday = val; this.#save(); }
+	toggleNotifications() { this.notifications = !this.notifications; this.#save(); }
+	toggleWarning() { this.warning = !this.warning; this.#save(); }
 
 	toggleTheme() {
 		this.theme = this.theme === 'dark' ? 'light' : 'dark';
@@ -102,29 +90,11 @@ export class SettingsViewModel {
 		}
 	}
 
-	toggleFiatView() {
-		this.fiatViewEnabled = !this.fiatViewEnabled;
-		this.#save();
-	}
-
-	setFiatCurrency(currency: string) {
-		this.fiatCurrency = currency;
-		this.#save();
-	}
-
-	setSubscriptionsTotal(val: number) {
-		this.subscriptionsMonthlyTotal = val;
-	}
-
-	updateSavingsPercent(pct: number) {
-		this.savingsPercent = Math.max(0, Math.min(100, Math.round(pct)));
-		this.#save();
-	}
-
-	updateLastPayday(date: string) {
-		this.lastPayday = date;
-		this.#save();
-	}
+	toggleFiatView() { this.fiatViewEnabled = !this.fiatViewEnabled; this.#save(); }
+	setFiatCurrency(currency: string) { this.fiatCurrency = currency; this.#save(); }
+	setSubscriptionsTotal(val: number) { this.subscriptionsMonthlyTotal = val; }
+	updateSavingsPercent(pct: number) { this.savingsPercent = Math.max(0, Math.min(100, Math.round(pct))); this.#save(); }
+	updateLastPayday(date: string) { this.lastPayday = date; this.#save(); }
 
 	completeOnboarding() {
 		this.onboardingCompletedAt = new Date().toISOString();
@@ -143,13 +113,12 @@ export class SettingsViewModel {
 		this.savingsPercent = 0;
 		this.theme = 'dark';
 		this.#applyTheme();
-		this.#repo.clear();
-		syncToServer('/api/user', 'PATCH', { settings: this.#snapshot() });
+		this.#save();
 	}
 
 	#save() {
 		this.#repo.save(this.#snapshot());
-		syncToServer('/api/user', 'PATCH', { settings: this.#snapshot() });
+		syncWithServer();
 	}
 
 	#snapshot(): Settings {
@@ -168,4 +137,4 @@ export class SettingsViewModel {
 	}
 }
 
-export const settingsVM = new SettingsViewModel(new SettingsRepository());
+export const settingsVM = new SettingsViewModel();

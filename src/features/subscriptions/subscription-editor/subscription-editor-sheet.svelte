@@ -29,7 +29,7 @@
 		{ value: 'yearly', label: m.sub_cycle_yearly() },
 	];
 
-	const currencyOptions = vm.currencies.map((c) => ({ value: c, label: c }));
+	const currencyOptions = $derived(vm.currencies.map((c) => ({ value: c, label: c })));
 
 	function handleIconSelect(icon: string) {
 		const preset = vm.presets.find((p) => p.icon === icon);

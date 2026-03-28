@@ -3,11 +3,15 @@ import { auth } from '$lib/auth';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	// Better Auth — populate session from cookie
-	const session = await auth.api.getSession({ headers: event.request.headers });
-	if (session) {
-		event.locals.session = session.session;
-		event.locals.user = session.user;
+	// Better Auth — populate session from cookie (don't crash if DB is down)
+	try {
+		const session = await auth.api.getSession({ headers: event.request.headers });
+		if (session) {
+			event.locals.session = session.session;
+			event.locals.user = session.user;
+		}
+	} catch (e) {
+		console.warn('[auth] getSession failed:', (e as Error).message?.slice(0, 80));
 	}
 
 	// Better Auth handles /api/auth/* routes directly

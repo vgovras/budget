@@ -23,7 +23,7 @@
 				stroke="rgba(255,255,255,0.05)"
 				stroke-width="18"
 			/>
-			{#each slices as slice (slice.label)}
+			{#each slices as slice (slice.id)}
 				<circle
 					cx={DONUT_CX}
 					cy={DONUT_CY}
@@ -60,7 +60,7 @@
 	</div>
 
 	<div class="flex-1 min-w-0 flex flex-col gap-2.5">
-		{#each slices.slice(0, 5) as slice (slice.label)}
+		{#each slices.slice(0, 5) as slice (slice.id)}
 			<div class="flex items-center gap-2.5">
 				<div class="w-2.5 h-2.5 rounded-full shrink-0" style="background:{slice.color}"></div>
 				<div class="flex-1 min-w-0">

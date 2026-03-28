@@ -76,7 +76,7 @@
 		<div class="card-label" style="margin-bottom:10px">{m.home_quick_repeat()}</div>
 		{#if vm.quickChips.length > 0}
 			<div class="flex gap-2 overflow-x-auto no-scrollbar">
-				{#each vm.quickChips as chip (chip.note + chip.amount + chip.icon)}
+				{#each vm.quickChips as chip (chip.id)}
 					<!-- svelte-ignore a11y_click_events_have_key_events -->
 					<!-- svelte-ignore a11y_no_static_element_interactions -->
 					<div
@@ -250,11 +250,6 @@
 	.days-unit { font-size: 12px; font-weight: 300; opacity: 0.35; }
 	.stat-sub { font-size: 10px; color: var(--text-muted); font-weight: 300; margin-top: 2px; }
 	.stat-danger { color: var(--danger); }
-
-	/* Section header */
-	.sec-hdr { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; }
-	.sec-title { font-size: 14px; font-weight: 500; color: var(--text-hi); }
-	.sec-link { font-size: 12px; color: var(--text-lo); font-weight: 300; cursor: pointer; }
 
 	/* Expense list inside card */
 	.exp-group-label {

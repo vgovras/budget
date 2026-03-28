@@ -8,13 +8,13 @@ export interface Expense {
 	date: string;
 	accountId: string;
 	type: 'expense' | 'income' | 'transfer' | 'subscription';
+	updatedAt: string;
+	deleted?: boolean;
 	commission?: number;
 	netAmount?: number;
 	toAccountId?: string;
 	exchangeRate?: number;
-	/** Original amount as entered by the user (before currency conversion) */
 	displayAmount?: number;
-	/** Currency the user entered the amount in */
 	displayCurrency?: string;
 }
 
@@ -23,9 +23,10 @@ export interface Account {
 	name: string;
 	balance: number;
 	currencyCode: string;
+	updatedAt: string;
+	deleted?: boolean;
 	isPrimary?: boolean;
 	createdAt?: string;
-	// Derived/legacy — not in DB, computed on client
 	budget?: number;
 	spent?: number;
 	currency?: string;
@@ -56,6 +57,8 @@ export interface Category {
 	bg: string;
 	border: string;
 	type: CategoryType;
+	updatedAt: string;
+	deleted?: boolean;
 	commission?: number;
 	isDefault?: boolean;
 }
@@ -71,6 +74,8 @@ export interface Subscription {
 	dayOfMonth: number;
 	nextDate: string;
 	status: 'active' | 'paused';
+	updatedAt: string;
+	deleted?: boolean;
 }
 
 export interface RecurringTransaction {
@@ -85,6 +90,18 @@ export interface RecurringTransaction {
 	dayOfMonth?: number;
 	nextDate: string;
 	enabled: boolean;
+	updatedAt: string;
+	deleted?: boolean;
+}
+
+export interface UserData {
+	expenses: Record<string, Expense>;
+	accounts: Record<string, Account>;
+	categories: Record<string, Category>;
+	subscriptions: Record<string, Subscription>;
+	recurring: Record<string, RecurringTransaction>;
+	settings: Settings;
+	syncedAt: string;
 }
 
 export type ScreenId = 'home' | 'history' | 'analytics' | 'settings';

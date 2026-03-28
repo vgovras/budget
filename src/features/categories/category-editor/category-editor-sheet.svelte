@@ -40,6 +40,7 @@
 						class:active={vm.bg === preset.bg}
 						style:background={preset.bg}
 						style:border-color={preset.border}
+						aria-label="Color preset"
 						onclick={() => vm.setColor(preset.bg, preset.border)}
 					></button>
 				{/each}

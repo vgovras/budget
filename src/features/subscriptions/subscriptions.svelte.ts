@@ -5,27 +5,21 @@ import { settingsVM } from '$features/settings/settings.svelte.js';
 import { convert } from '$lib/utils/currency.js';
 import { nowISO } from '$lib/utils/format.js';
 import { SubscriptionsRepository } from './subscriptions.js';
-import { syncToServer } from '$lib/utils/sync.js';
+import { syncWithServer } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 function advanceDate(date: Date, cycle: Subscription['cycle']): Date {
 	const next = new Date(date);
 	switch (cycle) {
-		case 'monthly':
-			next.setMonth(next.getMonth() + 1);
-			break;
-		case 'quarterly':
-			next.setMonth(next.getMonth() + 3);
-			break;
-		case 'yearly':
-			next.setFullYear(next.getFullYear() + 1);
-			break;
+		case 'monthly': next.setMonth(next.getMonth() + 1); break;
+		case 'quarterly': next.setMonth(next.getMonth() + 3); break;
+		case 'yearly': next.setFullYear(next.getFullYear() + 1); break;
 	}
 	return next;
 }
 
 export class SubscriptionsViewModel {
-	#repo: SubscriptionsRepository;
+	#repo = new SubscriptionsRepository();
 
 	items = $state<Subscription[]>([]);
 
@@ -40,49 +34,44 @@ export class SubscriptionsViewModel {
 		}, 0)
 	);
 
-	constructor(repo: SubscriptionsRepository) {
-		this.#repo = repo;
+	constructor() {
 		if (typeof window !== 'undefined') {
-			this.#hydrate();
+			this.items = this.#repo.load();
 			this.#processDue();
 		}
 	}
 
-	#hydrate() {
-		this.items = this.#repo.load() ?? [];
-	}
-
-	add(data: Omit<Subscription, 'id'>) {
-		const sub: Subscription = { ...data, id: uuidv7() };
+	add(data: Omit<Subscription, 'id' | 'updatedAt'>) {
+		const sub: Subscription = { ...data, id: uuidv7(), updatedAt: new Date().toISOString() };
 		this.items = [...this.items, sub];
-		this.#save();
+		this.#repo.upsert(sub);
+		syncWithServer();
 	}
 
 	update(id: string, patch: Partial<Subscription>) {
-		this.items = this.items.map((s) => (s.id === id ? { ...s, ...patch } : s));
-		this.#save();
+		this.items = this.items.map((s) =>
+			s.id === id ? { ...s, ...patch, updatedAt: new Date().toISOString() } : s
+		);
+		const updated = this.items.find((s) => s.id === id);
+		if (updated) this.#repo.upsert(updated);
+		syncWithServer();
 	}
 
 	remove(id: string) {
 		this.items = this.items.filter((s) => s.id !== id);
-		this.#save();
-	}
-
-	resetAll() {
-		this.items = [];
-		this.#repo.clear();
-		syncToServer('/api/user', 'PATCH', { subscriptions: this.items });
-	}
-
-	#save() {
-		this.#repo.save(this.items);
-		syncToServer('/api/user', 'PATCH', { subscriptions: this.items });
+		this.#repo.softDelete(id);
+		syncWithServer();
 	}
 
 	toggle(id: string) {
 		const sub = this.items.find((s) => s.id === id);
-		if (!sub) return;
-		this.update(id, { status: sub.status === 'active' ? 'paused' : 'active' });
+		if (sub) this.update(id, { status: sub.status === 'active' ? 'paused' : 'active' });
+	}
+
+	resetAll() {
+		for (const s of this.items) this.#repo.softDelete(s.id);
+		this.items = [];
+		syncWithServer();
 	}
 
 	#processDue() {
@@ -124,9 +113,9 @@ export class SubscriptionsViewModel {
 			day: 'today',
 			date: nowISO(),
 			accountId: acc.id,
-			type: 'subscription',
+			type: 'subscription'
 		});
 	}
 }
 
-export const subscriptionsVM = new SubscriptionsViewModel(new SubscriptionsRepository());
+export const subscriptionsVM = new SubscriptionsViewModel();

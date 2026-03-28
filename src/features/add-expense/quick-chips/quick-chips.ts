@@ -1,6 +1,8 @@
 import type { Expense, Category } from '$lib/types.js';
+import { uuidv7 } from 'uuidv7';
 
 export interface QuickChip {
+	id: string;
 	icon: string;
 	note: string;
 	amount: number;
@@ -17,6 +19,7 @@ export function getRecentUnique(expenses: Expense[], categories: Category[], lim
 		seen.add(e.icon);
 		const cat = categories.find((c) => c.icon === e.icon);
 		result.push({
+			id: uuidv7(),
 			icon: e.icon,
 			note: e.note,
 			amount: e.amount,

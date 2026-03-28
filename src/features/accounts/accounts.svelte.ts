@@ -1,10 +1,10 @@
 import type { Account } from '$lib/types.js';
 import { AccountsRepository } from './accounts.js';
-import { syncToServer } from '$lib/utils/sync.js';
+import { syncWithServer } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 export class AccountsViewModel {
-	#repo: AccountsRepository;
+	#repo = new AccountsRepository();
 
 	accounts = $state<Account[]>([]);
 	activeIdx = $state(0);
@@ -12,37 +12,39 @@ export class AccountsViewModel {
 	readonly active = $derived(this.accounts[this.activeIdx]);
 	readonly primary = $derived(this.accounts.find((a) => a.isPrimary) ?? this.accounts[0]);
 
-	constructor(repo: AccountsRepository) {
-		this.#repo = repo;
-		const saved = this.#repo.load();
-		if (saved) {
-			this.accounts = saved;
-		}
+	constructor() {
+		this.accounts = this.#repo.load();
 	}
 
 	setActive(idx: number) {
 		this.activeIdx = idx;
 	}
 
-	add(data: Omit<Account, 'id'>) {
-		const acc = { ...data, id: uuidv7(), createdAt: new Date().toISOString() };
+	add(data: Omit<Account, 'id' | 'updatedAt'>) {
+		const now = new Date().toISOString();
+		const acc: Account = { ...data, id: uuidv7(), updatedAt: now, createdAt: now };
 		this.accounts = [...this.accounts, acc];
-		this.#repo.save(this.accounts);
-		syncToServer('/api/accounts', 'POST', acc);
+		this.#repo.upsert(acc);
+		syncWithServer();
 	}
 
 	update(id: string, patch: Partial<Account>) {
-		this.accounts = this.accounts.map((a) => (a.id === id ? { ...a, ...patch } : a));
-		this.#repo.save(this.accounts);
-		syncToServer(`/api/accounts/${id}`, 'PATCH', patch);
+		this.accounts = this.accounts.map((a) =>
+			a.id === id ? { ...a, ...patch, updatedAt: new Date().toISOString() } : a
+		);
+		const updated = this.accounts.find((a) => a.id === id);
+		if (updated) this.#repo.upsert(updated);
+		syncWithServer();
 	}
 
 	setPrimary(id: string) {
-		this.accounts = this.accounts.map((a) => ({ ...a, isPrimary: a.id === id }));
-		this.#repo.save(this.accounts);
-		for (const acc of this.accounts) {
-			syncToServer(`/api/accounts/${acc.id}`, 'PATCH', { isPrimary: acc.id === id });
-		}
+		this.accounts = this.accounts.map((a) => ({
+			...a,
+			isPrimary: a.id === id,
+			updatedAt: new Date().toISOString()
+		}));
+		for (const acc of this.accounts) this.#repo.upsert(acc);
+		syncWithServer();
 	}
 
 	remove(id: string) {
@@ -50,18 +52,16 @@ export class AccountsViewModel {
 		if (this.activeIdx >= this.accounts.length) {
 			this.activeIdx = Math.max(0, this.accounts.length - 1);
 		}
-		this.#repo.save(this.accounts);
-		syncToServer(`/api/accounts/${id}`, 'DELETE');
+		this.#repo.softDelete(id);
+		syncWithServer();
 	}
 
 	resetAll() {
-		for (const acc of this.accounts) {
-			syncToServer(`/api/accounts/${acc.id}`, 'DELETE');
-		}
+		for (const a of this.accounts) this.#repo.softDelete(a.id);
 		this.accounts = [];
 		this.activeIdx = 0;
-		this.#repo.clear();
+		syncWithServer();
 	}
 }
 
-export const accountsVM = new AccountsViewModel(new AccountsRepository());
+export const accountsVM = new AccountsViewModel();

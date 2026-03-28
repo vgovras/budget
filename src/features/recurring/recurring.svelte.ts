@@ -3,47 +3,50 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { nowISO } from '$lib/utils/format.js';
 import { RecurringRepository } from './recurring.js';
-import { syncToServer } from '$lib/utils/sync.js';
+import { syncWithServer } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 const SALARY_ID = 'rec-salary';
 
 export class RecurringViewModel {
-	#repo: RecurringRepository;
+	#repo = new RecurringRepository();
 
 	items = $state<RecurringTransaction[]>([]);
 
 	readonly enabledItems = $derived(this.items.filter((r) => r.enabled));
 
-	constructor(repo: RecurringRepository) {
-		this.#repo = repo;
+	constructor() {
 		if (typeof window !== 'undefined') {
-			this.items = this.#repo.load() ?? [];
+			this.items = this.#repo.load();
 			this.#processdue();
 		}
 	}
 
-	add(data: Omit<RecurringTransaction, 'id'>): void {
-		const item: RecurringTransaction = { ...data, id: uuidv7() };
+	add(data: Omit<RecurringTransaction, 'id' | 'updatedAt'>): void {
+		const item: RecurringTransaction = { ...data, id: uuidv7(), updatedAt: new Date().toISOString() };
 		this.items = [...this.items, item];
-		this.#save();
+		this.#repo.upsert(item);
+		syncWithServer();
 	}
 
 	update(id: string, patch: Partial<RecurringTransaction>): void {
-		this.items = this.items.map((r) => (r.id === id ? { ...r, ...patch } : r));
-		this.#save();
+		this.items = this.items.map((r) =>
+			r.id === id ? { ...r, ...patch, updatedAt: new Date().toISOString() } : r
+		);
+		const updated = this.items.find((r) => r.id === id);
+		if (updated) this.#repo.upsert(updated);
+		syncWithServer();
 	}
 
 	remove(id: string): void {
 		this.items = this.items.filter((r) => r.id !== id);
-		this.#save();
+		this.#repo.softDelete(id);
+		syncWithServer();
 	}
 
 	toggle(id: string): void {
 		const item = this.items.find((r) => r.id === id);
-		if (item) {
-			this.update(id, { enabled: !item.enabled });
-		}
+		if (item) this.update(id, { enabled: !item.enabled });
 	}
 
 	syncSalary(salary: number, payday: number, accountId: string) {
@@ -79,10 +82,12 @@ export class RecurringViewModel {
 			frequency: 'monthly',
 			dayOfMonth: payday,
 			nextDate: nextDate.toISOString(),
-			enabled: true
+			enabled: true,
+			updatedAt: new Date().toISOString()
 		};
 		this.items = [...this.items, item];
-		this.#save();
+		this.#repo.upsert(item);
+		syncWithServer();
 	}
 
 	#computeNextPayday(payday: number): Date {
@@ -94,14 +99,9 @@ export class RecurringViewModel {
 	}
 
 	resetAll(): void {
+		for (const r of this.items) this.#repo.softDelete(r.id);
 		this.items = [];
-		this.#repo.clear();
-		syncToServer('/api/user', 'PATCH', { recurring: this.items });
-	}
-
-	#save(): void {
-		this.#repo.save(this.items);
-		syncToServer('/api/user', 'PATCH', { recurring: this.items });
+		syncWithServer();
 	}
 
 	#processdue(): void {
@@ -125,7 +125,8 @@ export class RecurringViewModel {
 
 		if (changed) {
 			this.items = [...this.items];
-			this.#save();
+			for (const item of this.items) this.#repo.upsert(item);
+			syncWithServer();
 		}
 	}
 
@@ -153,17 +154,11 @@ export class RecurringViewModel {
 
 	#advanceDate(item: RecurringTransaction, date: Date): void {
 		switch (item.frequency) {
-			case 'daily':
-				date.setDate(date.getDate() + 1);
-				break;
-			case 'weekly':
-				date.setDate(date.getDate() + 7);
-				break;
-			case 'monthly':
-				date.setMonth(date.getMonth() + 1);
-				break;
+			case 'daily': date.setDate(date.getDate() + 1); break;
+			case 'weekly': date.setDate(date.getDate() + 7); break;
+			case 'monthly': date.setMonth(date.getMonth() + 1); break;
 		}
 	}
 }
 
-export const recurringVM = new RecurringViewModel(new RecurringRepository());
+export const recurringVM = new RecurringViewModel();

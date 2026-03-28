@@ -1,26 +1,14 @@
 import type { Settings } from '$lib/types.js';
+import { getLocalData, saveLocalData } from '$lib/utils/store.js';
 
 export class SettingsRepository {
-	readonly #key = 'budget:settings';
-
-	load(): Settings | null {
-		try {
-			const raw = localStorage.getItem(this.#key);
-			return raw ? JSON.parse(raw) : null;
-		} catch {
-			return null;
-		}
+	load(): Settings {
+		return getLocalData().settings;
 	}
 
-	save(data: Settings): void {
-		try {
-			localStorage.setItem(this.#key, JSON.stringify(data));
-		} catch {
-			/* quota exceeded */
-		}
-	}
-
-	clear(): void {
-		localStorage.removeItem(this.#key);
+	save(settings: Settings): void {
+		const data = getLocalData();
+		data.settings = settings;
+		saveLocalData(data);
 	}
 }

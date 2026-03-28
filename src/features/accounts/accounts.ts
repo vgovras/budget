@@ -1,26 +1,23 @@
 import type { Account } from '$lib/types.js';
+import { getLocalData, saveLocalData } from '$lib/utils/store.js';
 
 export class AccountsRepository {
-	readonly #key = 'budget:accounts';
-
-	load(): Account[] | null {
-		try {
-			const raw = localStorage.getItem(this.#key);
-			return raw ? JSON.parse(raw) : null;
-		} catch {
-			return null;
-		}
+	load(): Account[] {
+		const data = getLocalData();
+		return Object.values(data.accounts).filter((a) => !a.deleted);
 	}
 
-	save(data: Account[]): void {
-		try {
-			localStorage.setItem(this.#key, JSON.stringify(data));
-		} catch {
-			/* quota exceeded */
-		}
+	upsert(account: Account): void {
+		const data = getLocalData();
+		data.accounts[account.id] = account;
+		saveLocalData(data);
 	}
 
-	clear(): void {
-		localStorage.removeItem(this.#key);
+	softDelete(id: string): void {
+		const data = getLocalData();
+		if (data.accounts[id]) {
+			data.accounts[id] = { ...data.accounts[id], deleted: true, updatedAt: new Date().toISOString() };
+			saveLocalData(data);
+		}
 	}
 }

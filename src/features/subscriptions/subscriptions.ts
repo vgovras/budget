@@ -1,26 +1,22 @@
 import type { Subscription } from '$lib/types.js';
+import { getLocalData, saveLocalData } from '$lib/utils/store.js';
 
 export class SubscriptionsRepository {
-	readonly #key = 'budget:subscriptions';
-
-	load(): Subscription[] | null {
-		try {
-			const raw = localStorage.getItem(this.#key);
-			return raw ? JSON.parse(raw) : null;
-		} catch {
-			return null;
-		}
+	load(): Subscription[] {
+		return Object.values(getLocalData().subscriptions).filter((s) => !s.deleted);
 	}
 
-	save(data: Subscription[]): void {
-		try {
-			localStorage.setItem(this.#key, JSON.stringify(data));
-		} catch {
-			/* quota exceeded */
-		}
+	upsert(sub: Subscription): void {
+		const data = getLocalData();
+		data.subscriptions[sub.id] = sub;
+		saveLocalData(data);
 	}
 
-	clear(): void {
-		localStorage.removeItem(this.#key);
+	softDelete(id: string): void {
+		const data = getLocalData();
+		if (data.subscriptions[id]) {
+			data.subscriptions[id] = { ...data.subscriptions[id], deleted: true, updatedAt: new Date().toISOString() };
+			saveLocalData(data);
+		}
 	}
 }

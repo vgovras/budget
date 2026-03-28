@@ -423,20 +423,6 @@
 		color: var(--text-lo);
 		flex-shrink: 0;
 	}
-	.settings-row-right svg {
-		width: 16px;
-		height: 16px;
-		stroke-width: 1.8;
-		flex-shrink: 0;
-	}
-
-	.settings-val-badge {
-		font-family: var(--font-mono);
-		font-size: 15px;
-		font-weight: 500;
-		color: var(--text-mid);
-	}
-
 	.toggle {
 		width: 48px;
 		height: 28px;

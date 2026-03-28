@@ -1,33 +1,10 @@
 import type { Expense } from '$lib/types.js';
 import { ExpensesRepository } from './expenses.js';
-import { syncToServer } from '$lib/utils/sync.js';
+import { syncWithServer } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
-function expenseToTransaction(exp: Expense) {
-	const isIncome = exp.type === 'income';
-	return {
-		accountId: exp.accountId,
-		type: isIncome ? 'IN' : 'OUT',
-		subtype: exp.type.toUpperCase(),
-		amount: exp.amount,
-		icon: exp.icon,
-		label: exp.label,
-		note: exp.note,
-		createdAt: exp.date || new Date().toISOString(),
-		meta: {
-			localId: exp.id,
-			commission: exp.commission,
-			netAmount: exp.netAmount,
-			toAccountId: exp.toAccountId,
-			exchangeRate: exp.exchangeRate,
-			displayAmount: exp.displayAmount,
-			displayCurrency: exp.displayCurrency
-		}
-	};
-}
-
 export class ExpensesViewModel {
-	#repo: ExpensesRepository;
+	#repo = new ExpensesRepository();
 
 	expenses = $state<Expense[]>([]);
 
@@ -35,44 +12,31 @@ export class ExpensesViewModel {
 		this.expenses.filter((e) => e.type === 'expense').reduce((s, e) => s + e.amount, 0)
 	);
 
-	constructor(repo: ExpensesRepository) {
-		this.#repo = repo;
-		const saved = this.#repo.load();
-		if (saved) {
-			this.expenses = saved.expenses ?? saved;
-		}
+	constructor() {
+		this.expenses = this.#repo.load();
 	}
 
-	add(data: Omit<Expense, 'id'>) {
-		const exp = { ...data, id: uuidv7() };
+	add(data: Omit<Expense, 'id' | 'updatedAt'>) {
+		const exp: Expense = { ...data, id: uuidv7(), updatedAt: new Date().toISOString() };
 		this.expenses = [exp, ...this.expenses];
-		this.#save();
-		syncToServer('/api/transactions', 'POST', expenseToTransaction(exp));
+		this.#repo.upsert(exp);
+		syncWithServer();
 		return exp;
 	}
 
 	update(id: string, patch: Partial<Expense>) {
-		this.expenses = this.expenses.map((e) => (e.id === id ? { ...e, ...patch } : e));
-		this.#save();
-		// Transactions are append-only on server — update creates adjustment
+		this.expenses = this.expenses.map((e) =>
+			e.id === id ? { ...e, ...patch, updatedAt: new Date().toISOString() } : e
+		);
 		const updated = this.expenses.find((e) => e.id === id);
-		if (updated) syncToServer('/api/transactions', 'POST', expenseToTransaction(updated));
+		if (updated) this.#repo.upsert(updated);
+		syncWithServer();
 	}
 
 	remove(id: string) {
-		const removed = this.expenses.find((e) => e.id === id);
 		this.expenses = this.expenses.filter((e) => e.id !== id);
-		this.#save();
-		// Append-only: create reversal transaction
-		if (removed) {
-			const reversal = {
-				...expenseToTransaction(removed),
-				type: removed.type === 'income' ? 'OUT' : 'IN',
-				subtype: 'ADJUSTMENT',
-				meta: { ...expenseToTransaction(removed).meta, reversedLocalId: removed.id }
-			};
-			syncToServer('/api/transactions', 'POST', reversal);
-		}
+		this.#repo.softDelete(id);
+		syncWithServer();
 	}
 
 	forAccount(accountId: string): Expense[] {
@@ -80,13 +44,10 @@ export class ExpensesViewModel {
 	}
 
 	resetAll() {
+		for (const e of this.expenses) this.#repo.softDelete(e.id);
 		this.expenses = [];
-		this.#repo.clear();
-	}
-
-	#save() {
-		this.#repo.save({ expenses: this.expenses });
+		syncWithServer();
 	}
 }
 
-export const expensesVM = new ExpensesViewModel(new ExpensesRepository());
+export const expensesVM = new ExpensesViewModel();
