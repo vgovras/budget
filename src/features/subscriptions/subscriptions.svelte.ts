@@ -5,7 +5,7 @@ import { settingsVM } from '$features/settings/settings.svelte.js';
 import { convert } from '$lib/utils/currency.js';
 import { nowISO } from '$lib/utils/format.js';
 import { SubscriptionsRepository } from './subscriptions.js';
-import { syncWithServer } from '$lib/utils/sync.js';
+import { markDirty } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 function advanceDate(date: Date, cycle: Subscription['cycle']): Date {
@@ -45,7 +45,7 @@ export class SubscriptionsViewModel {
 		const sub: Subscription = { ...data, id: uuidv7(), updatedAt: new Date().toISOString() };
 		this.items = [...this.items, sub];
 		this.#repo.upsert(sub);
-		syncWithServer();
+		markDirty();
 	}
 
 	update(id: string, patch: Partial<Subscription>) {
@@ -54,13 +54,13 @@ export class SubscriptionsViewModel {
 		);
 		const updated = this.items.find((s) => s.id === id);
 		if (updated) this.#repo.upsert(updated);
-		syncWithServer();
+		markDirty();
 	}
 
 	remove(id: string) {
 		this.items = this.items.filter((s) => s.id !== id);
 		this.#repo.softDelete(id);
-		syncWithServer();
+		markDirty();
 	}
 
 	toggle(id: string) {
@@ -71,7 +71,7 @@ export class SubscriptionsViewModel {
 	resetAll() {
 		for (const s of this.items) this.#repo.softDelete(s.id);
 		this.items = [];
-		syncWithServer();
+		markDirty();
 	}
 
 	#processDue() {

@@ -1,6 +1,6 @@
 import type { Account } from '$lib/types.js';
 import { AccountsRepository } from './accounts.js';
-import { syncWithServer } from '$lib/utils/sync.js';
+import { markDirty } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 export class AccountsViewModel {
@@ -25,7 +25,7 @@ export class AccountsViewModel {
 		const acc: Account = { ...data, id: uuidv7(), updatedAt: now, createdAt: now };
 		this.accounts = [...this.accounts, acc];
 		this.#repo.upsert(acc);
-		syncWithServer();
+		markDirty();
 	}
 
 	update(id: string, patch: Partial<Account>) {
@@ -34,7 +34,7 @@ export class AccountsViewModel {
 		);
 		const updated = this.accounts.find((a) => a.id === id);
 		if (updated) this.#repo.upsert(updated);
-		syncWithServer();
+		markDirty();
 	}
 
 	setPrimary(id: string) {
@@ -44,7 +44,7 @@ export class AccountsViewModel {
 			updatedAt: new Date().toISOString()
 		}));
 		for (const acc of this.accounts) this.#repo.upsert(acc);
-		syncWithServer();
+		markDirty();
 	}
 
 	remove(id: string) {
@@ -53,14 +53,14 @@ export class AccountsViewModel {
 			this.activeIdx = Math.max(0, this.accounts.length - 1);
 		}
 		this.#repo.softDelete(id);
-		syncWithServer();
+		markDirty();
 	}
 
 	resetAll() {
 		for (const a of this.accounts) this.#repo.softDelete(a.id);
 		this.accounts = [];
 		this.activeIdx = 0;
-		syncWithServer();
+		markDirty();
 	}
 }
 

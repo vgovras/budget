@@ -3,7 +3,7 @@ import { DEFAULT_SETTINGS } from '$lib/constants.js';
 import { convert } from '$lib/utils/currency.js';
 import { SettingsRepository } from './settings.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
-import { syncWithServer } from '$lib/utils/sync.js';
+import { markDirty } from '$lib/utils/sync.js';
 
 export class SettingsViewModel {
 	#repo = new SettingsRepository();
@@ -118,7 +118,7 @@ export class SettingsViewModel {
 
 	#save() {
 		this.#repo.save(this.#snapshot());
-		syncWithServer();
+		markDirty();
 	}
 
 	#snapshot(): Settings {

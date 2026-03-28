@@ -3,7 +3,7 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { nowISO } from '$lib/utils/format.js';
 import { RecurringRepository } from './recurring.js';
-import { syncWithServer } from '$lib/utils/sync.js';
+import { markDirty } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 const SALARY_ID = 'rec-salary';
@@ -26,7 +26,7 @@ export class RecurringViewModel {
 		const item: RecurringTransaction = { ...data, id: uuidv7(), updatedAt: new Date().toISOString() };
 		this.items = [...this.items, item];
 		this.#repo.upsert(item);
-		syncWithServer();
+		markDirty();
 	}
 
 	update(id: string, patch: Partial<RecurringTransaction>): void {
@@ -35,13 +35,13 @@ export class RecurringViewModel {
 		);
 		const updated = this.items.find((r) => r.id === id);
 		if (updated) this.#repo.upsert(updated);
-		syncWithServer();
+		markDirty();
 	}
 
 	remove(id: string): void {
 		this.items = this.items.filter((r) => r.id !== id);
 		this.#repo.softDelete(id);
-		syncWithServer();
+		markDirty();
 	}
 
 	toggle(id: string): void {
@@ -87,7 +87,7 @@ export class RecurringViewModel {
 		};
 		this.items = [...this.items, item];
 		this.#repo.upsert(item);
-		syncWithServer();
+		markDirty();
 	}
 
 	#computeNextPayday(payday: number): Date {
@@ -101,7 +101,7 @@ export class RecurringViewModel {
 	resetAll(): void {
 		for (const r of this.items) this.#repo.softDelete(r.id);
 		this.items = [];
-		syncWithServer();
+		markDirty();
 	}
 
 	#processdue(): void {
@@ -126,7 +126,7 @@ export class RecurringViewModel {
 		if (changed) {
 			this.items = [...this.items];
 			for (const item of this.items) this.#repo.upsert(item);
-			syncWithServer();
+			markDirty();
 		}
 	}
 

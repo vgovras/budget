@@ -1,6 +1,6 @@
 import type { Expense } from '$lib/types.js';
 import { ExpensesRepository } from './expenses.js';
-import { syncWithServer } from '$lib/utils/sync.js';
+import { markDirty } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 export class ExpensesViewModel {
@@ -20,7 +20,7 @@ export class ExpensesViewModel {
 		const exp: Expense = { ...data, id: uuidv7(), updatedAt: new Date().toISOString() };
 		this.expenses = [exp, ...this.expenses];
 		this.#repo.upsert(exp);
-		syncWithServer();
+		markDirty();
 		return exp;
 	}
 
@@ -30,13 +30,13 @@ export class ExpensesViewModel {
 		);
 		const updated = this.expenses.find((e) => e.id === id);
 		if (updated) this.#repo.upsert(updated);
-		syncWithServer();
+		markDirty();
 	}
 
 	remove(id: string) {
 		this.expenses = this.expenses.filter((e) => e.id !== id);
 		this.#repo.softDelete(id);
-		syncWithServer();
+		markDirty();
 	}
 
 	forAccount(accountId: string): Expense[] {
@@ -46,7 +46,7 @@ export class ExpensesViewModel {
 	resetAll() {
 		for (const e of this.expenses) this.#repo.softDelete(e.id);
 		this.expenses = [];
-		syncWithServer();
+		markDirty();
 	}
 }
 

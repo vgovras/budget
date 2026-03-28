@@ -1,6 +1,6 @@
 import type { Category, CategoryType } from '$lib/types.js';
 import { CategoriesRepository } from './categories.js';
-import { syncWithServer } from '$lib/utils/sync.js';
+import { markDirty } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
 
 export class CategoriesViewModel {
@@ -25,7 +25,7 @@ export class CategoriesViewModel {
 		const cat: Category = { ...data, id: uuidv7(), updatedAt: new Date().toISOString() };
 		this.categories = [...this.categories, cat];
 		this.#repo.upsert(cat);
-		syncWithServer();
+		markDirty();
 		return cat;
 	}
 
@@ -35,20 +35,20 @@ export class CategoriesViewModel {
 		);
 		const updated = this.categories.find((c) => c.id === id);
 		if (updated) this.#repo.upsert(updated);
-		syncWithServer();
+		markDirty();
 	}
 
 	remove(id: string): void {
 		this.categories = this.categories.filter((c) => c.id !== id);
 		this.#repo.softDelete(id);
-		syncWithServer();
+		markDirty();
 	}
 
 	resetAll(): void {
 		// Mark all as deleted, migration will re-seed defaults on next load
 		for (const c of this.categories) this.#repo.softDelete(c.id);
 		this.categories = [];
-		syncWithServer();
+		markDirty();
 	}
 }
 
