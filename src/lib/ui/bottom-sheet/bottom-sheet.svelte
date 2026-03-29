@@ -41,6 +41,7 @@
 		width: 100%;
 		max-width: 600px;
 		max-height: 85vh;
+		max-height: 85dvh;
 		margin: 0 auto;
 		background: var(--card);
 		border-radius: var(--r-xl) var(--r-xl) 0 0;

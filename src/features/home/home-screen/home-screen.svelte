@@ -175,10 +175,10 @@
 		color: var(--text-muted); font-weight: 500; margin-bottom: 0.375rem;
 	}
 	.hero-balance {
-		font-size: 3.375rem; font-weight: 300; color: var(--text-hi);
-		letter-spacing: -3px; line-height: 1; margin-bottom: 0.3125rem;
+		font-size: 2.75rem; font-weight: 300; color: var(--text-hi);
+		letter-spacing: -2px; line-height: 1; margin-bottom: 0.25rem;
 	}
-	.hero-balance .curr { font-size: 1.625rem; opacity: 0.5; vertical-align: super; letter-spacing: 0; }
+	.hero-balance .curr { font-size: 1.375rem; opacity: 0.5; vertical-align: super; letter-spacing: 0; }
 	.hero-sub {
 		font-size: 0.75rem; color: var(--text-lo); font-weight: 400;
 		display: flex; align-items: center; gap: 0.375rem;
@@ -215,8 +215,13 @@
 	}
 
 	/* Stat cards */
-	.stat-row { display: flex; gap: 0.625rem; }
-	:global(.stat-card) { flex: 1; padding: 0.8125rem 0.75rem; }
+	.stat-row {
+		display: flex; gap: 0.5rem;
+		overflow-x: auto; scrollbar-width: none;
+		min-height: 7.5rem;
+	}
+	.stat-row::-webkit-scrollbar { display: none; }
+	:global(.stat-card) { flex: 1 0 30%; padding: 0.75rem; }
 	.stat-icon-row { display: flex; align-items: center; gap: 0.4375rem; margin-bottom: 0.5rem; }
 	.s-icon {
 		width: 1.75rem; height: 1.75rem; border-radius: 0.5625rem;
@@ -228,7 +233,7 @@
 		font-size: 0.625rem; letter-spacing: 0.8px; text-transform: uppercase;
 		color: var(--text-muted); font-weight: 500;
 	}
-	.stat-val { font-size: 1.1875rem; font-weight: 500; color: var(--text-hi); letter-spacing: -0.5px; }
+	.stat-val { font-size: 1.0625rem; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px; }
 	.stat-val .curr { font-size: 0.75rem; font-weight: 400; opacity: 0.5; }
 	.days-unit { font-size: 0.75rem; font-weight: 400; opacity: 0.45; }
 	.stat-sub { font-size: 0.6875rem; color: var(--text-muted); font-weight: 400; margin-top: 0.125rem; }

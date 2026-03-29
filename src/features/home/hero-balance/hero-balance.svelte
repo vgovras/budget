@@ -21,8 +21,8 @@
 
 <div class="pt-5 px-1">
 	<div class="text-2xs tracking-[1.4px] uppercase text-text-muted font-medium mb-1.5">{m.home_remaining_budget()}</div>
-	<div class="text-[3.375rem] font-light text-text-hi tracking-[-3px] leading-none mb-1">
-		<span class="text-2xl opacity-50 align-super tracking-normal">{currency}</span>{fmt(remaining)}
+	<div class="text-[2.75rem] font-light text-text-hi tracking-[-2px] leading-none mb-1">
+		<span class="text-xl opacity-50 align-super tracking-normal">{currency}</span>{fmt(remaining)}
 	</div>
 	<div class="text-xs text-text-lo flex items-center gap-1.5 mb-4.5">
 		{m.account_of()} {currency} {fmt(total)} {m.home_of_budget_this_month()}

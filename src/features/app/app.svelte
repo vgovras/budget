@@ -111,6 +111,7 @@
 	.phone {
 		width: 100%;
 		height: 100vh;
+		height: 100dvh;
 		padding-top: calc(12px + env(safe-area-inset-top));
 		background: var(--bg);
 		overflow: hidden;
