@@ -29,7 +29,7 @@
 	<div class="flex justify-between items-start mb-3.5 relative">
 		<div>
 			<div class="text-2xs tracking-[1.3px] uppercase text-text-muted font-medium">{m.home_spent_label()}</div>
-			<div class="text-xs text-text-mid font-light mt-[3px]">{monthLabel}</div>
+			<div class="text-xs text-text-mid mt-[3px]">{monthLabel}</div>
 		</div>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -40,15 +40,15 @@
 	</div>
 
 	<div class="flex items-baseline gap-1.5 mb-3.5 relative">
-		<span class="text-base font-light opacity-40 text-text-hi">{currency}</span>
-		<span class="text-[28px] font-medium text-text-hi tracking-tight">{fmt(spentAmount)}</span>
-		<span class="text-sm text-text-mid font-light">{m.account_of()}</span>
+		<span class="text-base opacity-40 text-text-hi">{currency}</span>
+		<span class="text-[1.75rem] font-medium text-text-hi tracking-tight">{fmt(spentAmount)}</span>
+		<span class="text-sm text-text-mid">{m.account_of()}</span>
 		<span class="text-sm text-text-secondary">{currency} {fmt(totalBudget)}</span>
 	</div>
 
 	<div class="flex justify-between text-xs text-text-muted mb-[7px]">
 		<span>{currency} {fmt(spentAmount)} {m.home_spent_label().toLowerCase()}</span>
-		<span>{spentPercent}% · {daysLeft} {m.home_days_short()} залишилось</span>
+		<span>{spentPercent}% · {daysLeft} {m.home_days_short()} {m.home_budget_remaining_suffix()}</span>
 	</div>
 
 	<div class="w-full h-[3px] bg-border rounded-sm relative">

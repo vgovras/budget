@@ -76,7 +76,7 @@
 	}
 
 	.hint {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		color: var(--accent);
 		text-align: center;
 		font-weight: 500;
@@ -90,7 +90,7 @@
 		padding: 0 4px;
 	}
 	.month-label {
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--text-hi);
 		text-transform: capitalize;
@@ -115,7 +115,7 @@
 		text-align: center;
 	}
 	.wd {
-		font-size: 10px;
+		font-size: 0.6875rem;
 		font-weight: 500;
 		color: var(--text-muted);
 		text-transform: uppercase;
@@ -133,7 +133,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 13px;
+		font-size: 0.8125rem;
 		font-weight: 400;
 		color: var(--text-primary);
 		height: 36px;

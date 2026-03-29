@@ -74,7 +74,7 @@
 		border-radius: var(--r-sm);
 		border: 1px solid var(--surface-8);
 		background: var(--surface-5);
-		font-size: 16px;
+		font-size: 1rem;
 		color: var(--text-hi);
 		font-family: var(--font);
 		outline: none;
@@ -117,7 +117,7 @@
 	}
 
 	.commission-pct {
-		font-size: 16px;
+		font-size: 1rem;
 		color: var(--text-mid);
 	}
 </style>

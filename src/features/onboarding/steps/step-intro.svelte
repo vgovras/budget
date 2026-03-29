@@ -18,10 +18,10 @@
 	});
 </script>
 
-<div class="flex flex-col h-full justify-center">
-	<div class="relative h-72 overflow-hidden shrink-0 flex items-center justify-center">
-		<div class="glow glow-1"></div>
-		<div class="glow glow-2"></div>
+<div class="slide-layout">
+	<div class="slide-visual h-72">
+		<div class="glow-orb glow-1"></div>
+		<div class="glow-orb glow-2"></div>
 		<div class="ill">
 			<svg width="260" height="260" viewBox="0 0 200 200" fill="none">
 				<rect x="30" y="60" width="140" height="88" rx="16" fill="var(--surface-4)" stroke="var(--surface-8)" stroke-width="1"/>
@@ -30,7 +30,7 @@
 				<rect x="34" y="68" width="28" height="20" rx="4" fill="var(--surface-10)" stroke="var(--surface-16)" stroke-width="0.8"/>
 				<line x1="34" y1="76" x2="62" y2="76" stroke="var(--surface-12)" stroke-width="0.8"/>
 				<line x1="34" y1="80" x2="62" y2="80" stroke="var(--surface-8)" stroke-width="0.8"/>
-				<text x="34" y="108" font-family="DM Sans,sans-serif" font-size="11" fill="var(--text-mid)" font-weight="300">{m.account_balance()}</text>
+				<text x="34" y="108" font-family="DM Sans,sans-serif" font-size="11" fill="var(--text-mid)" font-weight="400">{m.account_balance()}</text>
 				<text x="34" y="124" font-family="DM Sans,sans-serif" font-size="20" fill="var(--text-hi)" font-weight="500" letter-spacing="-0.5">₴31 856</text>
 				<circle cx="118" cy="120" r="7" fill="rgba(255,100,100,0.5)"/>
 				<circle cx="130" cy="120" r="7" fill="rgba(255,160,60,0.7)"/>
@@ -39,16 +39,16 @@
 				<rect x="110" y="42" width="66" height="28" rx="10" fill="var(--card)" stroke="var(--success-border)" stroke-width="1"/>
 				<circle cx="124" cy="56" r="5" fill="rgba(80,200,120,0.2)"/>
 				<circle cx="124" cy="56" r="2.5" fill="rgba(80,200,120,0.8)"/>
-				<text x="133" y="53" font-family="DM Sans,sans-serif" font-size="8" fill="var(--text-secondary)" font-weight="300">{m.account_budget_label()}</text>
+				<text x="133" y="53" font-family="DM Sans,sans-serif" font-size="8" fill="var(--text-secondary)" font-weight="400">{m.account_budget_label()}</text>
 				<text x="133" y="63" font-family="DM Sans,sans-serif" font-size="10" fill="var(--success)" font-weight="500">+₴2 000</text>
 			</svg>
 		</div>
 	</div>
 
-	<div class="px-7 pt-2 flex flex-col">
-		<div class="text-2xs tracking-[1.5px] uppercase text-text-muted font-medium mb-2.5">01 / 05</div>
-		<h2 class="text-[32px] font-medium text-text-hi tracking-tight leading-[1.15] mb-2.5">{@html m.onboarding_slide1_title()}</h2>
-		<p class="text-base text-text-mid font-light leading-relaxed">{m.onboarding_slide1_desc()}</p>
+	<div class="slide-text-block">
+		<div class="slide-num">01 / 05</div>
+		<h2 class="slide-title">{@html m.onboarding_slide1_title()}</h2>
+		<p class="slide-desc">{m.onboarding_slide1_desc()}</p>
 	</div>
 
 	<div class="flex-1 flex items-center justify-center">
@@ -65,45 +65,27 @@
 		</div>
 	</div>
 
-	<div class="px-6 pb-7">
+	<div class="slide-bottom">
 		<Button variant="primary" size="lg" class="text-base rounded-[18px]" onclick={onNext}>{m.onboarding_start()} →</Button>
 	</div>
 </div>
 
 <style>
-	.glow {
-		position: absolute;
-		border-radius: 50%;
-		pointer-events: none;
-		animation: glow-pulse 4s ease-in-out infinite;
-	}
 	.glow-1 {
-		width: 260px;
-		height: 200px;
-		left: -40px;
-		top: -40px;
+		width: 260px; height: 200px; left: -40px; top: -40px;
 		background: radial-gradient(ellipse, rgba(60, 100, 255, 0.35) 0%, transparent 70%);
 	}
 	.glow-2 {
-		width: 180px;
-		height: 180px;
-		right: -20px;
-		bottom: -20px;
+		width: 180px; height: 180px; right: -20px; bottom: -20px;
 		background: radial-gradient(ellipse, rgba(120, 60, 220, 0.25) 0%, transparent 70%);
 		animation-delay: 2s;
 	}
 	.ill {
-		position: relative;
-		z-index: 2;
+		position: relative; z-index: 2;
 		animation: float 3.5s ease-in-out infinite;
 	}
 	@keyframes float {
 		0%, 100% { transform: translateY(0); }
 		50% { transform: translateY(-10px); }
-	}
-	h2 :global(em) {
-		font-style: normal;
-		color: var(--text-mid);
-		font-weight: 300;
 	}
 </style>

@@ -46,8 +46,8 @@
 			<span class="text-base text-text-mid font-medium">{suffix}</span>
 		{/if}
 		<div class="flex flex-col gap-0.5 ml-1">
-			<button class="flex items-center justify-center w-6 h-[18px] border border-border-hi rounded-[5px] bg-surface-4 text-text-mid text-2xs transition-all duration-150 active:bg-surface-10 active:text-text-primary" onclick={() => (value = clamp(value + 1))}>▲</button>
-			<button class="flex items-center justify-center w-6 h-[18px] border border-border-hi rounded-[5px] bg-surface-4 text-text-mid text-2xs transition-all duration-150 active:bg-surface-10 active:text-text-primary" onclick={() => (value = clamp(value - 1))}>▼</button>
+			<button class="flex items-center justify-center w-6 h-[1.25rem] border border-border-hi rounded-[5px] bg-surface-4 text-text-mid text-2xs transition-all duration-150 active:bg-surface-10 active:text-text-primary" onclick={() => (value = clamp(value + 1))}>▲</button>
+			<button class="flex items-center justify-center w-6 h-[1.25rem] border border-border-hi rounded-[5px] bg-surface-4 text-text-mid text-2xs transition-all duration-150 active:bg-surface-10 active:text-text-primary" onclick={() => (value = clamp(value - 1))}>▼</button>
 		</div>
 	</div>
 </div>

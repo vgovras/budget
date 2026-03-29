@@ -15,10 +15,10 @@
 	const budgetLabel = $derived(budget >= 1000 ? `${currency}${(budget / 1000).toFixed(0)}k` : `${currency}${fmt(budget)}`);
 </script>
 
-<div class="slide">
-	<div class="visual">
-		<div class="glow glow-1"></div>
-		<div class="glow glow-2"></div>
+<div class="slide-layout">
+	<div class="slide-visual" style="height:280px;flex-direction:column">
+		<div class="glow-orb glow-1"></div>
+		<div class="glow-orb glow-2"></div>
 
 		<div class="ready-content">
 			<div class="checkmark-circle" in:scale={{ duration: 500, start: 0, delay: 100 }}>
@@ -56,30 +56,19 @@
 		</div>
 	</div>
 
-	<div class="text-block">
+	<div class="slide-text-block">
 		<div class="slide-num">05 / 05</div>
 		<h2 class="slide-title">{@html m.onboarding_slide4_title()}</h2>
 		<p class="slide-desc">{m.onboarding_slide4_desc()}</p>
 	</div>
 
-	<div class="bottom">
-		<Button variant="gradient" size="lg" class="text-[15px] rounded-[18px]" onclick={onFinish}>{m.onboarding_open_app()}</Button>
+	<div class="slide-bottom">
+		<Button variant="gradient" size="lg" class="text-md rounded-[18px]" onclick={onFinish}>{m.onboarding_open_app()}</Button>
 		<Button variant="outline" size="lg" class="text-sm font-normal rounded-[18px]" onclick={onBack}>← {m.onboarding_back()}</Button>
 	</div>
 </div>
 
 <style>
-	.slide { display: flex; flex-direction: column; height: 100%; justify-content: center; }
-
-	.visual {
-		position: relative; height: 280px; overflow: hidden; flex-shrink: 0;
-		display: flex; flex-direction: column; align-items: center; justify-content: center;
-	}
-
-	.glow {
-		position: absolute; border-radius: 50%; pointer-events: none;
-		animation: glow-pulse 4s ease-in-out infinite;
-	}
 	.glow-1 {
 		width: 280px; height: 280px; left: 50%; top: 50%; transform: translate(-50%,-50%);
 		background: radial-gradient(ellipse, rgba(60,100,255,0.3) 0%, transparent 60%);
@@ -89,59 +78,34 @@
 		background: radial-gradient(ellipse, rgba(120,60,220,0.3) 0%, transparent 60%);
 		animation-delay: 2s;
 	}
-
 	.ready-content {
 		position: relative; z-index: 2;
-		display: flex; flex-direction: column; align-items: center; gap: 14px;
+		display: flex; flex-direction: column; align-items: center; gap: 0.875rem;
 	}
-
 	.checkmark-circle {
-		width: 70px; height: 70px; border-radius: 50%;
+		width: 4.375rem; height: 4.375rem; border-radius: 50%;
 		background: var(--surface-5); border: 1px solid var(--border-hi);
 		display: flex; align-items: center; justify-content: center;
 	}
-
-	.mini-cards { display: flex; gap: 8px; }
+	.mini-cards { display: flex; gap: 0.5rem; }
 	.mini-card {
 		background: var(--surface-5); border: 1px solid var(--surface-8);
-		border-radius: 14px; padding: 8px 12px; text-align: center; flex: 1;
-		min-width: 65px;
+		border-radius: 0.875rem; padding: 0.5rem 0.75rem; text-align: center; flex: 1;
+		min-width: 4.0625rem;
 	}
 	.mini-card-val {
-		font-size: 15px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px;
+		font-size: 0.9375rem; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px;
 	}
 	.mini-card-val.green { color: var(--success); }
 	.mini-card-label {
-		font-size: 9px; color: var(--text-lo); font-weight: 300; margin-top: 2px;
+		font-size: 0.625rem; color: var(--text-lo); font-weight: 400; margin-top: 0.125rem;
 	}
-
 	.mini-bars {
-		display: flex; align-items: flex-end; gap: 4px; height: 48px;
+		display: flex; align-items: flex-end; gap: 0.25rem; height: 3rem;
 	}
 	.mini-bar {
-		width: 16px; border-radius: 3px 3px 0 0;
+		width: 1rem; border-radius: 3px 3px 0 0;
 		background: var(--accent);
 	}
-	.mini-bar.active {
-		background: var(--success);
-	}
-
-	.text-block { padding: 8px 28px 0; display: flex; flex-direction: column; }
-	.slide-num {
-		font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-		color: var(--text-muted); font-weight: 500; margin-bottom: 10px;
-	}
-	.slide-title {
-		font-size: 32px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.8px;
-		line-height: 1.15; margin-bottom: 10px;
-	}
-	.slide-title :global(em) {
-		font-style: normal; color: var(--text-mid); font-weight: 300;
-	}
-	.slide-desc {
-		font-size: 15px; color: var(--text-mid); font-weight: 300; line-height: 1.6;
-	}
-
-	.bottom { padding: 20px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
-
+	.mini-bar.active { background: var(--success); }
 </style>

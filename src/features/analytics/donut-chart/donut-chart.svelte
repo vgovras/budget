@@ -41,7 +41,7 @@
 				x={DONUT_CX}
 				y="68"
 				text-anchor="middle"
-				font-size="10"
+				font-size="12"
 				fill="var(--text-mid)"
 				font-family="DM Sans"
 				letter-spacing="1">{m.analytics_donut_total()}</text
@@ -50,10 +50,10 @@
 				x={DONUT_CX}
 				y="86"
 				text-anchor="middle"
-				font-size="18"
+				font-size="20"
 				fill="var(--text-hi)"
 				font-family="DM Sans"
-				font-weight="300"
+				font-weight="400"
 				letter-spacing="-1">{totalLabel}</text
 			>
 		</svg>

@@ -76,7 +76,7 @@
 	}
 
 	.sub-title {
-		font-size: 10px;
+		font-size: 0.6875rem;
 		letter-spacing: 1.3px;
 		text-transform: uppercase;
 		color: var(--text-muted);
@@ -84,7 +84,7 @@
 	}
 
 	.sub-total {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		font-weight: 500;
 		color: var(--text-secondary);
 	}
@@ -123,19 +123,19 @@
 	}
 
 	.sub-name {
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--text-hi);
 	}
 
 	.sub-meta {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		color: var(--text-lo);
-		font-weight: 300;
+		font-weight: 400;
 	}
 
 	.sub-amount {
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--text-primary);
 		flex-shrink: 0;
@@ -171,7 +171,7 @@
 	}
 
 	.add-label {
-		font-size: 14px;
+		font-size: 0.875rem;
 		color: var(--accent);
 		font-weight: 400;
 	}

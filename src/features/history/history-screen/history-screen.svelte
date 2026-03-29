@@ -112,7 +112,7 @@
 	{/each}
 </div>
 
-<div class="content" use:scrollNav>
+<div class="screen-content" use:scrollNav>
 	{#if vm.hasData}
 		<Card class="card-padding">
 			<div class="chart-header">
@@ -165,7 +165,7 @@
 		background: color-mix(in srgb, var(--bg) 80%, transparent);
 	}
 	.top-bar-title {
-		font-size: 20px;
+		font-size: 1.25rem;
 		font-weight: 500;
 		color: var(--text-hi);
 	}
@@ -197,7 +197,7 @@
 		background: none;
 		border: none;
 		outline: none;
-		font-size: 14px;
+		font-size: 0.875rem;
 		color: var(--text-hi);
 		font-family: var(--font);
 		min-width: 0;
@@ -267,7 +267,7 @@
 		gap: 4px;
 	}
 	.filter-label {
-		font-size: 10px;
+		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 0.8px;
 		text-transform: uppercase;
@@ -297,7 +297,7 @@
 		border: 1px solid var(--border);
 		background: var(--card);
 		color: var(--text-mid);
-		font-size: 13px;
+		font-size: 0.8125rem;
 		font-weight: 500;
 		white-space: nowrap;
 		flex-shrink: 0;
@@ -311,24 +311,6 @@
 		color: rgba(80, 130, 255, 0.7);
 	}
 
-	/* Content */
-	.content {
-		flex: 1;
-		min-height: 0;
-		overflow-y: auto;
-		padding: 0 16px calc(100px + env(safe-area-inset-bottom));
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		scrollbar-width: none;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.content::-webkit-scrollbar {
-		display: none;
-	}
-
 	/* Chart card */
 	:global(.card-padding) {
 		padding: 18px;
@@ -340,14 +322,14 @@
 		margin-bottom: 16px;
 	}
 	.chart-label {
-		font-size: 10px;
+		font-size: 0.6875rem;
 		letter-spacing: 1.3px;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		font-weight: 500;
 	}
 	.chart-period {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		color: var(--text-primary);
 		font-weight: 500;
 		margin-top: 2px;
@@ -363,7 +345,7 @@
 		flex-shrink: 0;
 	}
 	.day-label {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		font-weight: 500;
 		color: var(--text-muted);
 		letter-spacing: 1.4px;
@@ -384,6 +366,6 @@
 		gap: 12px;
 		padding: 48px 20px;
 		color: var(--text-muted);
-		font-size: 14px;
+		font-size: 0.875rem;
 	}
 </style>

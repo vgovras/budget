@@ -30,7 +30,7 @@
 		border-radius: var(--r-sm);
 		border: 1px solid var(--surface-8);
 		background: var(--surface-5);
-		font-size: 15px;
+		font-size: 0.9375rem;
 		width: 100%;
 		transition: all 0.2s ease;
 		color: var(--text-hi);
@@ -55,7 +55,7 @@
 		border-radius: 99px;
 		border: 1px solid var(--border-hi);
 		background: var(--surface-4);
-		font-size: 12px;
+		font-size: 0.75rem;
 		color: var(--text-mid);
 		cursor: pointer;
 		white-space: nowrap;

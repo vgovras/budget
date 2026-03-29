@@ -7,8 +7,8 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		id: 'cat-food',
 		icon: 'utensils',
 		label: m.category_food(),
-		bg: 'rgba(255,150,50,0.12)',
-		border: 'rgba(255,150,50,0.25)',
+		bg: 'rgba(240,160,70,0.12)',
+		border: 'rgba(240,160,70,0.25)',
 		type: 'expense',
 		isDefault: true
 	},
@@ -16,8 +16,8 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		id: 'cat-transport',
 		icon: 'car',
 		label: m.category_transport(),
-		bg: 'rgba(70,150,255,0.12)',
-		border: 'rgba(70,150,255,0.25)',
+		bg: 'rgba(90,150,240,0.12)',
+		border: 'rgba(90,150,240,0.25)',
 		type: 'expense',
 		isDefault: true
 	},
@@ -25,8 +25,8 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		id: 'cat-entertainment',
 		icon: 'gamepad',
 		label: m.category_entertainment(),
-		bg: 'rgba(50,195,110,0.12)',
-		border: 'rgba(50,195,110,0.25)',
+		bg: 'rgba(150,110,220,0.12)',
+		border: 'rgba(150,110,220,0.25)',
 		type: 'expense',
 		isDefault: true
 	},
@@ -34,8 +34,8 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		id: 'cat-health',
 		icon: 'heart-pulse',
 		label: m.category_health(),
-		bg: 'rgba(255,90,120,0.12)',
-		border: 'rgba(255,90,120,0.25)',
+		bg: 'rgba(220,100,120,0.12)',
+		border: 'rgba(220,100,120,0.25)',
 		type: 'expense',
 		isDefault: true
 	},
@@ -43,8 +43,8 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		id: 'cat-home',
 		icon: 'house',
 		label: m.category_home(),
-		bg: 'rgba(255,200,50,0.12)',
-		border: 'rgba(255,200,50,0.25)',
+		bg: 'rgba(220,185,70,0.12)',
+		border: 'rgba(220,185,70,0.25)',
 		type: 'expense',
 		isDefault: true
 	},
@@ -52,42 +52,42 @@ export const DEFAULT_CATEGORIES: Category[] = [
 		id: 'cat-salary',
 		icon: 'banknote',
 		label: m.settings_salary_label(),
-		bg: 'rgba(50,195,110,0.12)',
-		border: 'rgba(50,195,110,0.25)',
+		bg: 'rgba(70,185,130,0.12)',
+		border: 'rgba(70,185,130,0.25)',
 		type: 'income',
 		isDefault: true
 	}
 ];
 
 export const CAT_COLORS = [
-	'#b57aff',
-	'#40f0ff',
-	'#e066ff',
-	'#00c8e0',
-	'#cc80ff',
-	'#00a8c0',
-	'#9040ff'
+	'#8b8cf6',
+	'#5cbcb0',
+	'#d4849a',
+	'#6aacdc',
+	'#c49b6a',
+	'#8cb89c',
+	'#b488c4'
 ];
 
 export const CAT_GLOWS = [
-	'rgba(181,122,255,0.6)',
-	'rgba(64,240,255,0.6)',
-	'rgba(224,102,255,0.6)',
-	'rgba(0,200,224,0.6)',
-	'rgba(204,128,255,0.6)',
-	'rgba(0,168,192,0.6)',
-	'rgba(144,64,255,0.6)'
+	'rgba(139,140,246,0.45)',
+	'rgba(92,188,176,0.45)',
+	'rgba(212,132,154,0.45)',
+	'rgba(106,172,220,0.45)',
+	'rgba(196,155,106,0.45)',
+	'rgba(140,184,156,0.45)',
+	'rgba(180,136,196,0.45)'
 ];
 
 export const CAT_COLOR_PRESETS = [
-	{ bg: 'rgba(255,150,50,0.12)', border: 'rgba(255,150,50,0.25)' },
-	{ bg: 'rgba(70,150,255,0.12)', border: 'rgba(70,150,255,0.25)' },
-	{ bg: 'rgba(150,90,255,0.12)', border: 'rgba(150,90,255,0.25)' },
-	{ bg: 'rgba(50,195,110,0.12)', border: 'rgba(50,195,110,0.25)' },
-	{ bg: 'rgba(255,90,120,0.12)', border: 'rgba(255,90,120,0.25)' },
-	{ bg: 'rgba(255,200,50,0.12)', border: 'rgba(255,200,50,0.25)' },
-	{ bg: 'rgba(0,200,224,0.12)', border: 'rgba(0,200,224,0.25)' },
-	{ bg: 'rgba(255,100,200,0.12)', border: 'rgba(255,100,200,0.25)' }
+	{ bg: 'rgba(240,160,70,0.12)', border: 'rgba(240,160,70,0.25)' },
+	{ bg: 'rgba(90,150,240,0.12)', border: 'rgba(90,150,240,0.25)' },
+	{ bg: 'rgba(150,110,220,0.12)', border: 'rgba(150,110,220,0.25)' },
+	{ bg: 'rgba(70,185,130,0.12)', border: 'rgba(70,185,130,0.25)' },
+	{ bg: 'rgba(220,100,120,0.12)', border: 'rgba(220,100,120,0.25)' },
+	{ bg: 'rgba(220,185,70,0.12)', border: 'rgba(220,185,70,0.25)' },
+	{ bg: 'rgba(70,180,190,0.12)', border: 'rgba(70,180,190,0.25)' },
+	{ bg: 'rgba(200,110,170,0.12)', border: 'rgba(200,110,170,0.25)' }
 ];
 
 export const CAT_ICON_PRESETS = [

@@ -11,80 +11,80 @@
    DESIGN TOKENS
    ============================================================ */
 :root {
-	--bg: #050508;
-	--card: #09090e;
-	--card-elevated: #09090e;
-	--card-alt: #111118;
-	--overlay: rgba(0, 0, 0, 0.65);
-	--border: rgba(255, 255, 255, 0.07);
-	--border-hi: rgba(255, 255, 255, 0.1);
+	--bg: #131316;
+	--card: #1c1c20;
+	--card-elevated: #222226;
+	--card-alt: #232328;
+	--overlay: rgba(0, 0, 0, 0.55);
+	--border: rgba(255, 255, 255, 0.08);
+	--border-hi: rgba(255, 255, 255, 0.12);
 
 	/* Primary accent — muted blue */
-	--accent: rgba(80, 130, 255, 0.7);
-	--accent-dim: rgba(80, 130, 255, 0.45);
-	--accent-bg: rgba(80, 130, 255, 0.08);
-	--accent-hover: rgba(80, 130, 255, 0.14);
-	--accent-border: rgba(80, 130, 255, 0.2);
-	--accent-border-hi: rgba(80, 130, 255, 0.3);
-	--accent-glow: rgba(80, 130, 255, 0.15);
+	--accent: rgba(90, 140, 255, 0.78);
+	--accent-dim: rgba(90, 140, 255, 0.50);
+	--accent-bg: rgba(90, 140, 255, 0.10);
+	--accent-hover: rgba(90, 140, 255, 0.16);
+	--accent-border: rgba(90, 140, 255, 0.22);
+	--accent-border-hi: rgba(90, 140, 255, 0.32);
+	--accent-glow: rgba(90, 140, 255, 0.15);
 
 	/* Semantic: income / success — soft green */
-	--income: #5ee6a0;
-	--income-dim: rgba(94, 230, 160, 0.55);
-	--income-bg: rgba(94, 230, 160, 0.08);
-	--income-border: rgba(94, 230, 160, 0.2);
+	--income: #66e8a6;
+	--income-dim: rgba(102, 232, 166, 0.58);
+	--income-bg: rgba(102, 232, 166, 0.10);
+	--income-border: rgba(102, 232, 166, 0.22);
 
 	/* Semantic: danger / over-budget */
-	--danger: rgba(255, 100, 100, 0.75);
-	--danger-dim: rgba(255, 100, 100, 0.45);
-	--danger-bg: rgba(255, 100, 100, 0.08);
-	--danger-hover: rgba(255, 100, 100, 0.16);
-	--danger-border: rgba(255, 100, 100, 0.2);
+	--danger: rgba(255, 110, 110, 0.82);
+	--danger-dim: rgba(255, 110, 110, 0.50);
+	--danger-bg: rgba(255, 110, 110, 0.10);
+	--danger-hover: rgba(255, 110, 110, 0.18);
+	--danger-border: rgba(255, 110, 110, 0.22);
 
 	/* Semantic: warning / near-limit — amber */
-	--warning: #ffb347;
-	--warning-dim: rgba(255, 179, 71, 0.55);
-	--warning-bg: rgba(255, 179, 71, 0.08);
-	--warning-border: rgba(255, 179, 71, 0.2);
+	--warning: #ffb84d;
+	--warning-dim: rgba(255, 184, 77, 0.58);
+	--warning-bg: rgba(255, 184, 77, 0.10);
+	--warning-border: rgba(255, 184, 77, 0.22);
 
 	/* Text */
-	--text-hi: rgba(255, 255, 255, 0.85);
-	--text-primary: rgba(255, 255, 255, 0.65);
-	--text-secondary: rgba(255, 255, 255, 0.5);
-	--text-mid: rgba(255, 255, 255, 0.35);
-	--text-lo: rgba(255, 255, 255, 0.25);
-	--text-muted: rgba(255, 255, 255, 0.2);
+	--text-hi: rgba(255, 255, 255, 0.90);
+	--text-primary: rgba(255, 255, 255, 0.74);
+	--text-secondary: rgba(255, 255, 255, 0.60);
+	--text-mid: rgba(255, 255, 255, 0.48);
+	--text-lo: rgba(255, 255, 255, 0.40);
+	--text-muted: rgba(255, 255, 255, 0.32);
 
 	/* Soft — prominent CTA buttons */
-	--soft: rgba(221, 232, 240, 0.09);
-	--soft-border: rgba(221, 232, 240, 0.25);
-	--soft-hover: rgba(221, 232, 240, 0.14);
-	--soft-hover-border: rgba(221, 232, 240, 0.4);
-	--shadow-soft: inset 0 1px 0 rgba(221, 232, 240, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.2), 0 0 24px rgba(221, 232, 240, 0.12), 0 6px 20px rgba(0, 0, 0, 0.35);
+	--soft: rgba(221, 232, 240, 0.10);
+	--soft-border: rgba(221, 232, 240, 0.22);
+	--soft-hover: rgba(221, 232, 240, 0.15);
+	--soft-hover-border: rgba(221, 232, 240, 0.35);
+	--shadow-soft: inset 0 1px 0 rgba(221, 232, 240, 0.30), inset 0 -1px 0 rgba(0, 0, 0, 0.15), 0 0 24px rgba(221, 232, 240, 0.10), 0 6px 20px rgba(0, 0, 0, 0.25);
 
 	/* Primary — high-contrast CTA */
-	--primary-bg: rgba(255, 255, 255, 0.95);
-	--primary-fg: #08080f;
+	--primary-bg: rgba(255, 255, 255, 0.92);
+	--primary-fg: #131316;
 
 	/* Expenses — neutral */
-	--expense: rgba(255, 255, 255, 0.35);
+	--expense: rgba(255, 255, 255, 0.40);
 
 	/* Success — green (savings, chips) */
-	--success: rgba(80, 200, 120, 0.9);
-	--success-dim: rgba(80, 200, 120, 0.6);
-	--success-bg: rgba(80, 200, 120, 0.15);
-	--success-border: rgba(80, 200, 120, 0.4);
+	--success: rgba(90, 210, 130, 0.90);
+	--success-dim: rgba(90, 210, 130, 0.60);
+	--success-bg: rgba(90, 210, 130, 0.12);
+	--success-border: rgba(90, 210, 130, 0.35);
 
 	/* Surfaces — white at different opacities (dark) */
 	--surface-3: rgba(255, 255, 255, 0.03);
 	--surface-4: rgba(255, 255, 255, 0.04);
 	--surface-5: rgba(255, 255, 255, 0.05);
-	--surface-7: rgba(255, 255, 255, 0.07);
-	--surface-8: rgba(255, 255, 255, 0.08);
-	--surface-10: rgba(255, 255, 255, 0.10);
-	--surface-12: rgba(255, 255, 255, 0.12);
-	--surface-14: rgba(255, 255, 255, 0.14);
-	--surface-16: rgba(255, 255, 255, 0.16);
+	--surface-7: rgba(255, 255, 255, 0.06);
+	--surface-8: rgba(255, 255, 255, 0.07);
+	--surface-10: rgba(255, 255, 255, 0.09);
+	--surface-12: rgba(255, 255, 255, 0.11);
+	--surface-14: rgba(255, 255, 255, 0.13);
+	--surface-16: rgba(255, 255, 255, 0.15);
 
 	/* Radii */
 	--r-sm: 14px;
@@ -106,70 +106,70 @@
    LIGHT THEME
    ============================================================ */
 [data-theme="light"] {
-	--bg: #f5f5f0;
-	--card: #ffffff;
+	--bg: #f0f0ec;
+	--card: #fafaf8;
 	--card-elevated: #ffffff;
-	--card-alt: #f0f0eb;
-	--overlay: rgba(0, 0, 0, 0.25);
-	--border: rgba(0, 0, 0, 0.08);
-	--border-hi: rgba(0, 0, 0, 0.12);
+	--card-alt: #e8e8e3;
+	--overlay: rgba(0, 0, 0, 0.28);
+	--border: rgba(0, 0, 0, 0.10);
+	--border-hi: rgba(0, 0, 0, 0.16);
 
-	--accent: rgba(50, 100, 220, 0.85);
-	--accent-dim: rgba(50, 100, 220, 0.55);
-	--accent-bg: rgba(50, 100, 220, 0.08);
-	--accent-hover: rgba(50, 100, 220, 0.12);
-	--accent-border: rgba(50, 100, 220, 0.2);
-	--accent-border-hi: rgba(50, 100, 220, 0.3);
-	--accent-glow: rgba(50, 100, 220, 0.1);
+	--accent: rgba(35, 78, 198, 1);
+	--accent-dim: rgba(35, 78, 198, 0.68);
+	--accent-bg: rgba(35, 78, 198, 0.08);
+	--accent-hover: rgba(35, 78, 198, 0.13);
+	--accent-border: rgba(35, 78, 198, 0.24);
+	--accent-border-hi: rgba(35, 78, 198, 0.35);
+	--accent-glow: rgba(35, 78, 198, 0.10);
 
-	--income: #2eaa60;
-	--income-dim: rgba(46, 170, 96, 0.65);
-	--income-bg: rgba(46, 170, 96, 0.08);
-	--income-border: rgba(46, 170, 96, 0.2);
+	--income: #177a3c;
+	--income-dim: rgba(23, 122, 60, 0.72);
+	--income-bg: rgba(23, 122, 60, 0.08);
+	--income-border: rgba(23, 122, 60, 0.24);
 
-	--danger: rgba(220, 60, 60, 0.8);
-	--danger-dim: rgba(220, 60, 60, 0.5);
-	--danger-bg: rgba(220, 60, 60, 0.06);
-	--danger-hover: rgba(220, 60, 60, 0.12);
-	--danger-border: rgba(220, 60, 60, 0.18);
+	--danger: rgba(190, 38, 38, 0.95);
+	--danger-dim: rgba(190, 38, 38, 0.60);
+	--danger-bg: rgba(190, 38, 38, 0.06);
+	--danger-hover: rgba(190, 38, 38, 0.12);
+	--danger-border: rgba(190, 38, 38, 0.22);
 
-	--warning: #d4880a;
-	--warning-dim: rgba(212, 136, 10, 0.6);
-	--warning-bg: rgba(212, 136, 10, 0.06);
-	--warning-border: rgba(212, 136, 10, 0.18);
+	--warning: #975e00;
+	--warning-dim: rgba(151, 94, 0, 0.68);
+	--warning-bg: rgba(151, 94, 0, 0.06);
+	--warning-border: rgba(151, 94, 0, 0.22);
 
-	--text-hi: rgba(0, 0, 0, 0.87);
-	--text-primary: rgba(0, 0, 0, 0.7);
-	--text-secondary: rgba(0, 0, 0, 0.55);
-	--text-mid: rgba(0, 0, 0, 0.45);
-	--text-lo: rgba(0, 0, 0, 0.38);
-	--text-muted: rgba(0, 0, 0, 0.3);
+	--text-hi: rgba(0, 0, 0, 0.90);
+	--text-primary: rgba(0, 0, 0, 0.74);
+	--text-secondary: rgba(0, 0, 0, 0.64);
+	--text-mid: rgba(0, 0, 0, 0.56);
+	--text-lo: rgba(0, 0, 0, 0.48);
+	--text-muted: rgba(0, 0, 0, 0.40);
 
-	--soft: rgba(100, 150, 220, 0.18);
-	--soft-border: rgba(100, 150, 220, 0.35);
-	--soft-hover: rgba(100, 150, 220, 0.25);
-	--soft-hover-border: rgba(100, 150, 220, 0.45);
-	--shadow-soft: 0 2px 8px rgba(80, 130, 220, 0.2), 0 4px 16px rgba(80, 130, 220, 0.1);
+	--soft: rgba(80, 130, 210, 0.16);
+	--soft-border: rgba(80, 130, 210, 0.30);
+	--soft-hover: rgba(80, 130, 210, 0.22);
+	--soft-hover-border: rgba(80, 130, 210, 0.40);
+	--shadow-soft: 0 2px 8px rgba(60, 110, 200, 0.18), 0 4px 16px rgba(60, 110, 200, 0.08);
 
-	--primary-bg: rgba(0, 0, 0, 0.9);
+	--primary-bg: rgba(0, 0, 0, 0.88);
 	--primary-fg: #ffffff;
 
-	--expense: rgba(0, 0, 0, 0.4);
+	--expense: rgba(0, 0, 0, 0.48);
 
-	--success: rgba(40, 160, 80, 0.9);
-	--success-dim: rgba(40, 160, 80, 0.6);
-	--success-bg: rgba(40, 160, 80, 0.1);
-	--success-border: rgba(40, 160, 80, 0.3);
+	--success: rgba(20, 125, 55, 0.95);
+	--success-dim: rgba(20, 125, 55, 0.65);
+	--success-bg: rgba(20, 125, 55, 0.08);
+	--success-border: rgba(20, 125, 55, 0.28);
 
 	--surface-3: rgba(0, 0, 0, 0.03);
 	--surface-4: rgba(0, 0, 0, 0.04);
 	--surface-5: rgba(0, 0, 0, 0.05);
 	--surface-7: rgba(0, 0, 0, 0.07);
-	--surface-8: rgba(0, 0, 0, 0.08);
-	--surface-10: rgba(0, 0, 0, 0.10);
-	--surface-12: rgba(0, 0, 0, 0.12);
-	--surface-14: rgba(0, 0, 0, 0.15);
-	--surface-16: rgba(0, 0, 0, 0.18);
+	--surface-8: rgba(0, 0, 0, 0.09);
+	--surface-10: rgba(0, 0, 0, 0.11);
+	--surface-12: rgba(0, 0, 0, 0.13);
+	--surface-14: rgba(0, 0, 0, 0.16);
+	--surface-16: rgba(0, 0, 0, 0.20);
 }
 
 /* ============================================================
@@ -270,11 +270,17 @@
 	--color-surface-14: var(--surface-14);
 	--color-surface-16: var(--surface-16);
 
-	/* Typography scale
-	   Tailwind defaults: xs(12) sm(14) base(16) lg(18) xl(20) 2xl(24) 3xl(30) 4xl(36) 5xl(48)
+	/* Typography scale (rem-based, 1rem = 16px)
+	   Tailwind defaults: xs(0.75) sm(0.875) base(1) lg(1.125) xl(1.25) 2xl(1.5) 3xl(1.875) 4xl(2.25)
 	   Custom additions for gaps in the scale: */
-	--text-2xs: 10px;
+	--text-3xs: 0.625rem;
+	--text-3xs--line-height: 1.35;
+	--text-2xs: 0.6875rem;
 	--text-2xs--line-height: 1.4;
+	--text-s: 0.8125rem;
+	--text-s--line-height: 1.5;
+	--text-md: 0.9375rem;
+	--text-md--line-height: 1.5;
 
 	/* Fonts */
 	--font-sans: var(--font);
@@ -299,12 +305,16 @@
 		margin: 0;
 	}
 
+	html {
+		font-size: 18px;
+	}
+
 	html, body {
 		overscroll-behavior: none;
 	}
 
 	::selection {
-		background: rgba(255, 255, 255, 0.15);
+		background: var(--accent-bg);
 		color: inherit;
 	}
 
@@ -344,6 +354,162 @@
 	}
 	.no-scrollbar::-webkit-scrollbar {
 		display: none;
+	}
+}
+
+/* ============================================================
+   SHARED COMPONENTS — reusable patterns across features
+   ============================================================ */
+@layer components {
+	/* ---- Screen layout ---- */
+	.screen-content {
+		flex: 1;
+		min-height: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding: 0 1rem calc(100px + env(safe-area-inset-bottom));
+		display: flex;
+		flex-direction: column;
+		gap: 0.875rem;
+		scrollbar-width: none;
+		max-width: 600px;
+		margin: 0 auto;
+		width: 100%;
+	}
+	.screen-content::-webkit-scrollbar { display: none; }
+
+	.top-bar {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem 1rem 0.625rem;
+		flex-shrink: 0;
+		max-width: 600px;
+		margin: 0 auto;
+		width: 100%;
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		backdrop-filter: blur(20px) saturate(1.2);
+		-webkit-backdrop-filter: blur(20px) saturate(1.2);
+		background: color-mix(in srgb, var(--bg) 80%, transparent);
+	}
+	.top-bar-title {
+		font-size: 1.25rem;
+		font-weight: 500;
+		color: var(--text-hi);
+	}
+
+	/* ---- Uppercase label (section headers, badges) ---- */
+	.label-caps {
+		font-size: 0.6875rem;
+		letter-spacing: 1.3px;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		font-weight: 500;
+	}
+
+	/* ---- Onboarding slide ---- */
+	.slide-layout {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		justify-content: center;
+	}
+	.slide-visual {
+		position: relative;
+		overflow: hidden;
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.slide-text-block {
+		padding: 0.5rem 1.5rem 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.slide-num {
+		font-size: 0.6875rem;
+		letter-spacing: 1.5px;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		font-weight: 500;
+		margin-bottom: 0.5rem;
+	}
+	.slide-title {
+		font-size: 2rem;
+		font-weight: 500;
+		color: var(--text-hi);
+		letter-spacing: -0.8px;
+		line-height: 1.15;
+		margin-bottom: 0.625rem;
+	}
+	.slide-title em {
+		font-style: normal;
+		color: var(--text-mid);
+		font-weight: 400;
+	}
+	.slide-desc {
+		font-size: 0.9375rem;
+		color: var(--text-mid);
+		font-weight: 400;
+		line-height: 1.6;
+	}
+	.slide-bottom {
+		padding: 1rem 1.5rem 1.75rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+		margin-top: auto;
+	}
+
+	/* ---- Decorative glow orbs ---- */
+	.glow-orb {
+		position: absolute;
+		border-radius: 50%;
+		pointer-events: none;
+		animation: glow-pulse 4s ease-in-out infinite;
+	}
+
+	/* ---- List divider ---- */
+	.list-divider {
+		height: 1px;
+		background: var(--surface-4);
+		margin: 0 0.875rem;
+	}
+
+	/* ---- List row (settings, accounts, subscriptions) ---- */
+	.list-row {
+		display: flex;
+		align-items: center;
+		gap: 0.875rem;
+		padding: 0.75rem 1.125rem;
+		cursor: pointer;
+		transition: background 0.15s ease;
+	}
+	.list-row:hover {
+		background: var(--surface-3);
+	}
+
+	/* ---- Field input ---- */
+	.field-input {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		border-radius: var(--r-sm);
+		border: 1px solid var(--surface-8);
+		background: var(--surface-5);
+		font-size: 0.9375rem;
+		color: var(--text-hi);
+		font-family: var(--font);
+		outline: none;
+		transition: all 0.2s ease;
+	}
+	.field-input:focus {
+		border-color: var(--surface-16);
+	}
+	.field-input::placeholder {
+		color: var(--text-lo);
 	}
 }
 

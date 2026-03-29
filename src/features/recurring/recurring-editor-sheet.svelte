@@ -111,7 +111,7 @@
 		border-radius: 9px;
 		border: none;
 		font-family: var(--font);
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s ease;
@@ -132,7 +132,7 @@
 		border-radius: var(--r-sm);
 		border: 1px solid var(--border);
 		background: var(--surface-3);
-		font-size: 15px;
+		font-size: 0.9375rem;
 		width: 100%;
 		color: var(--text-hi);
 		font-family: var(--font);

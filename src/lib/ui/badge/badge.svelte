@@ -11,6 +11,6 @@
 	} = $props();
 </script>
 
-<span class={cn('font-mono text-[15px] font-medium text-text-mid', className)}>
+<span class={cn('font-mono text-md font-medium text-text-mid', className)}>
 	{@render children()}
 </span>

@@ -150,7 +150,7 @@
 		border: 1px solid var(--surface-12);
 		border-radius: 10px;
 		padding: 8px 12px;
-		font-size: 12px;
+		font-size: 0.75rem;
 		color: var(--text-hi);
 		white-space: nowrap;
 		z-index: 10;

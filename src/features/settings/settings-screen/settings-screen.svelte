@@ -89,7 +89,7 @@
 	<span class="top-bar-title">{m.screen_title_settings()}</span>
 </div>
 
-<div class="content" use:scrollNav>
+<div class="screen-content" use:scrollNav>
 	<!-- Регулярні платежі -->
 	<div>
 		<div class="settings-section-title">{m.recurring_section_title()}</div>
@@ -313,41 +313,8 @@
 <RecurringEditorSheet vm={recEditorVM} />
 
 <style>
-	.top-bar {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 16px 16px 10px;
-		flex-shrink: 0;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.top-bar-title {
-		font-size: 20px;
-		font-weight: 500;
-		color: var(--text-hi);
-	}
-
-	.content {
-		flex: 1;
-		min-height: 0;
-		overflow-y: auto;
-		padding: 8px 16px calc(100px + env(safe-area-inset-bottom));
-		display: flex;
-		flex-direction: column;
-		gap: 24px;
-		scrollbar-width: none;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.content::-webkit-scrollbar {
-		display: none;
-	}
-
 	.settings-section-title {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 1.4px;
 		text-transform: uppercase;
@@ -405,12 +372,12 @@
 		min-width: 0;
 	}
 	.settings-row-label {
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--text-hi);
 	}
 	.settings-row-value {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		color: var(--text-lo);
 		font-family: var(--font-mono);
 		margin-top: 1px;

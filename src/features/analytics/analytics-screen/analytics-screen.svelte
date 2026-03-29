@@ -35,7 +35,7 @@
 	<span class="top-bar-title">{m.screen_title_analytics()}</span>
 </div>
 
-<div class="content" use:scrollNav>
+<div class="screen-content" use:scrollNav>
 	{#if vm.byAccount.length > 0}
 		<div class="analytics-card">
 			<div class="analytics-title">{m.analytics_balance_distribution()}</div>
@@ -116,47 +116,6 @@
 </div>
 
 <style>
-	.top-bar {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 16px 16px 10px;
-		flex-shrink: 0;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-		position: sticky;
-		top: 0;
-		z-index: 10;
-		backdrop-filter: blur(20px) saturate(1.2);
-		-webkit-backdrop-filter: blur(20px) saturate(1.2);
-		background: color-mix(in srgb, var(--bg) 80%, transparent);
-	}
-
-	.top-bar-title {
-		font-size: 20px;
-		font-weight: 500;
-		color: var(--text-hi);
-	}
-
-	.content {
-		flex: 1;
-		min-height: 0;
-		overflow-y: auto;
-		overflow-x: hidden;
-		padding: 12px 16px calc(100px + env(safe-area-inset-bottom));
-		display: flex;
-		flex-direction: column;
-		gap: 14px;
-		scrollbar-width: none;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.content::-webkit-scrollbar {
-		display: none;
-	}
-
 	.analytics-card {
 		background: var(--card);
 		border-radius: 20px;
@@ -166,7 +125,7 @@
 	}
 
 	.analytics-title {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 1.4px;
 		text-transform: uppercase;
@@ -185,7 +144,7 @@
 		padding: 0 20px 12px;
 	}
 	.accounts-total {
-		font-size: 15px;
+		font-size: 0.9375rem;
 		font-weight: 500;
 		color: var(--text-secondary);
 	}
@@ -222,13 +181,13 @@
 		min-width: 0;
 	}
 	.acc-name {
-		font-size: 15px;
+		font-size: 0.9375rem;
 		font-weight: 500;
 		color: var(--text-hi);
 	}
 	.acc-budget-line {
-		font-size: 12px;
-		font-weight: 300;
+		font-size: 0.75rem;
+		font-weight: 400;
 		color: var(--text-lo);
 		margin-top: 2px;
 	}
@@ -237,13 +196,13 @@
 		text-align: right;
 	}
 	.acc-balance {
-		font-size: 15px;
+		font-size: 0.9375rem;
 		font-weight: 500;
 		color: var(--text-hi);
 	}
 	.acc-balance-original {
-		font-size: 12px;
-		font-weight: 300;
+		font-size: 0.75rem;
+		font-weight: 400;
 		color: var(--text-lo);
 		margin-top: 2px;
 	}
@@ -284,7 +243,7 @@
 		color: var(--accent);
 	}
 	.add-acc-label {
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--accent);
 	}

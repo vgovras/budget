@@ -13,6 +13,6 @@
 		</svg>
 	</div>
 	<div class="text-sm font-medium text-text-primary text-center">{m.home_no_expenses_empty_title()}</div>
-	<div class="text-xs text-text-lo font-light text-center leading-relaxed max-w-[200px]">{m.home_no_expenses_empty_desc()}</div>
+	<div class="text-xs text-text-lo text-center leading-relaxed max-w-[200px]">{m.home_no_expenses_empty_desc()}</div>
 	<Button variant="accent" size="sm" class="mt-1 px-5 py-2.5 rounded-xl" onclick={onAdd}>+ {m.home_add_first()}</Button>
 </div>
