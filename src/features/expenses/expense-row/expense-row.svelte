@@ -87,7 +87,7 @@
 		min-width: 0;
 	}
 	.exp-name {
-		font-size: 15px;
+		font-size: 0.9375rem;
 		font-weight: 500;
 		margin-bottom: 3px;
 		white-space: nowrap;
@@ -96,8 +96,8 @@
 		color: var(--text-hi);
 	}
 	.exp-note {
-		font-size: 13px;
-		font-weight: 300;
+		font-size: 0.8125rem;
+		font-weight: 400;
 		color: var(--text-lo);
 	}
 	.exp-amount-wrap {
@@ -105,13 +105,13 @@
 		text-align: right;
 	}
 	.exp-amount {
-		font-size: 15px;
+		font-size: 0.9375rem;
 		font-weight: 500;
 		color: var(--danger);
 	}
 	.exp-commission {
-		font-size: 11px;
-		font-weight: 300;
+		font-size: 0.6875rem;
+		font-weight: 400;
 		color: var(--text-lo);
 		display: block;
 		margin-top: 2px;

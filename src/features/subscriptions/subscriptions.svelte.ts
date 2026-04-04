@@ -36,9 +36,13 @@ export class SubscriptionsViewModel {
 
 	constructor() {
 		if (typeof window !== 'undefined') {
-			this.items = this.#repo.load();
+			this.rehydrate();
 			this.#processDue();
 		}
+	}
+
+	rehydrate() {
+		this.items = this.#repo.load();
 	}
 
 	add(data: Omit<Subscription, 'id' | 'updatedAt'>) {
@@ -66,12 +70,6 @@ export class SubscriptionsViewModel {
 	toggle(id: string) {
 		const sub = this.items.find((s) => s.id === id);
 		if (sub) this.update(id, { status: sub.status === 'active' ? 'paused' : 'active' });
-	}
-
-	resetAll() {
-		for (const s of this.items) this.#repo.softDelete(s.id);
-		this.items = [];
-		markDirty();
 	}
 
 	#processDue() {

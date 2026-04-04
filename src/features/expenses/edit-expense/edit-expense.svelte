@@ -13,7 +13,7 @@
 
 <BottomSheet bind:open={vm.isOpen}>
 	<div class="flex flex-col gap-4">
-		<div class="text-[11px] font-medium tracking-[1.4px] uppercase text-[var(--text-lo)] text-center">
+		<div class="text-2xs font-medium tracking-[1.4px] uppercase text-[var(--text-lo)] text-center">
 			{vm.title}
 		</div>
 
@@ -42,7 +42,7 @@
 		border-radius: var(--r-sm);
 		border: 1px solid var(--border);
 		background: var(--surface-3);
-		font-size: 15px;
+		font-size: 0.9375rem;
 		width: 100%;
 		transition: all 0.2s ease;
 		color: var(--text-hi);

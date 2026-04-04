@@ -3,14 +3,14 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getTodaySpent, getWeeklyAmounts, getPeriodStart } from '$lib/utils/budget.js';
+import { getTodaySpent, getWeeklyAmounts, getPeriodStart, getEffectiveStart, getEffectiveBudget, calcDailyRemaining } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { getRecentUnique } from '$features/add-expense/quick-chips/quick-chips.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
 
 export class HomeScreenViewModel {
-	activePeriod = $state<'week' | 'month' | 'year'>('month');
+	activePeriod = $state<'day' | 'week' | 'month'>('month');
 
 	readonly greeting = $derived.by(() => {
 		const hour = new Date().getHours();
@@ -44,21 +44,22 @@ export class HomeScreenViewModel {
 
 	readonly accountBalance = $derived(this.#toDisplay(accountsVM.active?.balance ?? 0));
 
-	readonly #effectiveBudget = $derived.by(() => {
-		const created = accountsVM.active?.createdAt;
-		if (!created) return this.totalBudget;
-		const createdDate = new Date(created);
-		createdDate.setHours(0, 0, 0, 0);
-		const periodStart = getPeriodStart(this.#nextPayday, settingsVM.payday);
-		if (createdDate <= periodStart) return this.totalBudget;
-		const msPerDay = 1000 * 60 * 60 * 24;
-		const totalDays = Math.max(1, Math.round((this.#nextPayday.getTime() - periodStart.getTime()) / msPerDay));
-		const daysFromCreation = Math.max(1, Math.round((this.#nextPayday.getTime() - createdDate.getTime()) / msPerDay));
-		return Math.round(this.totalBudget * daysFromCreation / totalDays);
-	});
+	readonly #earliestExpenseDate = $derived(
+		this.accountExpenses.length > 0
+			? this.accountExpenses.reduce((min, e) => e.date < min ? e.date : min, this.accountExpenses[0].date)
+			: undefined
+	);
+
+	readonly #effectiveStart = $derived(
+		getEffectiveStart(this.#periodStart, accountsVM.active?.createdAt, this.#earliestExpenseDate)
+	);
+
+	readonly #effectiveBudget = $derived(
+		getEffectiveBudget(this.totalBudget, this.#periodStart, this.#nextPayday, this.#effectiveStart)
+	);
 
 	readonly remainingBudget = $derived(
-		this.#toDisplay(Math.max(0, this.#effectiveBudget - this.#rawSpentAmount))
+		this.#toDisplay(this.#effectiveBudget - this.#rawSpentAmount)
 	);
 
 	readonly spentPercent = $derived(
@@ -94,10 +95,11 @@ export class HomeScreenViewModel {
 		return d.toLocaleDateString(locale(), { day: 'numeric', month: 'long' });
 	});
 
+	readonly #periodStart = $derived(getPeriodStart(this.#nextPayday, settingsVM.payday));
+
 	readonly #totalPeriodDays = $derived.by(() => {
-		const start = getPeriodStart(this.#nextPayday, settingsVM.payday);
 		const msPerDay = 1000 * 60 * 60 * 24;
-		return Math.max(1, Math.round((this.#nextPayday.getTime() - start.getTime()) / msPerDay));
+		return Math.max(1, Math.round((this.#nextPayday.getTime() - this.#periodStart.getTime()) / msPerDay));
 	});
 
 	readonly dailyBudget = $derived(
@@ -109,10 +111,12 @@ export class HomeScreenViewModel {
 	);
 
 	readonly dailyRemaining = $derived(
-		Math.floor(this.remainingBudget / Math.max(1, this.daysUntilEnd))
+		this.#toDisplay(calcDailyRemaining(this.#effectiveBudget, this.#rawSpentAmount, this.#effectiveStart, this.#nextPayday))
 	);
 
-	readonly monthlyRemaining = $derived(this.remainingBudget);
+	readonly monthlyRemaining = $derived(
+		this.#toDisplay(this.totalBudget - this.#rawSpentAmount)
+	);
 
 	readonly hasExpenses = $derived(this.accountExpenses.length > 0);
 
@@ -146,7 +150,7 @@ export class HomeScreenViewModel {
 		return groupByDate(filtered);
 	});
 
-	setPeriod(p: 'week' | 'month' | 'year') {
+	setPeriod(p: 'day' | 'week' | 'month') {
 		this.activePeriod = p;
 	}
 }

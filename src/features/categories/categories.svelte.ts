@@ -13,8 +13,12 @@ export class CategoriesViewModel {
 
 	constructor() {
 		if (typeof window !== 'undefined') {
-			this.categories = this.#repo.load();
+			this.rehydrate();
 		}
+	}
+
+	rehydrate() {
+		this.categories = this.#repo.load();
 	}
 
 	byType(type: CategoryType) { return this.categories.filter((c) => c.type === type); }
@@ -41,13 +45,6 @@ export class CategoriesViewModel {
 	remove(id: string): void {
 		this.categories = this.categories.filter((c) => c.id !== id);
 		this.#repo.softDelete(id);
-		markDirty();
-	}
-
-	resetAll(): void {
-		// Mark all as deleted, migration will re-seed defaults on next load
-		for (const c of this.categories) this.#repo.softDelete(c.id);
-		this.categories = [];
 		markDirty();
 	}
 }

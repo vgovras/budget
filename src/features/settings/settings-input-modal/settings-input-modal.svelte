@@ -29,7 +29,7 @@
 
 <style>
 	.settings-input-title {
-		font-size: 17px;
+		font-size: 1.0625rem;
 		font-weight: 600;
 		letter-spacing: -0.02em;
 		text-align: center;
@@ -48,16 +48,16 @@
 
 	.settings-input-cur {
 		font-family: var(--font-mono);
-		font-size: 24px;
-		font-weight: 300;
+		font-size: 1.5rem;
+		font-weight: 400;
 		color: var(--text-lo);
 	}
 
 	.settings-input-field {
 		flex: 1;
 		font-family: var(--font-mono);
-		font-size: 32px;
-		font-weight: 300;
+		font-size: 2rem;
+		font-weight: 400;
 		letter-spacing: -0.03em;
 		width: 100%;
 		caret-color: var(--accent);
@@ -68,7 +68,7 @@
 	}
 
 	.settings-input-sub {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		color: var(--text-lo);
 		text-align: center;
 	}

@@ -108,7 +108,9 @@
 		trophy: icons.Trophy,
 		infinity: icons.Infinity,
 		sun: icons.Sun,
-		moon: icons.Moon
+		moon: icons.Moon,
+		'loader-circle': icons.LoaderCircle,
+		'log-out': icons.LogOut
 	};
 
 	const IconComponent = $derived(iconMap[name]);

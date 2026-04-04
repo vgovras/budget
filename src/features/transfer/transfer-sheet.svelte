@@ -88,7 +88,7 @@
 	}
 
 	.sheet-title {
-		font-size: 20px;
+		font-size: 1.25rem;
 		font-weight: 700;
 		letter-spacing: -0.02em;
 		color: var(--text-hi);
@@ -102,7 +102,7 @@
 	}
 
 	.field-label {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		font-weight: 500;
 		color: var(--text-mid);
 		padding-left: 2px;
@@ -113,7 +113,7 @@
 		border-radius: var(--r-sm);
 		border: 1px solid var(--surface-8);
 		background: var(--surface-5);
-		font-size: 16px;
+		font-size: 1rem;
 		color: var(--text-hi);
 		font-family: var(--font);
 		outline: none;
@@ -127,7 +127,7 @@
 	}
 
 	.field-hint {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		color: var(--accent);
 		padding-left: 2px;
 	}

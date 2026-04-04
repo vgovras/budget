@@ -57,7 +57,7 @@
 		border-radius: var(--r-sm);
 		border: 1px solid var(--surface-8);
 		background: var(--surface-5);
-		font-size: 16px;
+		font-size: 1rem;
 		color: var(--text-hi);
 		font-family: var(--font);
 		outline: none;
@@ -80,7 +80,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		font-size: 14px;
+		font-size: 0.875rem;
 		color: var(--text-primary);
 	}
 </style>

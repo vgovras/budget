@@ -1,7 +1,14 @@
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
+import { expensesVM } from '$features/expenses/expenses.svelte.js';
+import { categoriesVM } from '$features/categories/categories.svelte.js';
+import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { prorateForCurrentMonth } from '$lib/utils/budget.js';
+import { saveLocalData } from '$lib/utils/store.js';
+import { syncNow, startSync } from '$lib/utils/sync.js';
+import { authClient } from '$lib/auth-client.js';
+import type { UserData } from '$lib/types.js';
 import * as m from '$lib/paraglide/messages.js';
 
 export class OnboardingViewModel {
@@ -9,6 +16,7 @@ export class OnboardingViewModel {
 	maxReachedSlide = $state(0);
 	direction = $state<1 | -1>(1);
 	visible = $state(true);
+	loading = $state(false);
 
 	salary = $state<number | null>(null);
 	currency = $state(settingsVM.currency);
@@ -30,6 +38,44 @@ export class OnboardingViewModel {
 	readonly canProceed = $derived(
 		this.currentSlide !== 1 || (this.salary !== null && this.salary > 0)
 	);
+
+	/** Start Google OAuth and check if returning user. */
+	async login() {
+		this.loading = true;
+		await authClient.signIn.social({ provider: 'google' });
+	}
+
+	/** Called when session is detected (after OAuth return). */
+	async checkReturningUser() {
+		this.loading = true;
+		try {
+			const res = await fetch('/api/sync');
+			if (!res.ok) {
+				this.loading = false;
+				this.next();
+				return;
+			}
+			const { exists, data } = await res.json() as { exists: boolean; data?: UserData };
+			if (exists && data) {
+				saveLocalData(data);
+				settingsVM.rehydrate();
+				accountsVM.rehydrate();
+				expensesVM.rehydrate();
+				categoriesVM.rehydrate();
+				subscriptionsVM.rehydrate();
+				recurringVM.rehydrate();
+				startSync();
+				setTimeout(() => { this.visible = false; }, 400);
+			} else {
+				this.loading = false;
+				this.next();
+			}
+		} catch {
+			// Offline or error — continue as new user
+			this.loading = false;
+			this.next();
+		}
+	}
 
 	next() {
 		if (!this.canProceed) return;
@@ -77,11 +123,7 @@ export class OnboardingViewModel {
 		settingsVM.updatePayday(this.payday);
 		settingsVM.updateSavingsPercent(this.savingsPercent);
 
-		// Create salary as recurring income
 		recurringVM.syncSalary(sal, this.payday, 'pending');
-
-		const budget = this.budget > 0 ? this.budget : sal > 0 ? sal : 10000;
-		const { proratedBudget } = prorateForCurrentMonth(budget);
 
 		accountsVM.add({
 			name: m.default_account_name(),
@@ -90,7 +132,6 @@ export class OnboardingViewModel {
 			isPrimary: true
 		});
 
-		// Update salary recurring with actual account id
 		const createdAcc = accountsVM.accounts[accountsVM.accounts.length - 1];
 		if (createdAcc) {
 			recurringVM.syncSalary(sal, this.payday, createdAcc.id);
@@ -98,6 +139,8 @@ export class OnboardingViewModel {
 
 		settingsVM.updateLastPayday(new Date().toISOString());
 		settingsVM.completeOnboarding();
+
+		syncNow();
 
 		setTimeout(() => {
 			this.visible = false;

@@ -85,7 +85,7 @@
 	}
 
 	.label {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 1.4px;
 		text-transform: uppercase;
@@ -95,7 +95,7 @@
 	.amount {
 		position: relative;
 		z-index: 1;
-		font-size: 50px;
+		font-size: 3.125rem;
 		font-weight: 300;
 		letter-spacing: -2px;
 		line-height: 1;
@@ -103,9 +103,9 @@
 	}
 
 	.cur {
-		font-size: 26px;
-		font-weight: 300;
-		opacity: 0.45;
+		font-size: 1.625rem;
+		font-weight: 400;
+		opacity: 0.5;
 		margin-right: 3px;
 		vertical-align: 10px;
 	}
@@ -118,9 +118,9 @@
 		gap: 8px;
 		margin-top: 20px;
 		margin-bottom: 10px;
-		font-size: 12px;
+		font-size: 0.75rem;
 		color: var(--text-lo);
-		font-weight: 300;
+		font-weight: 400;
 	}
 	.budget-nums {
 		flex: 1;

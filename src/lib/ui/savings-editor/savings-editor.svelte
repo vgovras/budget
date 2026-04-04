@@ -45,18 +45,18 @@
 	<div class="flex flex-col gap-2.5 p-3.5 bg-surface-3 border border-surface-7 rounded-2xl">
 		<ProgressBar value={barPercent} variant="green" />
 		<div class="flex justify-between items-center">
-			<span class="text-sm text-text-mid font-light">{m.onboarding_savings_pill()}</span>
-			<span class="text-sm text-success font-medium">{currency}{fmt(savingsAmount)}<span class="text-xs text-text-lo font-light">/{m.onboarding_per_month()}</span></span>
+			<span class="text-sm text-text-mid">{m.onboarding_savings_pill()}</span>
+			<span class="text-sm text-success font-medium">{currency}{fmt(savingsAmount)}<span class="text-xs text-text-lo">/{m.onboarding_per_month()}</span></span>
 		</div>
 		{#if subscriptionsTotal > 0}
 			<div class="flex justify-between items-center">
-				<span class="text-sm text-text-mid font-light">{m.sub_section_title()}</span>
-				<span class="text-sm text-warning font-medium">{currency}{fmt(subscriptionsTotal)}<span class="text-xs text-text-lo font-light">/{m.onboarding_per_month()}</span></span>
+				<span class="text-sm text-text-mid">{m.sub_section_title()}</span>
+				<span class="text-sm text-warning font-medium">{currency}{fmt(subscriptionsTotal)}<span class="text-xs text-text-lo">/{m.onboarding_per_month()}</span></span>
 			</div>
 		{/if}
 		<div class="flex justify-between items-center">
-			<span class="text-sm text-text-mid font-light">{m.onboarding_remaining_for_expenses()}</span>
-			<span class="text-sm text-text-hi font-medium">{currency}{fmt(budget)} <span class="text-xs text-text-lo font-light">≈ {currency}{fmt(dailyBudget)}/{m.home_days_short()}</span></span>
+			<span class="text-sm text-text-mid">{m.onboarding_remaining_for_expenses()}</span>
+			<span class="text-sm text-text-hi font-medium">{currency}{fmt(budget)} <span class="text-xs text-text-lo">≈ {currency}{fmt(dailyBudget)}/{m.home_days_short()}</span></span>
 		</div>
 	</div>
 </div>

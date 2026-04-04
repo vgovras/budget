@@ -34,7 +34,7 @@
 		background: var(--surface-3);
 		cursor: pointer;
 		transition: all 0.15s ease;
-		font-size: 11px;
+		font-size: 0.6875rem;
 		color: var(--text-mid);
 		font-family: var(--font);
 	}
@@ -49,7 +49,7 @@
 	}
 
 	.quick-chip-note {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		color: var(--text-mid);
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -59,7 +59,7 @@
 	}
 
 	.quick-chip-amt {
-		font-size: 12px;
+		font-size: 0.75rem;
 		font-family: var(--font-mono);
 		color: var(--text-mid);
 	}

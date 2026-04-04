@@ -55,7 +55,7 @@
 		border-radius: var(--r-sm);
 		border: 1px solid var(--surface-8);
 		background: var(--surface-5);
-		font-size: 16px;
+		font-size: 1rem;
 		color: var(--text-hi);
 		font-family: var(--font);
 		outline: none;
@@ -84,7 +84,7 @@
 		border: 1px solid var(--surface-8);
 		background: var(--surface-4);
 		color: var(--text-lo);
-		font-size: 13px;
+		font-size: 0.8125rem;
 		font-family: var(--font);
 		cursor: pointer;
 		transition: all 0.2s ease;
@@ -92,7 +92,7 @@
 	.currency-chip {
 		flex: 1;
 		padding: 10px 8px;
-		font-size: 14px;
+		font-size: 0.875rem;
 	}
 	.type-chip.active {
 		border-color: var(--text-muted);

@@ -1,40 +1,71 @@
 import { authClient } from '$lib/auth-client.js';
 import { getLocalData, saveLocalData } from './store.js';
+import type { UserData } from '$lib/types.js';
 
-const LAST_SYNC_KEY = 'budget:lastSync';
-const SYNC_INTERVAL = 30_000;
+const PUSH_INTERVAL = 1_000;
+const PULL_INTERVAL = 5_000;
 
 let isLoggedIn = false;
-let lastSyncFailed = false;
 let dirty = false;
 let syncing = false;
-
-function getLastSync(): number {
-	return Number(localStorage.getItem(LAST_SYNC_KEY) || '0');
-}
-
-function setLastSync(): void {
-	localStorage.setItem(LAST_SYNC_KEY, String(Date.now()));
-}
+let started = false;
+let onPull: (() => void) | null = null;
 
 authClient.useSession().subscribe((session) => {
-	const nowLoggedIn = !!session.data;
-	if (nowLoggedIn && !isLoggedIn) {
-		dirty = true;
-		syncWithServer();
-	}
-	isLoggedIn = nowLoggedIn;
+	isLoggedIn = !!session.data;
 });
 
+/** Mark data as changed. Push cycle picks it up within 1s. */
 export function markDirty(): void {
 	dirty = true;
-	syncWithServer();
 }
 
-export async function syncWithServer(): Promise<void> {
-	if (!isLoggedIn || !navigator.onLine) return;
-	if (!dirty && !lastSyncFailed) return;
-	if (syncing) return;
+/** Register callback to rehydrate VMs after pull. */
+export function onSyncPull(cb: () => void): void {
+	onPull = cb;
+}
+
+/** Start both cycles: push (1s) + pull (5s). */
+export function startSync(): void {
+	if (started) return;
+	started = true;
+
+	push();
+	pull();
+
+	setInterval(push, PUSH_INTERVAL);
+	setInterval(pull, PULL_INTERVAL);
+
+	window.addEventListener('online', () => push());
+	document.addEventListener('visibilitychange', () => {
+		if (document.visibilityState === 'visible') pull();
+	});
+}
+
+/** Force immediate push (e.g. after onboarding finishes). */
+export function syncNow(): void {
+	dirty = true;
+	push();
+}
+
+function canSync(): boolean {
+	if (!isLoggedIn || !navigator.onLine || syncing) return false;
+	const data = getLocalData();
+	return !!data.settings.onboardingCompletedAt || Object.keys(data.accounts).length > 0;
+}
+
+function hasChanges(a: UserData, b: UserData): boolean {
+	return a.expenses !== b.expenses
+		|| a.accounts !== b.accounts
+		|| a.categories !== b.categories
+		|| a.subscriptions !== b.subscriptions
+		|| a.recurring !== b.recurring
+		|| JSON.stringify(a.settings) !== JSON.stringify(b.settings);
+}
+
+/** Push local changes to server. Fires every 1s, skips if nothing changed. */
+async function push(): Promise<void> {
+	if (!dirty || !canSync()) return;
 	syncing = true;
 
 	try {
@@ -43,48 +74,41 @@ export async function syncWithServer(): Promise<void> {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(getLocalData())
 		});
-		if (!res.ok) {
-			lastSyncFailed = true;
-			console.warn('[sync] failed:', res.status);
-			return;
-		}
+
+		if (!res.ok) return;
+
 		const { merged } = await res.json();
 		saveLocalData(merged);
-		setLastSync();
-		lastSyncFailed = false;
 		dirty = false;
-		console.log('[sync] ok');
+		console.log('[sync] pushed');
 	} catch (e) {
-		lastSyncFailed = true;
-		console.warn('[sync] error:', (e as Error).message);
+		console.warn('[sync:push] error:', (e as Error).message);
 	} finally {
 		syncing = false;
 	}
 }
 
-let started = false;
+/** Pull latest from server (read-only). Fires every 5s. */
+async function pull(): Promise<void> {
+	if (!canSync()) return;
+	syncing = true;
 
-export function startSync(): void {
-	if (started) return;
-	started = true;
+	try {
+		const res = await fetch('/api/sync');
+		if (!res.ok) return;
 
-	// Sync if never synced or last sync was more than interval ago
-	const elapsed = Date.now() - getLastSync();
-	if (elapsed > SYNC_INTERVAL) {
-		dirty = true;
+		const { exists, data } = await res.json() as { exists: boolean; data?: UserData };
+		if (!exists || !data) return;
+
+		const local = getLocalData();
+		if (!hasChanges(data, local)) return;
+
+		saveLocalData(data);
+		onPull?.();
+		console.log('[sync] pulled');
+	} catch {
+		// silent — pull is best-effort
+	} finally {
+		syncing = false;
 	}
-
-	syncWithServer();
-	window.addEventListener('online', () => {
-		lastSyncFailed = false;
-		syncWithServer();
-	});
-	document.addEventListener('visibilitychange', () => {
-		if (document.visibilityState === 'visible') {
-			lastSyncFailed = false;
-			dirty = true;
-			syncWithServer();
-		}
-	});
-	setInterval(() => syncWithServer(), SYNC_INTERVAL);
 }

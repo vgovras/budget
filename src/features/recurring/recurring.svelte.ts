@@ -17,9 +17,13 @@ export class RecurringViewModel {
 
 	constructor() {
 		if (typeof window !== 'undefined') {
-			this.items = this.#repo.load();
+			this.rehydrate();
 			this.#processdue();
 		}
+	}
+
+	rehydrate() {
+		this.items = this.#repo.load();
 	}
 
 	add(data: Omit<RecurringTransaction, 'id' | 'updatedAt'>): void {
@@ -96,12 +100,6 @@ export class RecurringViewModel {
 		const next = new Date(now.getFullYear(), now.getMonth(), day);
 		if (next <= now) next.setMonth(next.getMonth() + 1);
 		return next;
-	}
-
-	resetAll(): void {
-		for (const r of this.items) this.#repo.softDelete(r.id);
-		this.items = [];
-		markDirty();
 	}
 
 	#processdue(): void {

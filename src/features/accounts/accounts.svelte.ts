@@ -13,6 +13,10 @@ export class AccountsViewModel {
 	readonly primary = $derived(this.accounts.find((a) => a.isPrimary) ?? this.accounts[0]);
 
 	constructor() {
+		this.rehydrate();
+	}
+
+	rehydrate() {
 		this.accounts = this.#repo.load();
 	}
 
@@ -56,12 +60,6 @@ export class AccountsViewModel {
 		markDirty();
 	}
 
-	resetAll() {
-		for (const a of this.accounts) this.#repo.softDelete(a.id);
-		this.accounts = [];
-		this.activeIdx = 0;
-		markDirty();
-	}
 }
 
 export const accountsVM = new AccountsViewModel();

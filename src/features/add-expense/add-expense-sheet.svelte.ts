@@ -2,7 +2,7 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getAccStats, getTodaySpent } from '$lib/utils/budget.js';
+import { getAccStats, calcDailyRemaining, getPeriodStart, getEffectiveStart, getEffectiveBudget } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
 import { getRate, convert } from '$lib/utils/currency.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
@@ -52,21 +52,26 @@ export class AddExpenseSheetViewModel {
 	readonly dailyRemaining = $derived.by(() => {
 		const acc = this.selectedAccount;
 		if (!acc) return 0;
-		const budget = acc.budget || settingsVM.budget;
+
+		const totalBudget = acc.budget || settingsVM.budget;
 		const spent = getAccStats(expensesVM.expenses, acc.id);
-		const remaining = Math.max(0, budget - spent);
+		const accExpenses = expensesVM.expenses.filter((e) => e.accountId === acc.id && e.type === 'expense');
+		const earliestDate = accExpenses.length > 0
+			? accExpenses.reduce((min, e) => e.date < min ? e.date : min, accExpenses[0].date)
+			: undefined;
 
 		const salary = recurringVM.items.find((r) => r.id === 'rec-salary');
 		const nextPayday = salary?.nextDate
 			? new Date(salary.nextDate)
 			: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-		const now = new Date();
-		now.setHours(0, 0, 0, 0);
-		const daysLeft = Math.max(1, Math.ceil((nextPayday.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+		const periodStart = getPeriodStart(nextPayday, settingsVM.payday);
+		const effectiveStart = getEffectiveStart(periodStart, acc.createdAt, earliestDate);
+		const effectiveBudget = getEffectiveBudget(totalBudget, periodStart, nextPayday, effectiveStart);
 
-		const dailyBudget = Math.floor(settingsVM.toDisplay(remaining, acc.currencyCode) / daysLeft);
-		const todaySpent = settingsVM.toDisplay(getTodaySpent(expensesVM.expenses, acc.id), acc.currencyCode);
-		return Math.max(0, dailyBudget - todaySpent);
+		return settingsVM.toDisplay(
+			calcDailyRemaining(effectiveBudget, spent, effectiveStart, nextPayday),
+			acc.currencyCode
+		);
 	});
 
 	readonly displayCurrency = $derived(
@@ -106,14 +111,14 @@ export class AddExpenseSheetViewModel {
 		this.sheetType = type;
 	}
 
-	selectCategory(icon: string) {
-		this.selectedCategory = icon;
+	selectCategory(id: string) {
+		this.selectedCategory = id;
 	}
 
 	quickFill(chip: QuickChip) {
 		this.amount = chip.amount;
 		this.note = chip.note;
-		this.selectedCategory = chip.icon;
+		this.selectedCategory = chip.categoryId;
 	}
 
 	private toAccountCurrency(entered: number): number {
@@ -128,13 +133,6 @@ export class AddExpenseSheetViewModel {
 		return settingsVM.fiatViewEnabled && !!acc && acc.currencyCode !== settingsVM.fiatCurrency;
 	}
 
-	#syncActiveAccount(accountId: string) {
-		const idx = accountsVM.accounts.findIndex((a) => a.id === accountId);
-		if (idx >= 0 && idx !== accountsVM.activeIdx) {
-			accountsVM.setActive(idx);
-		}
-	}
-
 	save() {
 		if (!this.canSave || !this.amount) return;
 		const acc = this.selectedAccount;
@@ -145,8 +143,6 @@ export class AddExpenseSheetViewModel {
 		const fiatFields = this.isFiatConversion
 			? { displayAmount: entered, displayCurrency: settingsVM.fiatCurrency }
 			: {};
-
-		this.#syncActiveAccount(acc.id);
 
 		if (this.sheetType === 'transfer') {
 			const to = this.toAccount;
@@ -170,15 +166,16 @@ export class AddExpenseSheetViewModel {
 			return;
 		}
 
+		const cat = categoriesVM.getById(this.selectedCategory ?? '');
+
 		if (this.sheetType === 'income') {
-			const cat = categoriesVM.getByIcon(this.selectedCategory ?? '');
 			const commission = cat?.commission ?? 0;
 			const netAmount = commission > 0 ? Math.round(nativeAmount * (1 - commission / 100)) : nativeAmount;
 			accountsVM.update(acc.id, { balance: acc.balance + netAmount });
 			expensesVM.add({
 				icon: cat?.icon ?? 'wallet',
 				label: cat?.label ?? m.income_label(),
-				note: this.note || m.income_label(),
+				note: this.note || cat?.label || m.income_label(),
 				amount: nativeAmount,
 				day: 'today',
 				date: isoDate,
@@ -189,13 +186,11 @@ export class AddExpenseSheetViewModel {
 				...fiatFields,
 			});
 		} else {
-			const cats = categoriesVM.categories;
-			const cat = cats.find((c) => c.icon === this.selectedCategory) || cats[0];
 			accountsVM.update(acc.id, { balance: acc.balance - nativeAmount });
 			expensesVM.add({
-				icon: cat.icon,
-				label: cat.label,
-				note: this.note || cat.label,
+				icon: cat?.icon ?? 'wallet',
+				label: cat?.label ?? m.income_label(),
+				note: this.note || cat?.label || '',
 				amount: nativeAmount,
 				day: 'today',
 				date: isoDate,

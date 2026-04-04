@@ -38,9 +38,9 @@
 		</div>
 	{/if}
 	<div class="flex-1 min-w-0">
-		<div class={cn('text-[17px] text-text-hi', variant === 'danger' && 'text-danger')}>{label}</div>
+		<div class={cn('text-base text-text-hi', variant === 'danger' && 'text-danger')}>{label}</div>
 		{#if description}
-			<div class="text-[13px] text-text-lo font-mono mt-px">{description}</div>
+			<div class="text-s text-text-lo font-mono mt-px">{description}</div>
 		{/if}
 	</div>
 	{#if right}

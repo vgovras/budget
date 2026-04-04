@@ -44,10 +44,10 @@
 	const savingsDash = $derived(savingsPct * circ);
 </script>
 
-<div class="slide">
-	<div class="visual">
-		<div class="glow glow-1"></div>
-		<div class="glow glow-2"></div>
+<div class="slide-layout">
+	<div class="slide-visual" style="height:200px;flex-direction:column;gap:0.75rem">
+		<div class="glow-orb glow-1"></div>
+		<div class="glow-orb glow-2"></div>
 		<div class="ill">
 			<svg width="100" height="100" viewBox="0 0 100 100">
 				<circle cx="50" cy="50" r="38" fill="none" stroke="var(--surface-4)" stroke-width="9"/>
@@ -66,7 +66,7 @@
 				<text x="50" y="47" font-family="DM Sans,sans-serif" font-size="11" fill="var(--text-hi)" text-anchor="middle" font-weight="500">
 					{savingsPercent}%
 				</text>
-				<text x="50" y="59" font-family="DM Sans,sans-serif" font-size="8" fill="var(--text-mid)" text-anchor="middle" font-weight="300">{m.onboarding_savings_pill()}</text>
+				<text x="50" y="59" font-family="DM Sans,sans-serif" font-size="8" fill="var(--text-mid)" text-anchor="middle" font-weight="400">{m.onboarding_savings_pill()}</text>
 			</svg>
 			<div class="cat-pills">
 				<div class="cat-pill"><div class="pill-dot" style="background:rgba(74,127,255,0.8)"></div>{m.category_food()}</div>
@@ -76,7 +76,7 @@
 		</div>
 	</div>
 
-	<div class="text-block">
+	<div class="slide-text-block">
 		<div class="slide-num">04 / 05</div>
 		<h2 class="slide-title">{@html m.onboarding_savings_title()}</h2>
 	</div>
@@ -91,23 +91,12 @@
 		/>
 	</div>
 
-	<div class="bottom">
-		<Button variant="primary" size="lg" class="text-[15px] rounded-[18px]" onclick={onNext}>{m.onboarding_next()} →</Button>
+	<div class="slide-bottom">
+		<Button variant="primary" size="lg" class="text-md rounded-[18px]" onclick={onNext}>{m.onboarding_next()} →</Button>
 	</div>
 </div>
 
 <style>
-	.slide { display: flex; flex-direction: column; height: 100%; justify-content: center; }
-
-	.visual {
-		position: relative; height: 200px; overflow: hidden; flex-shrink: 0;
-		display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
-	}
-
-	.glow {
-		position: absolute; border-radius: 50%; pointer-events: none;
-		animation: glow-pulse 4s ease-in-out infinite;
-	}
 	.glow-1 {
 		width: 220px; height: 200px; left: 50%; top: -30px; transform: translateX(-50%);
 		background: radial-gradient(ellipse, rgba(80,200,120,0.3) 0%, transparent 70%);
@@ -117,39 +106,19 @@
 		background: radial-gradient(ellipse, rgba(60,100,255,0.25) 0%, transparent 70%);
 		animation-delay: 2s;
 	}
-
 	.ill {
 		position: relative; z-index: 2;
-		display: flex; flex-direction: column; align-items: center; gap: 12px;
+		display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
 	}
-
 	.cat-pills {
-		display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+		display: flex; flex-wrap: wrap; gap: 0.375rem; justify-content: center;
 	}
 	.cat-pill {
-		display: flex; align-items: center; gap: 5px;
+		display: flex; align-items: center; gap: 0.3125rem;
 		background: var(--surface-5); border: 1px solid var(--surface-8);
-		border-radius: 16px; padding: 5px 10px;
-		font-size: 11px; color: var(--text-secondary); font-weight: 400;
+		border-radius: 1rem; padding: 0.3125rem 0.625rem;
+		font-size: 0.6875rem; color: var(--text-secondary); font-weight: 400;
 	}
 	.pill-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
-
-	.text-block { padding: 8px 24px 0; display: flex; flex-direction: column; }
-	.slide-num {
-		font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-		color: var(--text-muted); font-weight: 500; margin-bottom: 8px;
-	}
-	.slide-title {
-		font-size: 32px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.8px;
-		line-height: 1.15;
-	}
-	.slide-title :global(em) {
-		font-style: normal; color: var(--text-mid); font-weight: 300;
-	}
-
-	.savings-area {
-		padding: 20px 24px 0;
-	}
-
-	.bottom { padding: 16px 24px 28px; display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+	.savings-area { padding: 1.25rem 1.5rem 0; }
 </style>

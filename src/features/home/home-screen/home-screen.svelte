@@ -17,7 +17,7 @@
 	const vm = new HomeScreenViewModel();
 </script>
 
-<div class="content" use:scrollNav>
+<div class="screen-content" use:scrollNav>
 	<!-- Hero Balance -->
 	<div class="hero">
 		<div class="flex justify-between items-start">
@@ -28,7 +28,7 @@
 				class="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0 bg-surface-5 border border-border text-text-mid cursor-pointer transition-all duration-200 active:scale-90"
 				onclick={() => settingsVM.toggleTheme()}
 			>
-				<Icon name={settingsVM.theme === 'dark' ? 'sun' : 'moon'} size={16} />
+				<Icon name={settingsVM.theme === 'system' ? 'monitor' : settingsVM.theme === 'light' ? 'sun' : 'moon'} size={16} />
 			</div>
 		</div>
 		<div class="hero-balance">
@@ -36,10 +36,10 @@
 		</div>
 		<div class="hero-sub">
 			{#if vm.todaySpent > 0}
-				<span class="sub-item spent">–{vm.currency} {fmt(vm.todaySpent)} today</span>
+				<span class="sub-item spent">–{vm.currency} {fmt(vm.todaySpent)} {m.home_today_spent()}</span>
 				<span class="sub-dot"></span>
 			{/if}
-			<span class="sub-item">{vm.currency} {fmt(vm.dailyBudget)} / day</span>
+			<span class="sub-item">{vm.currency} {fmt(vm.dailyBudget)} {m.home_budget_per_day()}</span>
 		</div>
 	</div>
 
@@ -50,7 +50,7 @@
 				<div class="s-icon"><Icon name="bar-chart" size={13} /></div>
 				<div class="stat-badge">{m.home_daily_remaining()}</div>
 			</div>
-			<div class="stat-val" class:stat-danger={vm.dailyRemaining <= 0}><span class="curr">{vm.currency}</span>{fmt(vm.dailyRemaining)}</div>
+			<div class="stat-val" class:stat-danger={vm.dailyRemaining < 0}>{vm.dailyRemaining < 0 ? '−' : ''}<span class="curr">{vm.currency}</span>{fmt(Math.abs(vm.dailyRemaining))}</div>
 			<div class="stat-sub">{m.home_daily_remaining_sub()}</div>
 		</Card>
 		<Card class="stat-card">
@@ -58,7 +58,7 @@
 				<div class="s-icon"><Icon name="target" size={13} /></div>
 				<div class="stat-badge">{m.home_monthly_remaining()}</div>
 			</div>
-			<div class="stat-val" class:stat-danger={vm.monthlyRemaining <= 0}><span class="curr">{vm.currency}</span>{fmt(vm.monthlyRemaining)}</div>
+			<div class="stat-val" class:stat-danger={vm.monthlyRemaining < 0}>{vm.monthlyRemaining < 0 ? '−' : ''}<span class="curr">{vm.currency}</span>{fmt(Math.abs(vm.monthlyRemaining))}</div>
 			<div class="stat-sub">{m.home_monthly_remaining_sub()}</div>
 		</Card>
 		<Card class="stat-card">
@@ -100,7 +100,7 @@
 				{/each}
 			</div>
 		{:else}
-			<div class="text-sm text-text-lo font-light">{m.home_quick_repeat_empty()}</div>
+			<div class="text-sm text-text-lo">{m.home_quick_repeat_empty()}</div>
 		{/if}
 	</Card>
 
@@ -113,9 +113,9 @@
 					<div class="card-sub">{vm.monthLabel}</div>
 				</div>
 				<div class="period-toggle">
+					<button class="ptab" class:active={vm.activePeriod === 'day'} onclick={() => vm.setPeriod('day')}>{m.home_period_day()}</button>
 					<button class="ptab" class:active={vm.activePeriod === 'week'} onclick={() => vm.setPeriod('week')}>{m.home_period_week()}</button>
 					<button class="ptab" class:active={vm.activePeriod === 'month'} onclick={() => vm.setPeriod('month')}>{m.home_period_month()}</button>
-					<button class="ptab" class:active={vm.activePeriod === 'year'} onclick={() => vm.setPeriod('year')}>{m.home_period_year()}</button>
 				</div>
 			</div>
 			<DonutChart byCategory={vm.byCategory} total={vm.spentAmount} currency={vm.currency} />
@@ -168,62 +168,45 @@
 </div>
 
 <style>
-	/* Layout — same pattern as analytics */
-	.content {
-		flex: 1;
-		min-height: 0;
-		overflow-y: auto;
-		overflow-x: hidden;
-		padding: 0 16px calc(100px + env(safe-area-inset-bottom));
-		display: flex;
-		flex-direction: column;
-		gap: 14px;
-		scrollbar-width: none;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.content::-webkit-scrollbar { display: none; }
-
 	/* Hero */
-	.hero { padding: 0 4px; }
+	.hero { padding: 0 0.25rem; }
 	.hero-label {
-		font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase;
-		color: var(--text-muted); font-weight: 500; margin-bottom: 6px;
+		font-size: 0.6875rem; letter-spacing: 1.4px; text-transform: uppercase;
+		color: var(--text-muted); font-weight: 500; margin-bottom: 0.375rem;
 	}
 	.hero-balance {
-		font-size: 54px; font-weight: 300; color: var(--text-hi);
-		letter-spacing: -3px; line-height: 1; margin-bottom: 5px;
+		font-size: 2.75rem; font-weight: 300; color: var(--text-hi);
+		letter-spacing: -2px; line-height: 1; margin-bottom: 0.25rem;
 	}
-	.hero-balance .curr { font-size: 26px; opacity: 0.35; vertical-align: super; letter-spacing: 0; }
+	.hero-balance .curr { font-size: 1.375rem; opacity: 0.5; vertical-align: super; letter-spacing: 0; }
 	.hero-sub {
-		font-size: 12px; color: var(--text-lo); font-weight: 300;
-		display: flex; align-items: center; gap: 6px;
+		font-size: 0.75rem; color: var(--text-lo); font-weight: 400;
+		display: flex; align-items: center; gap: 0.375rem;
 	}
 	.sub-item { letter-spacing: 0.2px; }
-	.sub-item.spent { color: rgba(255,100,100,0.6); }
+	.sub-item.spent { color: rgba(255,110,110,0.7); }
 	.sub-dot {
 		width: 3px; height: 3px; border-radius: 50%;
 		background: var(--surface-16);
 	}
 
 	/* Shared card internals */
-	:global(.card-padding) { padding: 18px; }
+	:global(.card-padding) { padding: 1.125rem; }
 	.card-top {
-		display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;
+		display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;
 	}
 	.card-label {
-		font-size: 10px; letter-spacing: 1.3px; text-transform: uppercase;
+		font-size: 0.6875rem; letter-spacing: 1.3px; text-transform: uppercase;
 		color: var(--text-muted); font-weight: 500;
 	}
 	.card-sub {
-		font-size: 13px; color: var(--text-primary); font-weight: 500; margin-top: 2px;
+		font-size: 0.8125rem; color: var(--text-primary); font-weight: 500; margin-top: 0.125rem;
 	}
 
 	/* Period toggle */
-	.period-toggle { display: flex; gap: 4px; }
+	.period-toggle { display: flex; gap: 0.25rem; }
 	.ptab {
-		font-size: 10px; padding: 4px 8px; border-radius: 8px;
+		font-size: 0.6875rem; padding: 0.3125rem 0.5rem; border-radius: 0.5rem;
 		color: var(--text-lo); cursor: pointer; font-weight: 400;
 		background: none; border: none; font-family: var(--font);
 	}
@@ -232,57 +215,62 @@
 	}
 
 	/* Stat cards */
-	.stat-row { display: flex; gap: 10px; }
-	:global(.stat-card) { flex: 1; padding: 13px 12px; }
-	.stat-icon-row { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+	.stat-row {
+		display: flex; gap: 0.5rem;
+		overflow-x: auto; scrollbar-width: none;
+		min-height: 7.5rem;
+	}
+	.stat-row::-webkit-scrollbar { display: none; }
+	:global(.stat-card) { flex: 1 0 30%; padding: 0.75rem; }
+	.stat-icon-row { display: flex; align-items: center; gap: 0.4375rem; margin-bottom: 0.5rem; }
 	.s-icon {
-		width: 28px; height: 28px; border-radius: 9px;
+		width: 1.75rem; height: 1.75rem; border-radius: 0.5625rem;
 		background: var(--surface-5); border: 1px solid var(--border);
 		display: flex; align-items: center; justify-content: center;
 		color: var(--text-mid);
 	}
 	.stat-badge {
-		font-size: 9px; letter-spacing: 0.8px; text-transform: uppercase;
+		font-size: 0.625rem; letter-spacing: 0.8px; text-transform: uppercase;
 		color: var(--text-muted); font-weight: 500;
 	}
-	.stat-val { font-size: 19px; font-weight: 500; color: var(--text-hi); letter-spacing: -0.5px; }
-	.stat-val .curr { font-size: 12px; font-weight: 300; opacity: 0.38; }
-	.days-unit { font-size: 12px; font-weight: 300; opacity: 0.35; }
-	.stat-sub { font-size: 10px; color: var(--text-muted); font-weight: 300; margin-top: 2px; }
+	.stat-val { font-size: 1.0625rem; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px; }
+	.stat-val .curr { font-size: 0.75rem; font-weight: 400; opacity: 0.5; }
+	.days-unit { font-size: 0.75rem; font-weight: 400; opacity: 0.45; }
+	.stat-sub { font-size: 0.6875rem; color: var(--text-muted); font-weight: 400; margin-top: 0.125rem; }
 	.stat-danger { color: var(--danger); }
 
 	/* Expense list inside card */
 	.exp-group-label {
-		font-size: 9px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
-		color: var(--text-muted); padding: 12px 14px 7px;
+		font-size: 0.625rem; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+		color: var(--text-muted); padding: 0.75rem 0.875rem 0.4375rem;
 	}
-	.exp-divider { height: 1px; background: var(--surface-4); margin: 0 14px; }
+	.exp-divider { height: 1px; background: var(--surface-4); margin: 0 0.875rem; }
 
 	/* Empty expenses card */
 	:global(.empty-card) {
 		display: flex; flex-direction: column; align-items: center;
-		gap: 10px; padding: 32px 20px;
+		gap: 0.625rem; padding: 2rem 1.25rem;
 	}
 	.empty-icon {
-		width: 52px; height: 52px; border-radius: 18px;
+		width: 3.25rem; height: 3.25rem; border-radius: 1.125rem;
 		background: var(--surface-4); border: 1px solid var(--surface-8);
 		display: flex; align-items: center; justify-content: center;
 	}
-	.empty-title { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+	.empty-title { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); }
 	.empty-sub {
-		font-size: 12px; color: var(--text-lo); font-weight: 300;
-		text-align: center; line-height: 1.5; max-width: 200px;
+		font-size: 0.75rem; color: var(--text-lo); font-weight: 400;
+		text-align: center; line-height: 1.5; max-width: 12.5rem;
 	}
 
 	/* Tips card */
-	:global(.tips-card) { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; }
+	:global(.tips-card) { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.875rem 1rem; }
 	.tip-dot {
 		width: 6px; height: 6px; border-radius: 50%;
-		background: rgba(80,130,255,0.6); flex-shrink: 0; margin-top: 3px;
+		background: rgba(90,140,255,0.65); flex-shrink: 0; margin-top: 3px;
 	}
 	.tip-label {
-		font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase;
-		color: rgba(80,130,255,0.6); font-weight: 500; margin-bottom: 4px;
+		font-size: 0.625rem; letter-spacing: 1.2px; text-transform: uppercase;
+		color: rgba(90,140,255,0.65); font-weight: 500; margin-bottom: 0.25rem;
 	}
-	.tip-text { font-size: 12px; color: var(--text-secondary); font-weight: 300; line-height: 1.5; }
+	.tip-text { font-size: 0.75rem; color: var(--text-secondary); font-weight: 400; line-height: 1.5; }
 </style>

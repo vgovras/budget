@@ -50,12 +50,13 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="fixed inset-0 z-50 bg-bg flex flex-col max-w-[600px] mx-auto"
+		style="padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom);"
 		transition:fade={{ duration: 400 }}
 		ontouchstart={onTouchStart}
 		ontouchmove={onTouchMove}
 		ontouchend={onTouchEnd}
 	>
-		<div class="flex gap-[5px] px-6 pt-3.5 shrink-0">
+		<div class="flex gap-[5px] px-6 pt-2.5 shrink-0">
 			{#each segments as i (i)}
 				<div
 					class="flex-1 h-0.5 rounded-[1px] transition-colors duration-400
@@ -64,15 +65,15 @@
 			{/each}
 		</div>
 
-		<div class="flex-1 grid place-items-center overflow-hidden relative">
+		<div class="flex-1 min-h-0 relative overflow-hidden">
 			{#key vm.currentSlide}
 				<div
-					class="absolute inset-0"
+					class="absolute inset-0 overflow-y-auto scrollbar-none"
 					in:fly={{ x: vm.direction * 80, duration: 350, delay: 150 }}
 					out:fly={{ x: vm.direction * -80, duration: 250 }}
 				>
 					{#if vm.currentSlide === 0}
-						<StepIntro onNext={() => vm.next()} />
+						<StepIntro {vm} />
 					{:else if vm.currentSlide === 1}
 						<StepSalary bind:value={vm.salary} bind:currency={vm.currency} bind:fiatViewEnabled={vm.fiatViewEnabled} bind:fiatCurrency={vm.fiatCurrency} onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 2}

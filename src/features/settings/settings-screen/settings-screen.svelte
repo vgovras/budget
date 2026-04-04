@@ -2,14 +2,10 @@
 	import { fade } from 'svelte/transition';
 	import { settingsVM } from '../settings.svelte.js';
 	import type { ConfirmDialogViewModel } from '$lib/ui/confirm-dialog/confirm-dialog.svelte.js';
-	import { expensesVM } from '$features/expenses/expenses.svelte.js';
-	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import CategoryEditorSheet from '$features/categories/category-editor/category-editor-sheet.svelte';
 	import { CategoryEditorSheetViewModel } from '$features/categories/category-editor/category-editor-sheet.svelte.js';
 	import { recurringVM } from '$features/recurring/recurring.svelte.js';
-	import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
-	import { navigationVM } from '$features/navigation/navigation.svelte.js';
 	import RecurringEditorSheet from '$features/recurring/recurring-editor-sheet.svelte';
 	import { RecurringEditorSheetViewModel } from '$features/recurring/recurring-editor-sheet.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
@@ -54,32 +50,20 @@
 	const session = authClient.useSession();
 	const isLoggedIn = $derived(!!$session.data);
 
-	async function toggleGoogle() {
-		if (isLoggedIn) {
-			await authClient.signOut();
-		} else {
-			await authClient.signIn.social({ provider: 'google' });
-		}
-	}
-
 	function deleteCategory(id: string) {
 		categoriesVM.remove(id);
 	}
 
-	function resetAll() {
+	function logout() {
 		confirmVM.show({
-			title: m.confirm_clear_all_title(),
-			message: m.confirm_clear_all_message(),
-			okLabel: m.button_clear(),
+			title: m.confirm_logout_title(),
+			message: m.confirm_logout_message(),
+			okLabel: m.settings_logout_label(),
 			okStyle: 'danger',
-			onConfirm() {
-				settingsVM.resetAll();
-				expensesVM.resetAll();
-				accountsVM.resetAll();
-				categoriesVM.resetAll();
-				recurringVM.resetAll();
-				subscriptionsVM.resetAll();
-				navigationVM.goTo('home');
+			async onConfirm() {
+				await authClient.signOut();
+				localStorage.clear();
+				window.location.reload();
 			}
 		});
 	}
@@ -89,7 +73,7 @@
 	<span class="top-bar-title">{m.screen_title_settings()}</span>
 </div>
 
-<div class="content" use:scrollNav>
+<div class="screen-content" use:scrollNav>
 	<!-- Регулярні платежі -->
 	<div>
 		<div class="settings-section-title">{m.recurring_section_title()}</div>
@@ -267,13 +251,11 @@
 		</div>
 	</div>
 
-	<!-- Socials -->
+	<!-- Акаунт -->
 	<div>
-		<div class="settings-section-title">Socials</div>
+		<div class="settings-section-title">{m.settings_section_data()}</div>
 		<div class="settings-group">
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row" onclick={toggleGoogle}>
+			<div class="settings-row">
 				<div class="settings-row-icon google-icon">
 					<GoogleIcon size={18} />
 				</div>
@@ -283,26 +265,14 @@
 						<div class="settings-row-value">{$session.data.user.email}</div>
 					{/if}
 				</div>
-				<div class="settings-row-right">
-					<div class="toggle" class:on={isLoggedIn}>
-						<div class="toggle-handle"></div>
-					</div>
-				</div>
 			</div>
-		</div>
-	</div>
-
-	<!-- Дані -->
-	<div>
-		<div class="settings-section-title">{m.settings_section_data()}</div>
-		<div class="settings-group">
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row danger" onclick={resetAll}>
-				<div class="settings-row-icon"><Icon name="trash" size={18} /></div>
+			<div class="settings-row danger" onclick={logout}>
+				<div class="settings-row-icon"><Icon name="log-out" size={18} /></div>
 				<div class="settings-row-info">
-					<div class="settings-row-label danger-text">{m.settings_clear_all_label()}</div>
-					<div class="settings-row-value">{m.settings_clear_all_desc()}</div>
+					<div class="settings-row-label danger-text">{m.settings_logout_label()}</div>
+					<div class="settings-row-value">{m.settings_logout_desc()}</div>
 				</div>
 			</div>
 		</div>
@@ -313,41 +283,8 @@
 <RecurringEditorSheet vm={recEditorVM} />
 
 <style>
-	.top-bar {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		padding: 16px 16px 10px;
-		flex-shrink: 0;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.top-bar-title {
-		font-size: 20px;
-		font-weight: 500;
-		color: var(--text-hi);
-	}
-
-	.content {
-		flex: 1;
-		min-height: 0;
-		overflow-y: auto;
-		padding: 8px 16px calc(100px + env(safe-area-inset-bottom));
-		display: flex;
-		flex-direction: column;
-		gap: 24px;
-		scrollbar-width: none;
-		max-width: 600px;
-		margin: 0 auto;
-		width: 100%;
-	}
-	.content::-webkit-scrollbar {
-		display: none;
-	}
-
 	.settings-section-title {
-		font-size: 11px;
+		font-size: 0.6875rem;
 		font-weight: 500;
 		letter-spacing: 1.4px;
 		text-transform: uppercase;
@@ -405,12 +342,12 @@
 		min-width: 0;
 	}
 	.settings-row-label {
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--text-hi);
 	}
 	.settings-row-value {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		color: var(--text-lo);
 		font-family: var(--font-mono);
 		margin-top: 1px;
