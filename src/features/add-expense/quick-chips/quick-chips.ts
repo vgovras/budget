@@ -4,6 +4,7 @@ import { uuidv7 } from 'uuidv7';
 export interface QuickChip {
 	id: string;
 	icon: string;
+	categoryId: string;
 	note: string;
 	amount: number;
 	bg: string;
@@ -21,6 +22,7 @@ export function getRecentUnique(expenses: Expense[], categories: Category[], lim
 		result.push({
 			id: uuidv7(),
 			icon: e.icon,
+			categoryId: cat?.id ?? '',
 			note: e.note,
 			amount: e.amount,
 			bg: cat?.bg ?? '',

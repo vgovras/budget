@@ -2,7 +2,6 @@ import type { Account } from '$lib/types.js';
 import { AccountsRepository } from './accounts.js';
 import { markDirty } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
-import { authClient } from '$lib/auth-client';
 
 export class AccountsViewModel {
 	#repo = new AccountsRepository();
@@ -14,6 +13,10 @@ export class AccountsViewModel {
 	readonly primary = $derived(this.accounts.find((a) => a.isPrimary) ?? this.accounts[0]);
 
 	constructor() {
+		this.rehydrate();
+	}
+
+	rehydrate() {
 		this.accounts = this.#repo.load();
 	}
 
@@ -57,16 +60,6 @@ export class AccountsViewModel {
 		markDirty();
 	}
 
-	async resetAll() {
-		for (const a of this.accounts) this.#repo.softDelete(a.id);
-		this.accounts = [];
-		this.activeIdx = 0;
-	
-		await authClient.signOut()
-		await authClient.revokeSessions();
-	
-		markDirty();
-	}
 }
 
 export const accountsVM = new AccountsViewModel();

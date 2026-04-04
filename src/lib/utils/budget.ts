@@ -1,6 +1,8 @@
 import type { Expense, Account } from '$lib/types.js';
 import { getDateKey, locale } from './format.js';
 
+const MS_PER_DAY = 86_400_000;
+
 export function isSpending(e: Expense): boolean {
 	return e.type === 'expense';
 }
@@ -13,16 +15,46 @@ export function getAccStats(expenses: Expense[], accId: string): number {
 	return spent;
 }
 
-export function getDailyBudget(expenses: Expense[], account: Account, budgetOverride?: number): number {
-	if (!account) return 0;
-	const budget = budgetOverride ?? account.budget;
+/** Effective start = max(periodStart, min(accountCreated, earliestExpense)) */
+export function getEffectiveStart(
+	periodStart: Date,
+	accountCreatedAt?: string,
+	earliestExpenseDate?: string
+): Date {
+	let earliest = accountCreatedAt ? new Date(accountCreatedAt) : periodStart;
+	if (earliestExpenseDate) {
+		const expDate = new Date(earliestExpenseDate);
+		if (expDate < earliest) earliest = expDate;
+	}
+	earliest.setHours(0, 0, 0, 0);
+	return earliest > periodStart ? earliest : periodStart;
+}
+
+/** Prorate budget if effectiveStart is after periodStart. */
+export function getEffectiveBudget(
+	totalBudget: number,
+	periodStart: Date,
+	periodEnd: Date,
+	effectiveStart: Date
+): number {
+	if (effectiveStart <= periodStart) return totalBudget;
+	const totalDays = Math.max(1, Math.round((periodEnd.getTime() - periodStart.getTime()) / MS_PER_DAY));
+	const activeDays = Math.max(1, Math.round((periodEnd.getTime() - effectiveStart.getTime()) / MS_PER_DAY));
+	return Math.round(totalBudget * activeDays / totalDays);
+}
+
+/** Daily remaining with rollover. Can be negative. */
+export function calcDailyRemaining(
+	effectiveBudget: number,
+	totalSpent: number,
+	effectiveStart: Date,
+	periodEnd: Date
+): number {
 	const now = new Date();
-	const daysLeft = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() - now.getDate() + 1;
-	const totalSpent = expenses
-		.filter((e) => e.accountId === account.id && isSpending(e))
-		.reduce((s, e) => s + e.amount, 0);
-	const remaining = Math.max(0, budget - totalSpent);
-	return Math.floor(remaining / Math.max(daysLeft, 1));
+	now.setHours(0, 0, 0, 0);
+	const totalDays = Math.max(1, Math.round((periodEnd.getTime() - effectiveStart.getTime()) / MS_PER_DAY));
+	const daysPassed = Math.max(1, Math.floor((now.getTime() - effectiveStart.getTime()) / MS_PER_DAY) + 1);
+	return Math.floor((effectiveBudget / totalDays) * daysPassed - totalSpent);
 }
 
 export function getWeeklyAmounts(expenses: Expense[]): number[] {
@@ -64,11 +96,6 @@ export function prorateForCurrentMonth(budget: number): {
 	};
 }
 
-/**
- * Checks if salary should be credited based on payday and last credit date.
- * Returns shouldCredit=true if current date >= this month's payday
- * and the last credit was before this month's payday.
- */
 export function checkPayday(
 	payday: number,
 	lastPayday: string
@@ -77,7 +104,6 @@ export function checkPayday(
 	const year = now.getFullYear();
 	const month = now.getMonth();
 
-	// Clamp payday to actual days in current month
 	const daysInMonth = new Date(year, month + 1, 0).getDate();
 	const clampedPayday = Math.min(payday, daysInMonth);
 
@@ -91,7 +117,6 @@ export function checkPayday(
 		return { shouldCredit: false, newPaydayDate: '' };
 	}
 
-	// Check if already credited for this payday
 	if (lastPayday) {
 		const lastDate = new Date(lastPayday);
 		lastDate.setHours(0, 0, 0, 0);
@@ -110,36 +135,6 @@ export function getPeriodStart(nextPayday: Date, payday: number): Date {
 	const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
 	start.setDate(Math.min(payday, daysInMonth));
 	return start;
-}
-
-export function getDailyRemainingWithRollover(
-	totalBudget: number,
-	totalSpent: number,
-	periodStart: Date,
-	periodEnd: Date,
-	firstExpenseDate?: string
-): number {
-	const now = new Date();
-	now.setHours(0, 0, 0, 0);
-	const msPerDay = 1000 * 60 * 60 * 24;
-	const totalDays = Math.max(1, Math.round((periodEnd.getTime() - periodStart.getTime()) / msPerDay));
-	const baseDailyBudget = totalBudget / totalDays;
-
-	if (!firstExpenseDate) {
-		return Math.floor(baseDailyBudget);
-	}
-
-	const firstDate = new Date(firstExpenseDate);
-	firstDate.setHours(0, 0, 0, 0);
-
-	const rolloverStart = firstDate < periodStart ? periodStart : firstDate;
-
-	const daysWithRollover = Math.min(
-		totalDays,
-		Math.max(1, Math.floor((now.getTime() - rolloverStart.getTime()) / msPerDay) + 1)
-	);
-	const accumulatedAllowance = baseDailyBudget * daysWithRollover;
-	return Math.floor(accumulatedAllowance - totalSpent);
 }
 
 export function getTodaySpent(expenses: Expense[], accId: string): number {

@@ -73,7 +73,7 @@
 					out:fly={{ x: vm.direction * -80, duration: 250 }}
 				>
 					{#if vm.currentSlide === 0}
-						<StepIntro onNext={() => vm.next()} />
+						<StepIntro {vm} />
 					{:else if vm.currentSlide === 1}
 						<StepSalary bind:value={vm.salary} bind:currency={vm.currency} bind:fiatViewEnabled={vm.fiatViewEnabled} bind:fiatCurrency={vm.fiatCurrency} onNext={() => vm.next()} />
 					{:else if vm.currentSlide === 2}

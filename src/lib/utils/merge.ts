@@ -1,4 +1,5 @@
-import type { UserData } from '$lib/types.js';
+import type { UserData, Settings } from '$lib/types.js';
+import { DEFAULT_SETTINGS } from '$lib/constants.js';
 
 function mergeById<T extends { updatedAt: string }>(
 	server: Record<string, T> = {},
@@ -13,6 +14,18 @@ function mergeById<T extends { updatedAt: string }>(
 	return merged;
 }
 
+function mergeSettings(server: Settings | undefined, client: Settings | undefined): Settings {
+	const s = server ?? DEFAULT_SETTINGS;
+	const c = client ?? DEFAULT_SETTINGS;
+
+	return {
+		...s,
+		...c,
+		// not-null wins — never overwrite a completed onboarding with null
+		onboardingCompletedAt: c.onboardingCompletedAt ?? s.onboardingCompletedAt ?? null
+	};
+}
+
 export function mergeUserData(server: UserData, client: UserData): UserData {
 	return {
 		expenses: mergeById(server.expenses, client.expenses),
@@ -20,7 +33,7 @@ export function mergeUserData(server: UserData, client: UserData): UserData {
 		categories: mergeById(server.categories, client.categories),
 		subscriptions: mergeById(server.subscriptions, client.subscriptions),
 		recurring: mergeById(server.recurring, client.recurring),
-		settings: client.settings ?? server.settings,
+		settings: mergeSettings(server.settings, client.settings),
 		syncedAt: new Date().toISOString()
 	};
 }

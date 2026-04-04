@@ -6,7 +6,7 @@
 
 	let { selected, onSelect, type = 'expense' }: {
 		selected: string | null;
-		onSelect: (icon: string) => void;
+		onSelect: (id: string) => void;
 		type?: CategoryType;
 	} = $props();
 
@@ -17,12 +17,12 @@
 		{#each filtered as cat (cat.id)}
 			<button
 				class="flex flex-col items-center gap-1.5 px-2 py-3 rounded-sm border font-sans text-xs font-medium transition-all duration-150
-					{selected === cat.icon
+					{selected === cat.id
 						? 'border-text-muted bg-surface-8 text-text-hi'
 						: 'border-surface-5 bg-surface-3 text-text-hi hover:border-surface-12 hover:bg-surface-5'}"
-				style:background={selected === cat.icon ? cat.bg : ''}
-				style:border-color={selected === cat.icon ? cat.border : ''}
-				onclick={() => onSelect(cat.icon)}
+				style:background={selected === cat.id ? cat.bg : ''}
+				style:border-color={selected === cat.id ? cat.border : ''}
+				onclick={() => onSelect(cat.id)}
 			>
 				<Icon name={cat.icon} size={22} />
 				{cat.label}

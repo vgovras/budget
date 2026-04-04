@@ -28,7 +28,7 @@
 				class="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center shrink-0 bg-surface-5 border border-border text-text-mid cursor-pointer transition-all duration-200 active:scale-90"
 				onclick={() => settingsVM.toggleTheme()}
 			>
-				<Icon name={settingsVM.theme === 'dark' ? 'sun' : 'moon'} size={16} />
+				<Icon name={settingsVM.theme === 'system' ? 'monitor' : settingsVM.theme === 'light' ? 'sun' : 'moon'} size={16} />
 			</div>
 		</div>
 		<div class="hero-balance">
@@ -50,7 +50,7 @@
 				<div class="s-icon"><Icon name="bar-chart" size={13} /></div>
 				<div class="stat-badge">{m.home_daily_remaining()}</div>
 			</div>
-			<div class="stat-val" class:stat-danger={vm.dailyRemaining <= 0}><span class="curr">{vm.currency}</span>{fmt(vm.dailyRemaining)}</div>
+			<div class="stat-val" class:stat-danger={vm.dailyRemaining < 0}>{vm.dailyRemaining < 0 ? '−' : ''}<span class="curr">{vm.currency}</span>{fmt(Math.abs(vm.dailyRemaining))}</div>
 			<div class="stat-sub">{m.home_daily_remaining_sub()}</div>
 		</Card>
 		<Card class="stat-card">
@@ -58,7 +58,7 @@
 				<div class="s-icon"><Icon name="target" size={13} /></div>
 				<div class="stat-badge">{m.home_monthly_remaining()}</div>
 			</div>
-			<div class="stat-val" class:stat-danger={vm.monthlyRemaining <= 0}><span class="curr">{vm.currency}</span>{fmt(vm.monthlyRemaining)}</div>
+			<div class="stat-val" class:stat-danger={vm.monthlyRemaining < 0}>{vm.monthlyRemaining < 0 ? '−' : ''}<span class="curr">{vm.currency}</span>{fmt(Math.abs(vm.monthlyRemaining))}</div>
 			<div class="stat-sub">{m.home_monthly_remaining_sub()}</div>
 		</Card>
 		<Card class="stat-card">
@@ -113,9 +113,9 @@
 					<div class="card-sub">{vm.monthLabel}</div>
 				</div>
 				<div class="period-toggle">
+					<button class="ptab" class:active={vm.activePeriod === 'day'} onclick={() => vm.setPeriod('day')}>{m.home_period_day()}</button>
 					<button class="ptab" class:active={vm.activePeriod === 'week'} onclick={() => vm.setPeriod('week')}>{m.home_period_week()}</button>
 					<button class="ptab" class:active={vm.activePeriod === 'month'} onclick={() => vm.setPeriod('month')}>{m.home_period_month()}</button>
-					<button class="ptab" class:active={vm.activePeriod === 'year'} onclick={() => vm.setPeriod('year')}>{m.home_period_year()}</button>
 				</div>
 			</div>
 			<DonutChart byCategory={vm.byCategory} total={vm.spentAmount} currency={vm.currency} />

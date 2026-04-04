@@ -8,10 +8,7 @@ import { markDirty } from '$lib/utils/sync.js';
 export class SettingsViewModel {
 	#repo = new SettingsRepository();
 
-	#systemTheme(): 'dark' | 'light' {
-		if (typeof window === 'undefined') return 'dark';
-		return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-	}
+	#systemPref = $state<'dark' | 'light'>('dark');
 
 	payday = $state(DEFAULT_SETTINGS.payday);
 	currency = $state(DEFAULT_SETTINGS.currency);
@@ -23,8 +20,12 @@ export class SettingsViewModel {
 	fiatViewEnabled = $state(false);
 	fiatCurrency = $state(DEFAULT_SETTINGS.fiatCurrency);
 	savingsPercent = $state(DEFAULT_SETTINGS.savingsPercent);
-	theme = $state<'dark' | 'light'>('dark');
+	theme = $state<'dark' | 'light' | 'system'>('system');
 	loaded = $state(false);
+
+	readonly resolvedTheme = $derived<'dark' | 'light'>(
+		this.theme === 'system' ? this.#systemPref : this.theme
+	);
 
 	readonly salary = $derived(
 		recurringVM.items
@@ -52,13 +53,18 @@ export class SettingsViewModel {
 
 	constructor() {
 		if (typeof window !== 'undefined') {
-			this.#hydrate();
+			const mq = window.matchMedia('(prefers-color-scheme: dark)');
+			this.#systemPref = mq.matches ? 'dark' : 'light';
+			mq.addEventListener('change', (e) => {
+				this.#systemPref = e.matches ? 'dark' : 'light';
+				this.#applyTheme();
+			});
+			this.rehydrate();
 		}
 	}
 
-	#hydrate() {
+	rehydrate() {
 		const saved = this.#repo.load();
-		console.log('Loaded settings:', saved);
 		if (saved) {
 			this.payday = saved.payday ?? DEFAULT_SETTINGS.payday;
 			this.currency = saved.currency ?? DEFAULT_SETTINGS.currency;
@@ -69,7 +75,7 @@ export class SettingsViewModel {
 			this.fiatViewEnabled = saved.fiatViewEnabled ?? false;
 			this.fiatCurrency = saved.fiatCurrency ?? DEFAULT_SETTINGS.fiatCurrency;
 			this.savingsPercent = saved.savingsPercent ?? 0;
-			this.theme = saved.theme ?? this.#systemTheme();
+			this.theme = saved.theme ?? 'system';
 		}
 		this.loaded = true;
 		this.#applyTheme();
@@ -80,14 +86,15 @@ export class SettingsViewModel {
 	toggleWarning() { this.warning = !this.warning; this.#save(); }
 
 	toggleTheme() {
-		this.theme = this.theme === 'dark' ? 'light' : 'dark';
+		const order: Array<'system' | 'light' | 'dark'> = ['system', 'light', 'dark'];
+		this.theme = order[(order.indexOf(this.theme) + 1) % 3];
 		this.#applyTheme();
 		this.#save();
 	}
 
 	#applyTheme() {
 		if (typeof document !== 'undefined') {
-			document.documentElement.setAttribute('data-theme', this.theme);
+			document.documentElement.setAttribute('data-theme', this.resolvedTheme);
 		}
 	}
 
@@ -102,25 +109,8 @@ export class SettingsViewModel {
 		this.#save();
 	}
 
-	resetAll() {
-		this.payday = DEFAULT_SETTINGS.payday;
-		this.currency = DEFAULT_SETTINGS.currency;
-		this.notifications = DEFAULT_SETTINGS.notifications;
-		this.warning = DEFAULT_SETTINGS.warning;
-		this.onboardingCompletedAt = null;
-		this.lastPayday = '';
-		this.fiatViewEnabled = false;
-		this.fiatCurrency = DEFAULT_SETTINGS.fiatCurrency;
-		this.savingsPercent = 0;
-		this.theme = 'dark';
-		this.#applyTheme();
-		this.#save();
-	}
-
 	#save() {
-		const data = this.#snapshot()
-		console.log('Saved settings:', data);
-		this.#repo.save(data);
+		this.#repo.save(this.#snapshot());
 		markDirty();
 	}
 

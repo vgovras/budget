@@ -23,8 +23,19 @@
 	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { recurringVM } from '$features/recurring/recurring.svelte.js';
 	import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
-	import { startSync } from '$lib/utils/sync.js';
+	import { expensesVM } from '$features/expenses/expenses.svelte.js';
+	import { categoriesVM } from '$features/categories/categories.svelte.js';
+	import { startSync, onSyncPull } from '$lib/utils/sync.js';
 	import * as m from '$lib/paraglide/messages.js';
+
+	onSyncPull(() => {
+		settingsVM.rehydrate();
+		accountsVM.rehydrate();
+		expensesVM.rehydrate();
+		categoriesVM.rehydrate();
+		subscriptionsVM.rehydrate();
+		recurringVM.rehydrate();
+	});
 
 	onMount(() => startSync());
 

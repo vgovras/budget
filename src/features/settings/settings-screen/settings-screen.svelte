@@ -2,14 +2,10 @@
 	import { fade } from 'svelte/transition';
 	import { settingsVM } from '../settings.svelte.js';
 	import type { ConfirmDialogViewModel } from '$lib/ui/confirm-dialog/confirm-dialog.svelte.js';
-	import { expensesVM } from '$features/expenses/expenses.svelte.js';
-	import { accountsVM } from '$features/accounts/accounts.svelte.js';
 	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import CategoryEditorSheet from '$features/categories/category-editor/category-editor-sheet.svelte';
 	import { CategoryEditorSheetViewModel } from '$features/categories/category-editor/category-editor-sheet.svelte.js';
 	import { recurringVM } from '$features/recurring/recurring.svelte.js';
-	import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
-	import { navigationVM } from '$features/navigation/navigation.svelte.js';
 	import RecurringEditorSheet from '$features/recurring/recurring-editor-sheet.svelte';
 	import { RecurringEditorSheetViewModel } from '$features/recurring/recurring-editor-sheet.svelte.js';
 	import { fmt } from '$lib/utils/format.js';
@@ -54,32 +50,20 @@
 	const session = authClient.useSession();
 	const isLoggedIn = $derived(!!$session.data);
 
-	async function toggleGoogle() {
-		if (isLoggedIn) {
-			await authClient.signOut();
-		} else {
-			await authClient.signIn.social({ provider: 'google' });
-		}
-	}
-
 	function deleteCategory(id: string) {
 		categoriesVM.remove(id);
 	}
 
-	function resetAll() {
+	function logout() {
 		confirmVM.show({
-			title: m.confirm_clear_all_title(),
-			message: m.confirm_clear_all_message(),
-			okLabel: m.button_clear(),
+			title: m.confirm_logout_title(),
+			message: m.confirm_logout_message(),
+			okLabel: m.settings_logout_label(),
 			okStyle: 'danger',
 			async onConfirm() {
-				settingsVM.resetAll();
-				expensesVM.resetAll();
-				await accountsVM.resetAll();
-				categoriesVM.resetAll();
-				recurringVM.resetAll();
-				subscriptionsVM.resetAll();
-				navigationVM.goTo('home');
+				await authClient.signOut();
+				localStorage.clear();
+				window.location.reload();
 			}
 		});
 	}
@@ -267,12 +251,10 @@
 		</div>
 	</div>
 
-	<!-- Socials -->
+	<!-- Акаунт -->
 	<div>
-		<div class="settings-section-title">Socials</div>
+		<div class="settings-section-title">{m.settings_section_data()}</div>
 		<div class="settings-group">
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="settings-row">
 				<div class="settings-row-icon google-icon">
 					<GoogleIcon size={18} />
@@ -284,20 +266,13 @@
 					{/if}
 				</div>
 			</div>
-		</div>
-	</div>
-
-	<!-- Дані -->
-	<div>
-		<div class="settings-section-title">{m.settings_section_data()}</div>
-		<div class="settings-group">
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row danger" onclick={resetAll}>
-				<div class="settings-row-icon"><Icon name="trash" size={18} /></div>
+			<div class="settings-row danger" onclick={logout}>
+				<div class="settings-row-icon"><Icon name="log-out" size={18} /></div>
 				<div class="settings-row-info">
-					<div class="settings-row-label danger-text">{m.settings_clear_all_label()}</div>
-					<div class="settings-row-value">{m.settings_clear_all_desc()}</div>
+					<div class="settings-row-label danger-text">{m.settings_logout_label()}</div>
+					<div class="settings-row-value">{m.settings_logout_desc()}</div>
 				</div>
 			</div>
 		</div>

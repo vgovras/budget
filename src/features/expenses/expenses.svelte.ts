@@ -13,7 +13,11 @@ export class ExpensesViewModel {
 	);
 
 	constructor() {
-		this.expenses = this.#repo.load();
+		this.rehydrate();
+	}
+
+	rehydrate() {
+		this.expenses = this.#repo.load().sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
 	}
 
 	add(data: Omit<Expense, 'id' | 'updatedAt'>) {
@@ -41,12 +45,6 @@ export class ExpensesViewModel {
 
 	forAccount(accountId: string): Expense[] {
 		return this.expenses.filter((e) => e.accountId === accountId);
-	}
-
-	resetAll() {
-		for (const e of this.expenses) this.#repo.softDelete(e.id);
-		this.expenses = [];
-		markDirty();
 	}
 }
 
