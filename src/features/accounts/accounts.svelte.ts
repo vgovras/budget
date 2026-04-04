@@ -2,6 +2,7 @@ import type { Account } from '$lib/types.js';
 import { AccountsRepository } from './accounts.js';
 import { markDirty } from '$lib/utils/sync.js';
 import { uuidv7 } from 'uuidv7';
+import { authClient } from '$lib/auth-client';
 
 export class AccountsViewModel {
 	#repo = new AccountsRepository();
@@ -56,10 +57,14 @@ export class AccountsViewModel {
 		markDirty();
 	}
 
-	resetAll() {
+	async resetAll() {
 		for (const a of this.accounts) this.#repo.softDelete(a.id);
 		this.accounts = [];
 		this.activeIdx = 0;
+	
+		await authClient.signOut()
+		await authClient.revokeSessions();
+	
 		markDirty();
 	}
 }

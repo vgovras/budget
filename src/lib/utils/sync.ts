@@ -32,10 +32,19 @@ export function markDirty(): void {
 }
 
 export async function syncWithServer(): Promise<void> {
-	if (!isLoggedIn || !navigator.onLine) return;
-	if (!dirty && !lastSyncFailed) return;
-	if (syncing) return;
-	syncing = true;
+	console.log('[sync] attempting sync... isLoggedIn:', isLoggedIn, 
+		'online:', navigator.onLine, 
+		'dirty:', dirty, 
+		'lastSyncFailed:', lastSyncFailed, 
+		'syncing:', syncing
+	);
+
+	// if (!isLoggedIn || !navigator.onLine) return;
+	// if (!dirty && !lastSyncFailed) return;
+	// if (syncing) return;
+	// syncing = true;
+
+	console.log('[sync] data: ', getLocalData());
 
 	try {
 		const res = await fetch('/api/sync', {

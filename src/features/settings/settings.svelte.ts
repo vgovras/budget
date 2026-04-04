@@ -58,6 +58,7 @@ export class SettingsViewModel {
 
 	#hydrate() {
 		const saved = this.#repo.load();
+		console.log('Loaded settings:', saved);
 		if (saved) {
 			this.payday = saved.payday ?? DEFAULT_SETTINGS.payday;
 			this.currency = saved.currency ?? DEFAULT_SETTINGS.currency;
@@ -117,7 +118,9 @@ export class SettingsViewModel {
 	}
 
 	#save() {
-		this.#repo.save(this.#snapshot());
+		const data = this.#snapshot()
+		console.log('Saved settings:', data);
+		this.#repo.save(data);
 		markDirty();
 	}
 

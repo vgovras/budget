@@ -72,10 +72,10 @@
 			message: m.confirm_clear_all_message(),
 			okLabel: m.button_clear(),
 			okStyle: 'danger',
-			onConfirm() {
+			async onConfirm() {
 				settingsVM.resetAll();
 				expensesVM.resetAll();
-				accountsVM.resetAll();
+				await accountsVM.resetAll();
 				categoriesVM.resetAll();
 				recurringVM.resetAll();
 				subscriptionsVM.resetAll();
@@ -273,7 +273,7 @@
 		<div class="settings-group">
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<div class="settings-row" onclick={toggleGoogle}>
+			<div class="settings-row">
 				<div class="settings-row-icon google-icon">
 					<GoogleIcon size={18} />
 				</div>
@@ -282,11 +282,6 @@
 					{#if isLoggedIn && $session.data?.user?.email}
 						<div class="settings-row-value">{$session.data.user.email}</div>
 					{/if}
-				</div>
-				<div class="settings-row-right">
-					<div class="toggle" class:on={isLoggedIn}>
-						<div class="toggle-handle"></div>
-					</div>
 				</div>
 			</div>
 		</div>
