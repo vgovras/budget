@@ -25,3 +25,9 @@ vite.config.ts.timestamp-*
 # Paraglide (generated)
 /src/lib/paraglide
 .playwright-mcp/
+
+# TWA build
+budget-twa/*.apk
+budget-twa/*.aab
+budget-twa/*.idsig
+budget-twa/android.keystore
