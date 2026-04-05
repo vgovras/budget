@@ -3,7 +3,7 @@
 		"relation": ["delegate_permission/common.handle_all_urls"],
 		"target": {
 			"namespace": "android_app",
-			"package_name": "com.budget.twa",
+			"package_name": "dev.pages.budget_app_dxb.twa",
 			"sha256_cert_fingerprints": ["5B:BF:67:DD:8F:3E:E2:F2:99:33:2F:0F:D3:92:52:51:9E:48:A8:9A:23:7C:85:9A:EC:48:71:00:F8:99:D6:D6"]
 		}
 	}
