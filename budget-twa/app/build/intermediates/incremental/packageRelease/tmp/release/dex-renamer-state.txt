@@ -1,0 +1,4 @@
+#Sun Apr 05 19:45:42 EEST 2026
+base.0=/Users/viacheslav/Documents/Code/budget/budget-twa/app/build/intermediates/dex/release/minifyReleaseWithR8/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
