@@ -26,7 +26,8 @@
 
 <style>
 	.note-field {
-		padding: 12px 16px;
+		height: 3rem;
+		padding: 0 16px;
 		border-radius: var(--r-sm);
 		border: 1px solid var(--surface-8);
 		background: var(--surface-5);
@@ -37,7 +38,7 @@
 		font-family: var(--font);
 	}
 	.note-field::placeholder {
-		color: var(--text-mid);
+		color: var(--text-lo);
 	}
 	.note-field:focus {
 		border-color: var(--surface-16);

@@ -36,11 +36,12 @@
 
 		<div class="field">
 			<span class="field-label">{m.transfer_amount()}</span>
-			<div class="amount-field">
+			<div class="sheet-field">
 				<MoneyInput
 					bind:value={vm.amount}
 					currency={vm.fromAccount?.currencyCode ?? settingsVM.currency}
-					size="lg"
+					size="sm"
+					class="w-full"
 				/>
 			</div>
 		</div>
@@ -108,39 +109,9 @@
 		padding-left: 2px;
 	}
 
-	.field-input {
-		padding: 14px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid var(--surface-8);
-		background: var(--surface-5);
-		font-size: 1rem;
-		color: var(--text-hi);
-		font-family: var(--font);
-		outline: none;
-		transition: border-color 0.2s ease;
-	}
-	.field-input::placeholder {
-		color: var(--text-lo);
-	}
-	.field-input:focus {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
 	.field-hint {
 		font-size: 0.8125rem;
 		color: var(--accent);
 		padding-left: 2px;
 	}
-
-	.amount-field {
-		padding: 16px 18px;
-		background: var(--surface-5);
-		border: 1px solid var(--border-hi);
-		border-radius: var(--r-md);
-		transition: border-color 0.2s ease;
-	}
-	.amount-field:focus-within {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
 </style>

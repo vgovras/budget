@@ -11,7 +11,7 @@
 		value: number | null;
 		currency?: string;
 		placeholder?: string;
-		size?: 'md' | 'lg' | 'xl';
+		size?: 'sm' | 'md' | 'lg' | 'xl';
 		autofocus?: boolean;
 		class?: string;
 	} = $props();
@@ -46,6 +46,7 @@
 	});
 
 	const sizeClasses = {
+		sm: { currency: 'text-base', input: 'text-base' },
 		md: { currency: 'text-xl', input: 'text-[1.75rem]' },
 		lg: { currency: 'text-2xl', input: 'text-4xl' },
 		xl: { currency: 'text-sm', input: 'text-[2.75rem] tracking-tighter text-center' }

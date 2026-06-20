@@ -37,7 +37,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
-		class="flex items-center justify-center gap-2 px-4 py-3 rounded-sm bg-surface-5 border border-surface-8 cursor-pointer transition-all duration-150 text-text-mid
+		class="flex items-center justify-center gap-2 px-4 h-12 rounded-sm bg-surface-5 border border-surface-8 cursor-pointer transition-all duration-150 text-text-mid
 			{open ? 'bg-surface-8' : ''}"
 		bind:this={triggerEl}
 		onclick={toggle}

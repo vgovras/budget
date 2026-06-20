@@ -4,7 +4,6 @@
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import Dropdown from '$lib/ui/dropdown/dropdown.svelte';
 	import NumberInput from '$lib/ui/number-input/number-input.svelte';
-	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
 	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import CategoryPicker from '$features/add-expense/category-picker/category-picker.svelte';
 	import type { RecurringEditorSheetViewModel } from './recurring-editor-sheet.svelte.js';
@@ -50,9 +49,9 @@
 			</button>
 		</div>
 
-		<AmountField>
-			<MoneyInput bind:value={vm.amount} {currency} size="lg" autofocus={vm.isOpen} />
-		</AmountField>
+		<div class="sheet-field">
+			<MoneyInput bind:value={vm.amount} {currency} size="sm" class="w-full" autofocus={vm.isOpen} />
+		</div>
 
 		<CategoryPicker
 			selected={vm.icon}
@@ -61,7 +60,7 @@
 		/>
 
 		<input
-			class="note-field"
+			class="field-input"
 			type="text"
 			placeholder={m.placeholder_note()}
 			bind:value={vm.note}
@@ -126,18 +125,4 @@
 		background: var(--income-bg);
 		color: var(--income);
 	}
-
-	.note-field {
-		padding: 12px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid var(--border);
-		background: var(--surface-3);
-		font-size: 0.9375rem;
-		width: 100%;
-		color: var(--text-hi);
-		font-family: var(--font);
-		transition: border-color 0.2s ease;
-	}
-	.note-field::placeholder { color: var(--text-lo); }
-	.note-field:focus { border-color: var(--surface-16); outline: none; }
 </style>

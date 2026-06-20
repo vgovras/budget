@@ -14,7 +14,7 @@
 
 <div class="flex flex-col gap-1.5">
 	{#if label}
-		<span class="text-sm font-medium text-text-mid pl-0.5">{label}</span>
+		<span class="text-sm font-medium text-text-secondary pl-0.5">{label}</span>
 	{/if}
 	{@render children()}
 	{#if hint}

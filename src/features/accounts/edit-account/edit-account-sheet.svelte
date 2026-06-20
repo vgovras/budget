@@ -6,7 +6,6 @@
 	import Toggle from '$lib/ui/toggle/toggle.svelte';
 	import SheetForm from '$lib/ui/sheet-form/sheet-form.svelte';
 	import FormField from '$lib/ui/form-field/form-field.svelte';
-	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
 	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import type { EditAccountSheetViewModel } from './edit-account-sheet.svelte.js';
 	import { settingsVM } from '$features/settings/settings.svelte.js';
@@ -24,9 +23,9 @@
 		</FormField>
 
 		<FormField label={m.account_balance()}>
-			<AmountField>
-				<MoneyInput bind:value={vm.balance} {currency} />
-			</AmountField>
+			<div class="sheet-field">
+				<MoneyInput bind:value={vm.balance} {currency} size="sm" class="w-full" />
+			</div>
 		</FormField>
 
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -52,20 +51,6 @@
 </BottomSheet>
 
 <style>
-	.field-input {
-		padding: 12px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid var(--surface-8);
-		background: var(--surface-5);
-		font-size: 1rem;
-		color: var(--text-hi);
-		font-family: var(--font);
-		outline: none;
-	}
-	.field-input:focus {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
 	.primary-row {
 		display: flex;
 		align-items: center;

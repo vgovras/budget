@@ -75,7 +75,7 @@
 	>
 		<DatePicker.Input class="hidden" />
 		<DatePicker.Trigger
-			class="flex items-center justify-between w-full px-4 py-3 rounded-sm border border-surface-8 bg-surface-5 cursor-pointer transition-all duration-200 hover:border-surface-16"
+			class="flex items-center justify-between w-full px-4 h-12 rounded-sm border border-surface-8 bg-surface-5 cursor-pointer transition-all duration-200 hover:border-surface-16"
 		>
 			<span class="text-base {value ? 'text-text-hi' : 'text-text-lo'}">{displayText() || 'Select date'}</span>
 			<Icon name="chevron-down" size={16} class="text-text-lo" />
@@ -135,7 +135,7 @@
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div class="relative">
 		<div
-			class="flex items-center justify-between w-full px-4 py-3 rounded-sm border border-surface-8 bg-surface-5 cursor-pointer transition-all duration-200 hover:border-surface-16"
+			class="flex items-center justify-between w-full px-4 h-12 rounded-sm border border-surface-8 bg-surface-5 cursor-pointer transition-all duration-200 hover:border-surface-16"
 			onclick={() => (open = !open)}
 		>
 			<span class="text-base {displayText() ? 'text-text-hi' : 'text-text-lo'}">{displayText() || 'Select range'}</span>

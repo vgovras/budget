@@ -2,7 +2,6 @@
 	import BottomSheet from '$lib/ui/bottom-sheet/bottom-sheet.svelte';
 	import Button from '$lib/ui/button/button.svelte';
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
-	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
 	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import DatePicker from '$lib/ui/date-picker/date-picker.svelte';
 	import type { EditExpenseViewModel } from './edit-expense.svelte.js';
@@ -17,11 +16,11 @@
 			{vm.title}
 		</div>
 
-		<AmountField>
-			<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="lg" autofocus={vm.isOpen} />
-		</AmountField>
+		<div class="sheet-field">
+			<MoneyInput bind:value={vm.amount} currency={vm.displayCurrency} size="sm" class="w-full" autofocus={vm.isOpen} />
+		</div>
 
-		<input class="note-field" type="text" placeholder={m.placeholder_note()} bind:value={vm.note} />
+		<input class="field-input" type="text" placeholder={m.placeholder_note()} bind:value={vm.note} />
 
 		<DatePicker bind:value={vm.editDate} />
 
@@ -35,24 +34,3 @@
 		</SheetActions>
 	</div>
 </BottomSheet>
-
-<style>
-	.note-field {
-		padding: 12px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid var(--border);
-		background: var(--surface-3);
-		font-size: 0.9375rem;
-		width: 100%;
-		transition: all 0.2s ease;
-		color: var(--text-hi);
-		font-family: var(--font);
-	}
-	.note-field::placeholder {
-		color: var(--text-lo);
-	}
-	.note-field:focus {
-		border-color: var(--surface-16);
-		outline: none;
-	}
-</style>

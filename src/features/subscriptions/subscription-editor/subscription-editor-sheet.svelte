@@ -6,7 +6,6 @@
 	import NumberInput from '$lib/ui/number-input/number-input.svelte';
 	import SheetForm from '$lib/ui/sheet-form/sheet-form.svelte';
 	import FormField from '$lib/ui/form-field/form-field.svelte';
-	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
 	import IconPicker from '$lib/ui/icon-picker/icon-picker.svelte';
 	import SheetActions from '$lib/ui/sheet-actions/sheet-actions.svelte';
 	import type { SubscriptionEditorSheetViewModel } from './subscription-editor-sheet.svelte.js';
@@ -58,9 +57,9 @@
 
 		<FormField label={m.sub_amount()}>
 			<div class="amount-row">
-				<AmountField>
-					<MoneyInput bind:value={vm.amount} currency={vm.currency} />
-				</AmountField>
+				<div class="sheet-field flex-1">
+					<MoneyInput bind:value={vm.amount} currency={vm.currency} size="sm" class="w-full" />
+				</div>
 				<Dropdown bind:value={vm.currency} options={currencyOptions} />
 			</div>
 		</FormField>
@@ -91,23 +90,6 @@
 </BottomSheet>
 
 <style>
-	.field-input {
-		padding: 12px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid var(--surface-8);
-		background: var(--surface-5);
-		font-size: 1rem;
-		color: var(--text-hi);
-		font-family: var(--font);
-		outline: none;
-	}
-	.field-input::placeholder {
-		color: var(--text-lo);
-	}
-	.field-input:focus {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
 	.amount-row {
 		display: flex;
 		gap: 10px;

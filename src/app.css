@@ -492,10 +492,11 @@
 		background: var(--surface-3);
 	}
 
-	/* ---- Field input ---- */
+	/* ---- Field input — unified 48px text field ---- */
 	.field-input {
 		width: 100%;
-		padding: 0.75rem 1rem;
+		height: 3rem;
+		padding: 0 1rem;
 		border-radius: var(--r-sm);
 		border: 1px solid var(--surface-8);
 		background: var(--surface-5);
@@ -510,6 +511,21 @@
 	}
 	.field-input::placeholder {
 		color: var(--text-lo);
+	}
+
+	/* ---- Sheet field box — unified 48px shell for MoneyInput etc. ---- */
+	.sheet-field {
+		display: flex;
+		align-items: center;
+		height: 3rem;
+		padding: 0 1rem;
+		border-radius: var(--r-sm);
+		background: var(--surface-5);
+		border: 1px solid var(--surface-8);
+		transition: all 0.2s ease;
+	}
+	.sheet-field:focus-within {
+		border-color: var(--surface-16);
 	}
 }
 

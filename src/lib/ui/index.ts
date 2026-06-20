@@ -13,7 +13,6 @@ export { default as MoneyInput } from './money-input/money-input.svelte';
 export { default as Dropdown } from './dropdown/dropdown.svelte';
 export { default as FormField } from './form-field/form-field.svelte';
 export { default as SheetForm } from './sheet-form/sheet-form.svelte';
-export { default as AmountField } from './amount-field/amount-field.svelte';
 export { default as IconPicker } from './icon-picker/icon-picker.svelte';
 export { default as ProgressBar } from './progress-bar/progress-bar.svelte';
 export { default as SheetActions } from './sheet-actions/sheet-actions.svelte';

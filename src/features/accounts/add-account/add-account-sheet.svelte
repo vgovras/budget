@@ -4,7 +4,6 @@
 	import MoneyInput from '$lib/ui/money-input/money-input.svelte';
 	import SheetForm from '$lib/ui/sheet-form/sheet-form.svelte';
 	import FormField from '$lib/ui/form-field/form-field.svelte';
-	import AmountField from '$lib/ui/amount-field/amount-field.svelte';
 	import type { AddAccountSheetViewModel } from './add-account-sheet.svelte.js';
 	import { CURRENCIES, CURRENCY_CODES } from '$lib/constants.js';
 	import * as m from '$lib/paraglide/messages.js';
@@ -38,9 +37,9 @@
 		</FormField>
 
 		<FormField label={m.field_label_budget_balance()}>
-			<AmountField>
-				<MoneyInput bind:value={vm.balance} size="lg" />
-			</AmountField>
+			<div class="sheet-field">
+				<MoneyInput bind:value={vm.balance} size="sm" class="w-full" />
+			</div>
 		</FormField>
 
 		<Button variant="soft" size="lg" disabled={!vm.canSave} onclick={() => vm.save()}>
@@ -50,24 +49,6 @@
 </BottomSheet>
 
 <style>
-	.field-input {
-		padding: 12px 16px;
-		border-radius: var(--r-sm);
-		border: 1px solid var(--surface-8);
-		background: var(--surface-5);
-		font-size: 1rem;
-		color: var(--text-hi);
-		font-family: var(--font);
-		outline: none;
-		transition: border-color 0.2s ease;
-	}
-	.field-input::placeholder {
-		color: var(--text-lo);
-	}
-	.field-input:focus {
-		border-color: rgba(221, 232, 240, 0.28);
-	}
-
 	.type-chips {
 		display: flex;
 		gap: 8px;
