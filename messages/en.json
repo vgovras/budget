@@ -91,6 +91,11 @@
 	"settings_logout_desc": "Sign out and clear local data",
 	"confirm_logout_title": "Logout?",
 	"confirm_logout_message": "You will be signed out. Your data is saved on the server.",
+	"settings_delete_account_label": "Delete account",
+	"settings_delete_account_desc": "Permanently delete your account and all data",
+	"confirm_delete_account_title": "Delete account?",
+	"confirm_delete_account_message": "All your data will be permanently deleted — on this device and on the server. This cannot be undone.",
+	"toast_delete_account_error": "Couldn't delete account. Please try again.",
 
 	"placeholder_enter_name": "Enter name",
 	"placeholder_note": "Note",

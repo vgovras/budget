@@ -5,7 +5,7 @@ import { categoriesVM } from '$features/categories/categories.svelte.js';
 export class RecurringEditorSheetViewModel {
 	isOpen = $state(false);
 	editingId = $state<string | null>(null);
-	icon = $state('utensils');
+	categoryId = $state<string | null>(null);
 	label = $state('');
 	note = $state('');
 	amount = $state<number | null>(null);
@@ -19,7 +19,7 @@ export class RecurringEditorSheetViewModel {
 
 	open() {
 		this.editingId = null;
-		this.icon = categoriesVM.expenseCategories[0]?.icon ?? 'utensils';
+		this.categoryId = categoriesVM.expenseCategories[0]?.id ?? null;
 		this.label = '';
 		this.note = '';
 		this.amount = null;
@@ -34,7 +34,9 @@ export class RecurringEditorSheetViewModel {
 		const item = recurringVM.items.find((r) => r.id === id);
 		if (!item) return;
 		this.editingId = id;
-		this.icon = item.icon;
+		// item.icon is an icon name; fall back to getById to recover legacy rows that stored a category id
+		this.categoryId =
+			categoriesVM.getByIcon(item.icon)?.id ?? categoriesVM.getById(item.icon)?.id ?? null;
 		this.label = item.label;
 		this.note = item.note;
 		this.amount = item.amount;
@@ -49,8 +51,14 @@ export class RecurringEditorSheetViewModel {
 		this.isOpen = false;
 	}
 
-	selectCategory(icon: string) {
-		this.icon = icon;
+	selectCategory(id: string) {
+		this.categoryId = id;
+	}
+
+	setType(type: 'expense' | 'income') {
+		if (this.type === type) return;
+		this.type = type;
+		this.categoryId = categoriesVM.byType(type)[0]?.id ?? null;
 	}
 
 	save() {
@@ -58,13 +66,14 @@ export class RecurringEditorSheetViewModel {
 
 		const nextDate = this.#computeNextDate();
 
-		const cat = categoriesVM.getByIcon(this.icon);
-		const label = cat?.label ?? this.icon;
+		const cat = categoriesVM.getById(this.categoryId ?? '');
+		// name = the note if provided, otherwise the category label
+		const name = this.note.trim() || cat?.label || '';
 
 		const data = {
-			icon: this.icon,
-			label,
-			note: this.note || label,
+			icon: cat?.icon ?? 'wallet',
+			label: name,
+			note: name,
 			amount: this.amount,
 			accountId: this.accountId,
 			type: this.type,

@@ -26,7 +26,9 @@
 	import { expensesVM } from '$features/expenses/expenses.svelte.js';
 	import { categoriesVM } from '$features/categories/categories.svelte.js';
 	import { startSync, onSyncPull } from '$lib/utils/sync.js';
+	import { loadRates } from '$lib/utils/rates.svelte.js';
 	import * as m from '$lib/paraglide/messages.js';
+	import { Toaster } from 'svelte-sonner';
 
 	onSyncPull(() => {
 		settingsVM.rehydrate();
@@ -37,7 +39,10 @@
 		recurringVM.rehydrate();
 	});
 
-	onMount(() => startSync());
+	onMount(() => {
+		loadRates();
+		return startSync();
+	});
 
 	const addExpenseVM = new AddExpenseSheetViewModel();
 	const addAccountVM = new AddAccountSheetViewModel();
@@ -116,6 +121,8 @@
 	{#if settingsVM.loaded && !settingsVM.onboardingDone}
 		<Onboarding />
 	{/if}
+
+	<Toaster position="top-center" richColors />
 </div>
 
 <style>

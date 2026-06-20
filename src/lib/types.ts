@@ -46,6 +46,7 @@ export interface Settings {
 	fiatCurrency: string;
 	savingsPercent: number;
 	theme?: 'dark' | 'light' | 'system';
+	updatedAt: string;
 }
 
 export type CategoryType = 'expense' | 'income';

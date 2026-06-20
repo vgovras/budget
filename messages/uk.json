@@ -91,6 +91,11 @@
 	"settings_logout_desc": "Вийти з акаунту та очистити локальні дані",
 	"confirm_logout_title": "Вийти?",
 	"confirm_logout_message": "Ви вийдете з акаунту. Ваші дані збережені на сервері.",
+	"settings_delete_account_label": "Видалити акаунт",
+	"settings_delete_account_desc": "Безповоротно видалити акаунт і всі дані",
+	"confirm_delete_account_title": "Видалити акаунт?",
+	"confirm_delete_account_message": "Усі ваші дані буде видалено безповоротно — на цьому пристрої та на сервері. Цю дію не можна скасувати.",
+	"toast_delete_account_error": "Не вдалося видалити акаунт. Спробуйте ще раз.",
 
 	"placeholder_enter_name": "Введіть назву",
 	"placeholder_note": "Нотатка",

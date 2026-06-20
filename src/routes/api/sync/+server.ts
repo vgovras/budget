@@ -19,13 +19,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const data = row?.data as UserData | undefined;
 	if (!data?.settings) return json({ exists: false });
 
-	// Ensure onboardingCompletedAt is set — if settings exist, onboarding was done
+	// Ensure onboardingCompletedAt is set — if settings exist, onboarding was done.
+	// Read-only: do NOT write back here (a side-effecting GET bumps timestamps on every poll).
 	data.settings.onboardingCompletedAt ??= new Date().toISOString();
-
-	await db
-		.update(userData)
-		.set({ data, updatedAt: new Date() })
-		.where(eq(userData.userId, locals.user.id));
 
 	return json({ exists: true, data });
 };

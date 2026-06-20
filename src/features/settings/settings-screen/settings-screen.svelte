@@ -18,6 +18,7 @@
 	import { CURRENCIES, CURRENCY_LABELS } from '$lib/constants.js';
 	import { authClient } from '$lib/auth-client.js';
 	import GoogleIcon from '$lib/ui/icon/google-icon.svelte';
+	import { toast } from 'svelte-sonner';
 
 	let { confirmVM }: { confirmVM: ConfirmDialogViewModel } = $props();
 
@@ -61,6 +62,27 @@
 			okLabel: m.settings_logout_label(),
 			okStyle: 'danger',
 			async onConfirm() {
+				await authClient.signOut();
+				localStorage.clear();
+				window.location.reload();
+			}
+		});
+	}
+
+	function deleteAccount() {
+		confirmVM.show({
+			title: m.confirm_delete_account_title(),
+			message: m.confirm_delete_account_message(),
+			okLabel: m.settings_delete_account_label(),
+			okStyle: 'danger',
+			async onConfirm() {
+				try {
+					const res = await fetch('/api/account', { method: 'DELETE' });
+					if (!res.ok) throw new Error(String(res.status));
+				} catch {
+					toast.error(m.toast_delete_account_error());
+					return;
+				}
 				await authClient.signOut();
 				localStorage.clear();
 				window.location.reload();
@@ -275,6 +297,17 @@
 					<div class="settings-row-value">{m.settings_logout_desc()}</div>
 				</div>
 			</div>
+			{#if isLoggedIn}
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="settings-row danger" onclick={deleteAccount}>
+					<div class="settings-row-icon"><Icon name="trash" size={18} /></div>
+					<div class="settings-row-info">
+						<div class="settings-row-label danger-text">{m.settings_delete_account_label()}</div>
+						<div class="settings-row-value">{m.settings_delete_account_desc()}</div>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

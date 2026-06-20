@@ -18,9 +18,11 @@ function mergeSettings(server: Settings | undefined, client: Settings | undefine
 	const s = server ?? DEFAULT_SETTINGS;
 	const c = client ?? DEFAULT_SETTINGS;
 
+	// Last-write-wins on the whole settings object by updatedAt (client wins ties).
+	const winner = (c.updatedAt ?? '') >= (s.updatedAt ?? '') ? c : s;
+
 	return {
-		...s,
-		...c,
+		...winner,
 		// not-null wins — never overwrite a completed onboarding with null
 		onboardingCompletedAt: c.onboardingCompletedAt ?? s.onboardingCompletedAt ?? null
 	};

@@ -163,9 +163,10 @@ export const DEFAULT_SETTINGS: Settings = {
 	currency: '₴',
 	notifications: false,
 	warning: true,
-	onboardingDone: false,
+	onboardingCompletedAt: null,
 	lastPayday: '',
 	fiatViewEnabled: false,
 	fiatCurrency: '₴',
-	savingsPercent: 0
+	savingsPercent: 0,
+	updatedAt: ''
 };

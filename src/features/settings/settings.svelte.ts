@@ -21,6 +21,7 @@ export class SettingsViewModel {
 	fiatCurrency = $state(DEFAULT_SETTINGS.fiatCurrency);
 	savingsPercent = $state(DEFAULT_SETTINGS.savingsPercent);
 	theme = $state<'dark' | 'light' | 'system'>('system');
+	updatedAt = $state('');
 	loaded = $state(false);
 
 	readonly resolvedTheme = $derived<'dark' | 'light'>(
@@ -76,6 +77,7 @@ export class SettingsViewModel {
 			this.fiatCurrency = saved.fiatCurrency ?? DEFAULT_SETTINGS.fiatCurrency;
 			this.savingsPercent = saved.savingsPercent ?? 0;
 			this.theme = saved.theme ?? 'system';
+			this.updatedAt = saved.updatedAt ?? '';
 		}
 		this.loaded = true;
 		this.#applyTheme();
@@ -110,6 +112,7 @@ export class SettingsViewModel {
 	}
 
 	#save() {
+		this.updatedAt = new Date().toISOString();
 		this.#repo.save(this.#snapshot());
 		markDirty();
 	}
@@ -125,7 +128,8 @@ export class SettingsViewModel {
 			fiatViewEnabled: this.fiatViewEnabled,
 			fiatCurrency: this.fiatCurrency,
 			savingsPercent: this.savingsPercent,
-			theme: this.theme
+			theme: this.theme,
+			updatedAt: this.updatedAt
 		};
 	}
 }

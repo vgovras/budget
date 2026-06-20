@@ -1,114 +1,109 @@
 import { authClient } from '$lib/auth-client.js';
 import { getLocalData, saveLocalData } from './store.js';
-import type { UserData } from '$lib/types.js';
+import { mergeUserData } from './merge.js';
 
-const PUSH_INTERVAL = 1_000;
-const PULL_INTERVAL = 5_000;
+const POLL_INTERVAL = 15_000;
+const DEBOUNCE = 300;
 
 let isLoggedIn = false;
 let dirty = false;
-let syncing = false;
+let inFlight = false;
+let queued = false;
 let started = false;
+let mutationVersion = 0;
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let onPull: (() => void) | null = null;
 
 authClient.useSession().subscribe((session) => {
 	isLoggedIn = !!session.data;
 });
 
-/** Mark data as changed. Push cycle picks it up within 1s. */
+/** Mark local data as changed. Triggers an immediate (debounced) sync when online. */
 export function markDirty(): void {
 	dirty = true;
+	mutationVersion++;
+	scheduleImmediate();
 }
 
-/** Register callback to rehydrate VMs after pull. */
+/** Register callback to rehydrate VMs after data changes are applied locally. */
 export function onSyncPull(cb: () => void): void {
 	onPull = cb;
 }
 
-/** Start both cycles: push (1s) + pull (5s). */
+/** Start sync: initial sync + periodic poll + online/visibility triggers. */
 export function startSync(): void {
 	if (started) return;
 	started = true;
 
-	push();
-	pull();
+	void sync();
+	setInterval(() => void sync(), POLL_INTERVAL);
 
-	setInterval(push, PUSH_INTERVAL);
-	setInterval(pull, PULL_INTERVAL);
-
-	window.addEventListener('online', () => push());
+	window.addEventListener('online', () => void sync());
 	document.addEventListener('visibilitychange', () => {
-		if (document.visibilityState === 'visible') pull();
+		if (document.visibilityState === 'visible') void sync();
 	});
 }
 
-/** Force immediate push (e.g. after onboarding finishes). */
+/** Force an immediate sync (e.g. after onboarding finishes). */
 export function syncNow(): void {
 	dirty = true;
-	push();
+	void sync();
+}
+
+function scheduleImmediate(): void {
+	if (debounceTimer) clearTimeout(debounceTimer);
+	debounceTimer = setTimeout(() => void sync(), DEBOUNCE);
 }
 
 function canSync(): boolean {
-	if (!isLoggedIn || !navigator.onLine || syncing) return false;
-	const data = getLocalData();
-	return !!data.settings.onboardingCompletedAt || Object.keys(data.accounts).length > 0;
+	if (!isLoggedIn || !navigator.onLine) return false;
+	const d = getLocalData();
+	return !!d.settings.onboardingCompletedAt || Object.keys(d.accounts).length > 0;
 }
 
-function hasChanges(a: UserData, b: UserData): boolean {
-	return a.expenses !== b.expenses
-		|| a.accounts !== b.accounts
-		|| a.categories !== b.categories
-		|| a.subscriptions !== b.subscriptions
-		|| a.recurring !== b.recurring
-		|| JSON.stringify(a.settings) !== JSON.stringify(b.settings);
-}
-
-/** Push local changes to server. Fires every 1s, skips if nothing changed. */
-async function push(): Promise<void> {
-	if (!dirty || !canSync()) return;
-	syncing = true;
+/**
+ * Single serialized bidirectional sync.
+ * POST is itself a two-way merge on the server (merge(server, client) → merged),
+ * so one request covers both push and pull. The server response is re-merged with
+ * the *current* local data so edits made during the request are never lost, and the
+ * dirty flag is only cleared when no new mutation happened mid-flight.
+ */
+async function sync(): Promise<void> {
+	if (!canSync() || inFlight) {
+		if (inFlight) queued = true;
+		return;
+	}
+	inFlight = true;
 
 	try {
+		const before = mutationVersion;
+
 		const res = await fetch('/api/sync', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(getLocalData())
 		});
 
-		if (!res.ok) return;
+		if (res.ok) {
+			const { merged } = await res.json();
+			const current = getLocalData();
+			const next = mergeUserData(merged, current);
 
-		const { merged } = await res.json();
-		saveLocalData(merged);
-		dirty = false;
-		console.log('[sync] pushed');
-	} catch (e) {
-		console.warn('[sync:push] error:', (e as Error).message);
-	} finally {
-		syncing = false;
-	}
-}
+			if (JSON.stringify(next) !== JSON.stringify(current)) {
+				saveLocalData(next);
+				onPull?.();
+			}
 
-/** Pull latest from server (read-only). Fires every 5s. */
-async function pull(): Promise<void> {
-	if (!canSync()) return;
-	syncing = true;
-
-	try {
-		const res = await fetch('/api/sync');
-		if (!res.ok) return;
-
-		const { exists, data } = await res.json() as { exists: boolean; data?: UserData };
-		if (!exists || !data) return;
-
-		const local = getLocalData();
-		if (!hasChanges(data, local)) return;
-
-		saveLocalData(data);
-		onPull?.();
-		console.log('[sync] pulled');
+			// Only consider local clean if nothing changed while the request was in flight.
+			if (mutationVersion === before) dirty = false;
+		}
 	} catch {
-		// silent — pull is best-effort
+		/* offline / network error — keep dirty, retry on next trigger */
 	} finally {
-		syncing = false;
+		inFlight = false;
+		if (queued || dirty) {
+			queued = false;
+			void sync();
+		}
 	}
 }

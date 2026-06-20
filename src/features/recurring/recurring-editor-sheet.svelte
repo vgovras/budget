@@ -36,14 +36,14 @@
 			<button
 				class="sheet-tab"
 				class:active={vm.type === 'expense'}
-				onclick={() => (vm.type = 'expense')}
+				onclick={() => vm.setType('expense')}
 			>
 				{m.tab_expense()}
 			</button>
 			<button
 				class="sheet-tab income-tab"
 				class:active={vm.type === 'income'}
-				onclick={() => (vm.type = 'income')}
+				onclick={() => vm.setType('income')}
 			>
 				{m.tab_income()}
 			</button>
@@ -54,8 +54,8 @@
 		</div>
 
 		<CategoryPicker
-			selected={vm.icon}
-			onSelect={(icon) => vm.selectCategory(icon)}
+			selected={vm.categoryId}
+			onSelect={(id) => vm.selectCategory(id)}
 			type={vm.type === 'income' ? 'income' : 'expense'}
 		/>
 
