@@ -111,9 +111,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(150, 90, 255, 0.1);
-		border: 1px solid rgba(150, 90, 255, 0.2);
-		color: rgba(150, 90, 255, 0.7);
+		/* on-palette "fun" purple (#966edc), .12/.25 category convention */
+		background: rgba(150, 110, 220, 0.12);
+		border: 1px solid rgba(150, 110, 220, 0.25);
+		color: #966edc;
 		flex-shrink: 0;
 	}
 

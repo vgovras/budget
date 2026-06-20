@@ -177,6 +177,7 @@
 	.hero-balance {
 		font-size: 2.75rem; font-weight: 300; color: var(--text-hi);
 		letter-spacing: -2px; line-height: 1; margin-bottom: 0.25rem;
+		font-variant-numeric: tabular-nums;
 	}
 	.hero-balance .curr { font-size: 1.375rem; opacity: 0.5; vertical-align: super; letter-spacing: 0; }
 	.hero-sub {
@@ -184,7 +185,7 @@
 		display: flex; align-items: center; gap: 0.375rem;
 	}
 	.sub-item { letter-spacing: 0.2px; }
-	.sub-item.spent { color: rgba(255,110,110,0.7); }
+	.sub-item.spent { color: var(--danger); }
 	.sub-dot {
 		width: 3px; height: 3px; border-radius: 50%;
 		background: var(--surface-16);
@@ -222,6 +223,8 @@
 	}
 	.stat-row::-webkit-scrollbar { display: none; }
 	:global(.stat-card) { flex: 1 0 30%; padding: 0.75rem; }
+	/* Spec: stat cards sit on the elevated surface (#222226) at r-sm (14) */
+	:global(.stat-row .stat-card) { background: var(--card-elevated); border-radius: var(--r-sm); }
 	.stat-icon-row { display: flex; align-items: center; gap: 0.4375rem; margin-bottom: 0.5rem; }
 	.s-icon {
 		width: 1.75rem; height: 1.75rem; border-radius: 0.5625rem;
@@ -233,7 +236,7 @@
 		font-size: 0.625rem; letter-spacing: 0.8px; text-transform: uppercase;
 		color: var(--text-muted); font-weight: 500;
 	}
-	.stat-val { font-size: 1.0625rem; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px; }
+	.stat-val { font-size: 1.0625rem; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
 	.stat-val .curr { font-size: 0.75rem; font-weight: 400; opacity: 0.5; }
 	.days-unit { font-size: 0.75rem; font-weight: 400; opacity: 0.45; }
 	.stat-sub { font-size: 0.6875rem; color: var(--text-muted); font-weight: 400; margin-top: 0.125rem; }
@@ -266,11 +269,11 @@
 	:global(.tips-card) { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.875rem 1rem; }
 	.tip-dot {
 		width: 6px; height: 6px; border-radius: 50%;
-		background: rgba(90,140,255,0.65); flex-shrink: 0; margin-top: 3px;
+		background: var(--accent); flex-shrink: 0; margin-top: 3px;
 	}
 	.tip-label {
-		font-size: 0.625rem; letter-spacing: 1.2px; text-transform: uppercase;
-		color: rgba(90,140,255,0.65); font-weight: 500; margin-bottom: 0.25rem;
+		font-size: 0.625rem; letter-spacing: 1.3px; text-transform: uppercase;
+		color: var(--accent); font-weight: 500; margin-bottom: 0.25rem;
 	}
 	.tip-text { font-size: 0.75rem; color: var(--text-secondary); font-weight: 400; line-height: 1.5; }
 </style>

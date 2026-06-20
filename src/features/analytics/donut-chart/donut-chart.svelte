@@ -77,7 +77,7 @@
 
 <style>
 	.donut-svg {
-		filter: drop-shadow(0 0 6px rgba(80, 130, 255, 0.08));
+		filter: drop-shadow(0 0 6px var(--accent-glow));
 	}
 	.donut-bar {
 		height: 2px;

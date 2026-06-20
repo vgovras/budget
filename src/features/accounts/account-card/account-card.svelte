@@ -100,6 +100,7 @@
 		letter-spacing: -2px;
 		line-height: 1;
 		color: var(--text-hi);
+		font-variant-numeric: tabular-nums;
 	}
 
 	.cur {
@@ -124,6 +125,7 @@
 	}
 	.budget-nums {
 		flex: 1;
+		font-variant-numeric: tabular-nums;
 	}
 	.budget-pct {
 		font-weight: 500;
@@ -143,7 +145,7 @@
 		border-radius: 99px;
 		position: relative;
 		transition: width 0.8s var(--ease-out);
-		background: rgba(80, 130, 255, 0.7);
+		background: var(--accent);
 	}
 	.prog-fill::after {
 		content: '';
@@ -154,7 +156,7 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background: rgba(100, 150, 255, 0.8);
-		box-shadow: 0 0 6px rgba(100, 150, 255, 0.6);
+		background: var(--accent);
+		box-shadow: 0 0 6px var(--accent-glow);
 	}
 </style>

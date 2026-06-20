@@ -153,18 +153,18 @@
 		font-weight: 600;
 	}
 	.day.in-range {
-		background: rgba(80, 130, 255, 0.08);
+		background: var(--accent-bg);
 		border-radius: 0;
 	}
 	.day.range-start {
-		background: rgba(80, 130, 255, 0.2);
-		color: rgba(80, 130, 255, 1);
+		background: var(--accent-hover);
+		color: var(--accent);
 		font-weight: 600;
 		border-radius: 8px 0 0 8px;
 	}
 	.day.range-end {
-		background: rgba(80, 130, 255, 0.2);
-		color: rgba(80, 130, 255, 1);
+		background: var(--accent-hover);
+		color: var(--accent);
 		font-weight: 600;
 		border-radius: 0 8px 8px 0;
 	}

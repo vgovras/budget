@@ -228,8 +228,8 @@
 		position: relative;
 	}
 	.filter-toggle.active {
-		border-color: rgba(80, 130, 255, 0.25);
-		color: rgba(80, 130, 255, 0.7);
+		border-color: var(--accent-border);
+		color: var(--accent);
 	}
 	.filter-dot {
 		position: absolute;
@@ -238,7 +238,7 @@
 		width: 6px;
 		height: 6px;
 		border-radius: 50%;
-		background: var(--danger, #ff5555);
+		background: var(--danger);
 	}
 
 	/* Filter panel */
@@ -306,9 +306,9 @@
 		font-family: var(--font);
 	}
 	.filter-pill.active {
-		border-color: rgba(80, 130, 255, 0.25);
-		background: rgba(80, 130, 255, 0.08);
-		color: rgba(80, 130, 255, 0.7);
+		border-color: var(--accent-border);
+		background: var(--accent-bg);
+		color: var(--accent);
 	}
 
 	/* Chart card */

@@ -172,9 +172,9 @@
 		color: var(--text-mid);
 	}
 	.acc-icon.primary {
-		background: rgba(80, 200, 120, 0.12);
-		border-color: rgba(80, 200, 120, 0.25);
-		color: rgba(80, 200, 120, 0.8);
+		background: var(--success-bg);
+		border-color: var(--success-border);
+		color: var(--success);
 	}
 	.acc-info {
 		flex: 1;
@@ -215,7 +215,7 @@
 	.acc-prog-fill {
 		height: 100%;
 		border-radius: 99px;
-		background: rgba(80, 130, 255, 0.5);
+		background: var(--accent-dim);
 		transition: width 0.8s var(--ease-out);
 	}
 
