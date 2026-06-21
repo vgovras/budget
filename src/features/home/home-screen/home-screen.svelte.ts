@@ -37,6 +37,11 @@ export class HomeScreenViewModel {
 		)
 	);
 
+	// Усі транзакції основного рахунку (витрати + надходження) — для стрічки історії.
+	readonly accountTransactions = $derived(
+		expensesVM.expenses.filter((e: Expense) => e.accountId === accountsVM.primary?.id)
+	);
+
 	readonly #rawSpentAmount = $derived(
 		this.accountExpenses.reduce((s: number, e: Expense) => s + e.amount, 0)
 	);
@@ -144,7 +149,7 @@ export class HomeScreenViewModel {
 		const now = new Date();
 		now.setHours(0, 0, 0, 0);
 		const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-		const filtered = this.accountExpenses.filter((e) => e.date && new Date(e.date) >= weekAgo);
+		const filtered = this.accountTransactions.filter((e) => e.date && new Date(e.date) >= weekAgo);
 		return groupByDate(filtered);
 	});
 

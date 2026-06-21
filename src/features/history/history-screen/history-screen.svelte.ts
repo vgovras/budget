@@ -4,6 +4,7 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
+import { effectiveAmount } from '$lib/utils/budget.js';
 
 export type TransactionType = 'all' | 'income' | 'expense';
 export type SortMode = 'date' | 'amount-desc' | 'amount-asc';
@@ -92,7 +93,7 @@ export class HistoryScreenViewModel {
 	readonly total = $derived(
 		this.#toDisplay(
 			this.filtered.reduce((s: number, e: Expense) => {
-				return e.type === 'income' ? s - e.amount : s + e.amount;
+				return e.type === 'income' ? s - effectiveAmount(e) : s + e.amount;
 			}, 0)
 		)
 	);
@@ -100,7 +101,7 @@ export class HistoryScreenViewModel {
 	// --- Donut chart (based on filtered, shows all types) ---
 
 	readonly donutTotal = $derived(
-		this.#toDisplay(this.filtered.reduce((s, e) => s + e.amount, 0))
+		this.#toDisplay(this.filtered.reduce((s, e) => s + effectiveAmount(e), 0))
 	);
 
 	readonly byCategory = $derived(
@@ -111,7 +112,7 @@ export class HistoryScreenViewModel {
 						const cat = categoriesVM.getByIcon(e.icon);
 						acc[e.icon] = { icon: e.icon, label: cat?.label ?? e.label, sum: 0, color: cat?.border ?? '' };
 					}
-					acc[e.icon].sum += this.#toDisplay(e.amount);
+					acc[e.icon].sum += this.#toDisplay(effectiveAmount(e));
 					return acc;
 				},
 				{}

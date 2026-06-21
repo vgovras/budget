@@ -8,6 +8,15 @@ export function isSpending(e: Expense): boolean {
 	return e.type === 'expense';
 }
 
+/**
+ * Сума транзакції для статистики: для надходжень з комісією — частина після комісії
+ * (netAmount), інакше — повна сума.
+ */
+export function effectiveAmount(e: Expense): number {
+	if (e.type === 'income' && e.netAmount != null) return e.netAmount;
+	return e.amount;
+}
+
 export function getAccStats(expenses: Expense[], accId: string): number {
 	let spent = 0;
 	for (const e of expenses) {
