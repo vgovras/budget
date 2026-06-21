@@ -222,12 +222,13 @@
 
 	/* Stat cards */
 	.stat-row {
-		display: flex; gap: 0.5rem;
+		display: flex; gap: 0.4375rem;
 		overflow-x: auto; scrollbar-width: none;
 		min-height: 7.5rem;
 	}
 	.stat-row::-webkit-scrollbar { display: none; }
-	:global(.stat-card) { flex: 1 0 30%; padding: 0.75rem; }
+	/* Рівні колонки, що стискаються під ширину екрана (Fold/вузькі екрани) */
+	:global(.stat-card) { flex: 1 1 0; min-width: 0; padding: 0.625rem 0.5rem; }
 	/* Spec: stat cards sit on the elevated surface (#222226) at r-sm (14) */
 	:global(.stat-row .stat-card) { background: var(--card-elevated); border-radius: var(--r-sm); }
 	.stat-icon-row { display: flex; align-items: center; gap: 0.4375rem; margin-bottom: 0.5rem; }
@@ -241,7 +242,7 @@
 		font-size: 0.625rem; letter-spacing: 0.8px; text-transform: uppercase;
 		color: var(--text-muted); font-weight: 500;
 	}
-	.stat-val { font-size: 1.0625rem; font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px; font-variant-numeric: tabular-nums; }
+	.stat-val { font-size: clamp(0.875rem, 4.1vw, 1.0625rem); font-weight: 500; color: var(--text-hi); letter-spacing: -0.3px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 	.stat-val .curr { font-size: 0.75rem; font-weight: 400; opacity: 0.5; }
 	.days-unit { font-size: 0.75rem; font-weight: 400; opacity: 0.45; }
 	.stat-sub { font-size: 0.6875rem; color: var(--text-muted); font-weight: 400; margin-top: 0.125rem; }
