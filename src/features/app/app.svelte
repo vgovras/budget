@@ -51,20 +51,9 @@
 	const subEditorVM = new SubscriptionEditorSheetViewModel();
 	const confirmVM = new ConfirmDialogViewModel();
 
-	// Sync subscriptions total → settings
+	// Sync subscriptions total (у базовій валюті) → settings, для розрахунку бюджету
 	$effect(() => {
-		settingsVM.setSubscriptionsTotal(subscriptionsVM.monthlyTotal);
-	});
-
-	// Sync account budgets when settings budget changes
-	$effect(() => {
-		const budget = settingsVM.budget;
-		if (!settingsVM.loaded || budget <= 0) return;
-		for (const acc of accountsVM.accounts) {
-			if (acc.budget !== budget) {
-				accountsVM.update(acc.id, { budget });
-			}
-		}
+		settingsVM.setSubscriptionsTotal(subscriptionsVM.monthlyTotalBase);
 	});
 </script>
 

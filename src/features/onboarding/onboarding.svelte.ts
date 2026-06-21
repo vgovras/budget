@@ -4,7 +4,6 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
 import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
-import { prorateForCurrentMonth } from '$lib/utils/budget.js';
 import { saveLocalData } from '$lib/utils/store.js';
 import { syncNow, startSync } from '$lib/utils/sync.js';
 import { authClient } from '$lib/auth-client.js';
@@ -125,9 +124,11 @@ export class OnboardingViewModel {
 
 		recurringVM.syncSalary(sal, this.payday, 'pending');
 
+		// Баланс при реєстрації = 0. Зарплату не нараховуємо автоматично —
+		// користувач сам заповнює реальні баланси своїх рахунків.
 		accountsVM.add({
 			name: m.default_account_name(),
-			balance: sal,
+			balance: 0,
 			currencyCode: this.currency,
 			isPrimary: true
 		});

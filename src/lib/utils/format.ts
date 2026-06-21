@@ -39,6 +39,25 @@ export function fmtMoney(amount: number, currency: string): string {
 	return `${currency} ${fmt(amount)}`;
 }
 
+/** Compact money: 1.1M, 81.4k, 999 — strips trailing .0 */
+export function fmtCompact(amount: number, currency = ''): string {
+	const sign = amount < 0 ? '-' : '';
+	const abs = Math.abs(amount);
+	let value: string;
+	let suffix = '';
+	if (abs >= 1_000_000) {
+		value = (abs / 1_000_000).toFixed(1);
+		suffix = 'M';
+	} else if (abs >= 1000) {
+		value = (abs / 1000).toFixed(1);
+		suffix = 'k';
+	} else {
+		value = String(Math.round(abs));
+	}
+	value = value.replace(/\.0$/, '');
+	return `${currency}${sign}${value}${suffix}`;
+}
+
 export function nowISO(): string {
 	return new Date().toISOString();
 }

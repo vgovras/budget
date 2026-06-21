@@ -26,6 +26,7 @@
 	</div>
 
 	{#each subscriptionsVM.items as sub, i (sub.id)}
+		{@const showConverted = settingsVM.fiatViewEnabled && sub.currency !== settingsVM.fiatCurrency}
 		{#if i > 0}<div class="sub-divider"></div>{/if}
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -44,7 +45,12 @@
 				</div>
 			</div>
 			<div class="sub-amount">
-				{sub.currency} {fmt(sub.amount)}
+				{#if showConverted}
+					<div class="sub-amount-main">{displayCurrency} {fmt(settingsVM.toDisplay(sub.amount, sub.currency))}</div>
+					<div class="sub-amount-native">{sub.currency} {fmt(sub.amount)}</div>
+				{:else}
+					<div class="sub-amount-main">{sub.currency} {fmt(sub.amount)}</div>
+				{/if}
 			</div>
 		</div>
 	{/each}
@@ -136,10 +142,21 @@
 	}
 
 	.sub-amount {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 1px;
+		flex-shrink: 0;
+	}
+	.sub-amount-main {
 		font-size: 0.875rem;
 		font-weight: 500;
 		color: var(--text-primary);
-		flex-shrink: 0;
+	}
+	.sub-amount-native {
+		font-size: 0.6875rem;
+		font-weight: 400;
+		color: var(--text-lo);
 	}
 
 	.sub-divider {

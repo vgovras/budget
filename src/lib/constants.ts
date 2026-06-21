@@ -100,7 +100,9 @@ export const CAT_ICON_PRESETS = [
 	'home', 'list', 'bar-chart', 'settings', 'arrow-left-right'
 ];
 
-export const SUBSCRIPTION_ICON_PRESETS: { icon: string; label: string }[] = [
+// `labelKey` — для загальних (не брендових) пресетів, що локалізуються.
+// Бренди (Netflix, Spotify, …) лишаються як є.
+export const SUBSCRIPTION_ICON_PRESETS: { icon: string; label: string; labelKey?: string }[] = [
 	{ icon: 'tv', label: 'Netflix' },
 	{ icon: 'music', label: 'Spotify' },
 	{ icon: 'play-circle', label: 'YouTube' },
@@ -112,30 +114,30 @@ export const SUBSCRIPTION_ICON_PRESETS: { icon: string; label: string }[] = [
 	{ icon: 'figma', label: 'Figma' },
 	{ icon: 'bot', label: 'ChatGPT' },
 	{ icon: 'shield', label: 'VPN' },
-	{ icon: 'hard-drive', label: 'Cloud Storage' },
-	{ icon: 'dumbbell', label: 'Gym' },
-	{ icon: 'newspaper', label: 'News' },
-	{ icon: 'gamepad-2', label: 'Gaming' },
+	{ icon: 'hard-drive', label: 'Cloud Storage', labelKey: 'sub_preset_cloud_storage' },
+	{ icon: 'dumbbell', label: 'Gym', labelKey: 'sub_preset_gym' },
+	{ icon: 'newspaper', label: 'News', labelKey: 'sub_preset_news' },
+	{ icon: 'gamepad-2', label: 'Gaming', labelKey: 'sub_preset_gaming' },
 	{ icon: 'palette', label: 'Adobe' },
 	{ icon: 'file-spreadsheet', label: 'Microsoft 365' },
 	{ icon: 'book-open', label: 'Notion' },
-	{ icon: 'phone', label: 'Mobile' },
-	{ icon: 'wifi', label: 'Internet' },
-	{ icon: 'house', label: 'Rent' },
-	{ icon: 'zap', label: 'Electricity' },
-	{ icon: 'droplets', label: 'Water' },
-	{ icon: 'flame', label: 'Gas' },
-	{ icon: 'car', label: 'Car Insurance' },
-	{ icon: 'stethoscope', label: 'Health Insurance' },
+	{ icon: 'phone', label: 'Mobile', labelKey: 'sub_preset_mobile' },
+	{ icon: 'wifi', label: 'Internet', labelKey: 'sub_preset_internet' },
+	{ icon: 'house', label: 'Rent', labelKey: 'sub_preset_rent' },
+	{ icon: 'zap', label: 'Electricity', labelKey: 'sub_preset_electricity' },
+	{ icon: 'droplets', label: 'Water', labelKey: 'sub_preset_water' },
+	{ icon: 'flame', label: 'Gas', labelKey: 'sub_preset_gas' },
+	{ icon: 'car', label: 'Car Insurance', labelKey: 'sub_preset_car_insurance' },
+	{ icon: 'stethoscope', label: 'Health Insurance', labelKey: 'sub_preset_health_insurance' },
 	{ icon: 'monitor', label: 'Apple TV' },
 	{ icon: 'headphones', label: 'Apple Music' },
-	{ icon: 'mail', label: 'Email' },
+	{ icon: 'mail', label: 'Email', labelKey: 'sub_preset_email' },
 	{ icon: 'message-circle', label: 'Messenger' },
-	{ icon: 'map-pin', label: 'Maps' },
-	{ icon: 'podcast', label: 'Podcast' },
-	{ icon: 'key', label: 'Password Manager' },
+	{ icon: 'map-pin', label: 'Maps', labelKey: 'sub_preset_maps' },
+	{ icon: 'podcast', label: 'Podcast', labelKey: 'sub_preset_podcast' },
+	{ icon: 'key', label: 'Password Manager', labelKey: 'sub_preset_password_manager' },
 	{ icon: 'brush', label: 'Canva' },
-	{ icon: 'infinity', label: 'Other' },
+	{ icon: 'infinity', label: 'Other', labelKey: 'sub_preset_other' },
 ];
 
 export const CURRENCIES = ['₴', '$', '€', '£', 'zł'] as const;

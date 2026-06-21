@@ -7,10 +7,20 @@ export class AccountsViewModel {
 	#repo = new AccountsRepository();
 
 	accounts = $state<Account[]>([]);
-	activeIdx = $state(0);
+	/** null → fall back to the primary account; set by an explicit user selection. */
+	#selectedIdx = $state<number | null>(null);
+
+	readonly primary = $derived(this.accounts.find((a) => a.isPrimary) ?? this.accounts[0]);
+
+	readonly activeIdx = $derived.by(() => {
+		if (this.#selectedIdx !== null && this.#selectedIdx < this.accounts.length) {
+			return this.#selectedIdx;
+		}
+		const idx = this.accounts.findIndex((a) => a.isPrimary);
+		return idx >= 0 ? idx : 0;
+	});
 
 	readonly active = $derived(this.accounts[this.activeIdx]);
-	readonly primary = $derived(this.accounts.find((a) => a.isPrimary) ?? this.accounts[0]);
 
 	constructor() {
 		this.rehydrate();
@@ -21,7 +31,7 @@ export class AccountsViewModel {
 	}
 
 	setActive(idx: number) {
-		this.activeIdx = idx;
+		this.#selectedIdx = idx;
 	}
 
 	add(data: Omit<Account, 'id' | 'updatedAt'>) {
@@ -53,8 +63,8 @@ export class AccountsViewModel {
 
 	remove(id: string) {
 		this.accounts = this.accounts.filter((a) => a.id !== id);
-		if (this.activeIdx >= this.accounts.length) {
-			this.activeIdx = Math.max(0, this.accounts.length - 1);
+		if (this.#selectedIdx !== null && this.#selectedIdx >= this.accounts.length) {
+			this.#selectedIdx = null;
 		}
 		this.#repo.softDelete(id);
 		markDirty();

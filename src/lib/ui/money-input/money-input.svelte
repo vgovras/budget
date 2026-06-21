@@ -18,11 +18,16 @@
 
 	let inputEl: HTMLInputElement;
 	let editing = $state(false);
+	// Сирий рядок під час редагування — щоб роздільник дробу не «з'їдався».
+	let editValue = $state('');
 
-	const formatted = $derived(value ? value.toLocaleString(locale()) : '');
+	const formatted = $derived(
+		value != null ? value.toLocaleString(locale(), { maximumFractionDigits: 2 }) : ''
+	);
 
 	function onFocus() {
 		editing = true;
+		editValue = value != null ? String(value) : '';
 	}
 
 	function onBlur() {
@@ -31,8 +36,16 @@
 
 	function onInput(e: Event) {
 		const input = e.target as HTMLInputElement;
-		const raw = input.value.replace(/[^\d]/g, '');
-		value = raw ? Number(raw) : null;
+		// Цифри + один роздільник дробу (',' або '.'), максимум 2 знаки після коми.
+		let raw = input.value.replace(/[^\d.,]/g, '').replace(/,/g, '.');
+		const dot = raw.indexOf('.');
+		if (dot !== -1) {
+			const intPart = raw.slice(0, dot);
+			const decPart = raw.slice(dot + 1).replace(/\./g, '').slice(0, 2);
+			raw = `${intPart}.${decPart}`;
+		}
+		editValue = raw;
+		value = raw === '' || raw === '.' ? null : Number(raw);
 	}
 
 	function focusInput() {
@@ -61,9 +74,9 @@
 		bind:this={inputEl}
 		class="flex-1 font-mono tracking-tight w-full caret-accent text-text-hi bg-transparent {sizeClasses[size].input}"
 		type="text"
-		inputmode="numeric"
+		inputmode="decimal"
 		{placeholder}
-		value={editing ? (value ?? '') : formatted}
+		value={editing ? editValue : formatted}
 		oninput={onInput}
 		onfocus={onFocus}
 		onblur={onBlur}

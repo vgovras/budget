@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { buildSlices, DONUT_R, DONUT_CX, DONUT_CY, DONUT_CIRC } from './donut-chart.js';
+	import { fmtCompact } from '$lib/utils/format.js';
 	import * as m from '$lib/paraglide/messages.js';
 
 	let {
@@ -9,7 +10,7 @@
 	}: { byCategory: { icon: string; label: string; sum: number }[]; total: number; currency?: string } = $props();
 
 	const slices = $derived(buildSlices(byCategory, total));
-	const totalLabel = $derived(total >= 1000 ? `${currency}${(total / 1000).toFixed(1)}k` : `${currency}${total}`);
+	const totalLabel = $derived(fmtCompact(total, currency));
 </script>
 
 <div class="flex items-center gap-4">

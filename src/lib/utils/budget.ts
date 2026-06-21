@@ -1,5 +1,6 @@
-import type { Expense, Account } from '$lib/types.js';
+import type { Expense } from '$lib/types.js';
 import { getDateKey, locale } from './format.js';
+import { convert } from './currency.js';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -15,46 +16,39 @@ export function getAccStats(expenses: Expense[], accId: string): number {
 	return spent;
 }
 
-/** Effective start = max(periodStart, min(accountCreated, earliestExpense)) */
-export function getEffectiveStart(
-	periodStart: Date,
-	accountCreatedAt?: string,
-	earliestExpenseDate?: string
-): Date {
-	let earliest = accountCreatedAt ? new Date(accountCreatedAt) : periodStart;
-	if (earliestExpenseDate) {
-		const expDate = new Date(earliestExpenseDate);
-		if (expDate < earliest) earliest = expDate;
-	}
-	earliest.setHours(0, 0, 0, 0);
-	return earliest > periodStart ? earliest : periodStart;
-}
-
-/** Prorate budget if effectiveStart is after periodStart. */
-export function getEffectiveBudget(
-	totalBudget: number,
-	periodStart: Date,
-	periodEnd: Date,
-	effectiveStart: Date
-): number {
-	if (effectiveStart <= periodStart) return totalBudget;
-	const totalDays = Math.max(1, Math.round((periodEnd.getTime() - periodStart.getTime()) / MS_PER_DAY));
-	const activeDays = Math.max(1, Math.round((periodEnd.getTime() - effectiveStart.getTime()) / MS_PER_DAY));
-	return Math.round(totalBudget * activeDays / totalDays);
-}
-
-/** Daily remaining with rollover. Can be negative. */
-export function calcDailyRemaining(
-	effectiveBudget: number,
-	totalSpent: number,
-	effectiveStart: Date,
-	periodEnd: Date
-): number {
+/** Whole days from today (00:00) until the next payday. Always >= 1. */
+export function daysUntilPayday(nextPayday: Date): number {
 	const now = new Date();
 	now.setHours(0, 0, 0, 0);
-	const totalDays = Math.max(1, Math.round((periodEnd.getTime() - effectiveStart.getTime()) / MS_PER_DAY));
-	const daysPassed = Math.max(1, Math.floor((now.getTime() - effectiveStart.getTime()) / MS_PER_DAY) + 1);
-	return Math.floor((effectiveBudget / totalDays) * daysPassed - totalSpent);
+	const end = new Date(nextPayday);
+	end.setHours(0, 0, 0, 0);
+	return Math.max(1, Math.round((end.getTime() - now.getTime()) / MS_PER_DAY));
+}
+
+/** "Stupid" дайлі ліміт: available money spread evenly across the days left. */
+export function dailyAllowance(available: number, daysLeft: number): number {
+	return Math.floor(available / Math.max(1, daysLeft));
+}
+
+export interface UpcomingBill {
+	amount: number;
+	currency: string;
+	nextDate?: string;
+}
+
+/** Sum of bills whose nextDate falls in [from, to), converted into `toCurrency`. */
+export function sumBillsDueBefore(
+	bills: UpcomingBill[],
+	from: Date,
+	to: Date,
+	toCurrency: string
+): number {
+	return bills.reduce((sum, b) => {
+		if (!b.nextDate) return sum;
+		const due = new Date(b.nextDate);
+		if (due < from || due >= to) return sum;
+		return sum + convert(b.amount, b.currency, toCurrency);
+	}, 0);
 }
 
 export function getWeeklyAmounts(expenses: Expense[]): number[] {
@@ -81,19 +75,6 @@ export function getWeekDayLabels(): string[] {
 		d.setDate(d.getDate() - (6 - i));
 		return d.toLocaleDateString(locale(), { weekday: 'short' }).slice(0, 2);
 	});
-}
-
-export function prorateForCurrentMonth(budget: number): {
-	proratedBudget: number;
-	daysLeft: number;
-} {
-	const now = new Date();
-	const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-	const daysLeft = daysInMonth - now.getDate() + 1;
-	return {
-		proratedBudget: Math.round(budget * (daysLeft / daysInMonth)),
-		daysLeft
-	};
 }
 
 export function checkPayday(
@@ -126,15 +107,6 @@ export function checkPayday(
 	}
 
 	return { shouldCredit: true, newPaydayDate: paydayThisMonth.toISOString() };
-}
-
-export function getPeriodStart(nextPayday: Date, payday: number): Date {
-	const start = new Date(nextPayday);
-	start.setHours(0, 0, 0, 0);
-	start.setMonth(start.getMonth() - 1);
-	const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
-	start.setDate(Math.min(payday, daysInMonth));
-	return start;
 }
 
 export function getTodaySpent(expenses: Expense[], accId: string): number {

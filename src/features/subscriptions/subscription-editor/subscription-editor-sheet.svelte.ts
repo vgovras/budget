@@ -3,6 +3,27 @@ import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { subscriptionsVM } from '../subscriptions.svelte.js';
 import { SUBSCRIPTION_ICON_PRESETS, CURRENCIES } from '$lib/constants.js';
+import * as m from '$lib/paraglide/messages.js';
+
+const PRESET_LABELS: Record<string, () => string> = {
+	sub_preset_cloud_storage: m.sub_preset_cloud_storage,
+	sub_preset_gym: m.sub_preset_gym,
+	sub_preset_news: m.sub_preset_news,
+	sub_preset_gaming: m.sub_preset_gaming,
+	sub_preset_mobile: m.sub_preset_mobile,
+	sub_preset_internet: m.sub_preset_internet,
+	sub_preset_rent: m.sub_preset_rent,
+	sub_preset_electricity: m.sub_preset_electricity,
+	sub_preset_water: m.sub_preset_water,
+	sub_preset_gas: m.sub_preset_gas,
+	sub_preset_car_insurance: m.sub_preset_car_insurance,
+	sub_preset_health_insurance: m.sub_preset_health_insurance,
+	sub_preset_email: m.sub_preset_email,
+	sub_preset_maps: m.sub_preset_maps,
+	sub_preset_podcast: m.sub_preset_podcast,
+	sub_preset_password_manager: m.sub_preset_password_manager,
+	sub_preset_other: m.sub_preset_other
+};
 
 function computeNextDate(dayOfMonth: number, cycle: Subscription['cycle']): string {
 	const now = new Date();
@@ -28,7 +49,12 @@ export class SubscriptionEditorSheetViewModel {
 	cycle = $state<Subscription['cycle']>('monthly');
 	dayOfMonth = $state(1);
 
-	readonly presets = SUBSCRIPTION_ICON_PRESETS;
+	readonly presets = $derived(
+		SUBSCRIPTION_ICON_PRESETS.map((p) => ({
+			icon: p.icon,
+			label: p.labelKey ? (PRESET_LABELS[p.labelKey]?.() ?? p.label) : p.label
+		}))
+	);
 	readonly currencies = CURRENCIES;
 
 	readonly isEditing = $derived(this.editingId !== null);

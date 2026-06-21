@@ -3,8 +3,10 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getTodaySpent, getWeeklyAmounts, getPeriodStart, getEffectiveStart, getEffectiveBudget, calcDailyRemaining } from '$lib/utils/budget.js';
+import { getTodaySpent, getWeeklyAmounts, daysUntilPayday, dailyAllowance, sumBillsDueBefore, type UpcomingBill } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
+import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
+import { convert } from '$lib/utils/currency.js';
 import { getRecentUnique } from '$features/add-expense/quick-chips/quick-chips.js';
 import { groupByDate, locale } from '$lib/utils/format.js';
 import * as m from '$lib/paraglide/messages.js';
@@ -19,7 +21,8 @@ export class HomeScreenViewModel {
 		return m.home_greeting_evening();
 	});
 
-	readonly nativeCurrency = $derived(accountsVM.active?.currencyCode ?? settingsVM.currency);
+	// Home-дашборд завжди про основний (primary) рахунок — «мої гроші до кінця місяця».
+	readonly nativeCurrency = $derived(accountsVM.primary?.currencyCode ?? settingsVM.currency);
 	readonly currency = $derived(
 		settingsVM.fiatViewEnabled ? settingsVM.fiatCurrency : this.nativeCurrency
 	);
@@ -30,7 +33,7 @@ export class HomeScreenViewModel {
 
 	readonly accountExpenses = $derived(
 		expensesVM.expenses.filter(
-			(e: Expense) => e.accountId === accountsVM.active?.id && e.type === 'expense'
+			(e: Expense) => e.accountId === accountsVM.primary?.id && e.type === 'expense'
 		)
 	);
 
@@ -40,37 +43,7 @@ export class HomeScreenViewModel {
 
 	readonly spentAmount = $derived(this.#toDisplay(this.#rawSpentAmount));
 
-	readonly totalBudget = $derived(accountsVM.active?.budget ?? settingsVM.budget);
-
-	readonly accountBalance = $derived(this.#toDisplay(accountsVM.active?.balance ?? 0));
-
-	readonly #earliestExpenseDate = $derived(
-		this.accountExpenses.length > 0
-			? this.accountExpenses.reduce((min, e) => e.date < min ? e.date : min, this.accountExpenses[0].date)
-			: undefined
-	);
-
-	readonly #effectiveStart = $derived(
-		getEffectiveStart(this.#periodStart, accountsVM.active?.createdAt, this.#earliestExpenseDate)
-	);
-
-	readonly #effectiveBudget = $derived(
-		getEffectiveBudget(this.totalBudget, this.#periodStart, this.#nextPayday, this.#effectiveStart)
-	);
-
-	readonly remainingBudget = $derived(
-		this.#toDisplay(this.#effectiveBudget - this.#rawSpentAmount)
-	);
-
-	readonly spentPercent = $derived(
-		this.#effectiveBudget > 0 ? Math.round((this.#rawSpentAmount / this.#effectiveBudget) * 100) : 0
-	);
-
-	readonly changePercent = $derived(
-		this.#effectiveBudget > 0
-			? `–${((this.#rawSpentAmount / this.#effectiveBudget) * 100).toFixed(1)}%`
-			: '0%'
-	);
+	readonly accountBalance = $derived(this.#toDisplay(accountsVM.primary?.balance ?? 0));
 
 	readonly monthLabel = $derived(
 		new Date().toLocaleDateString(locale(), { month: 'long', year: 'numeric' })
@@ -95,27 +68,52 @@ export class HomeScreenViewModel {
 		return d.toLocaleDateString(locale(), { day: 'numeric', month: 'long' });
 	});
 
-	readonly #periodStart = $derived(getPeriodStart(this.#nextPayday, settingsVM.payday));
+	readonly daysLeft = $derived(daysUntilPayday(this.#nextPayday));
 
-	readonly #totalPeriodDays = $derived.by(() => {
-		const msPerDay = 1000 * 60 * 60 * 24;
-		return Math.max(1, Math.round((this.#nextPayday.getTime() - this.#periodStart.getTime()) / msPerDay));
+	// Реальні майбутні списання (підписки + regular-витрати) до зарплати — їх віднімаємо.
+	readonly #reserve = $derived.by(() => {
+		const acc = accountsVM.primary;
+		if (!acc) return 0;
+		const now = new Date();
+		now.setHours(0, 0, 0, 0);
+		const bills: UpcomingBill[] = [
+			...subscriptionsVM.items
+				.filter((s) => !s.deleted && s.status === 'active' && s.accountId === acc.id)
+				.map((s) => ({ amount: s.amount, currency: s.currency, nextDate: s.nextDate })),
+			...recurringVM.items
+				.filter((r) => !r.deleted && r.enabled && r.type === 'expense' && r.accountId === acc.id)
+				.map((r) => ({ amount: r.amount, currency: acc.currencyCode, nextDate: r.nextDate }))
+		];
+		return sumBillsDueBefore(bills, now, this.#nextPayday, acc.currencyCode);
 	});
 
+	readonly #availableNative = $derived(
+		Math.max(0, (accountsVM.primary?.balance ?? 0) - this.#reserve)
+	);
+
+	// Головне число: скільки реально можу витрачати на день (заощадження НЕ враховуються).
 	readonly dailyBudget = $derived(
-		Math.floor(this.#toDisplay(this.totalBudget) / this.#totalPeriodDays)
+		this.#toDisplay(dailyAllowance(this.#availableNative, this.daysLeft))
 	);
 
 	readonly todaySpent = $derived(
-		accountsVM.active ? this.#toDisplay(getTodaySpent(expensesVM.expenses, accountsVM.active.id)) : 0
+		accountsVM.primary ? this.#toDisplay(getTodaySpent(expensesVM.expenses, accountsVM.primary.id)) : 0
 	);
 
-	readonly dailyRemaining = $derived(
-		this.#toDisplay(calcDailyRemaining(this.#effectiveBudget, this.#rawSpentAmount, this.#effectiveStart, this.#nextPayday))
+	readonly dailyRemaining = $derived(this.dailyBudget - this.todaySpent);
+
+	// «Лишилось до зарплати» — доступні гроші мінус реальні майбутні списання.
+	readonly monthlyRemaining = $derived(this.#toDisplay(this.#availableNative));
+
+	// ── Бажане використання на день (інформаційно) ──
+	// Плановий бюджет: зп − заощадження − підписки, рівномірно на місяць (/30).
+	// Не обмежує реальний dailyBudget; лише підказка «скільки варто витрачати».
+	readonly recommendedDaily = $derived(
+		Math.floor(convert(settingsVM.budget, settingsVM.currency, this.currency) / 30)
 	);
 
-	readonly monthlyRemaining = $derived(
-		this.#toDisplay(this.totalBudget - this.#rawSpentAmount)
+	readonly hasRecommendedDaily = $derived(
+		settingsVM.savingsPercent > 0 && settingsVM.budget > 0 && this.recommendedDaily > 0
 	);
 
 	readonly hasExpenses = $derived(this.accountExpenses.length > 0);

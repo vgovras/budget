@@ -25,13 +25,20 @@ export class SubscriptionsViewModel {
 
 	readonly active = $derived(this.items.filter((s) => s.status === 'active'));
 
+	#monthlyAmount(s: Subscription): number {
+		return s.cycle === 'yearly' ? s.amount / 12
+			: s.cycle === 'quarterly' ? s.amount / 3
+			: s.amount;
+	}
+
+	/** Total monthly cost in display (fiat) currency — for showing to the user. */
 	readonly monthlyTotal = $derived(
-		this.active.reduce((sum, s) => {
-			const monthly = s.cycle === 'yearly' ? s.amount / 12
-				: s.cycle === 'quarterly' ? s.amount / 3
-				: s.amount;
-			return sum + settingsVM.toDisplay(Math.round(monthly), s.currency);
-		}, 0)
+		this.active.reduce((sum, s) => sum + settingsVM.toDisplay(Math.round(this.#monthlyAmount(s)), s.currency), 0)
+	);
+
+	/** Total monthly cost in base (settings) currency — used in budget math. */
+	readonly monthlyTotalBase = $derived(
+		this.active.reduce((sum, s) => sum + convert(Math.round(this.#monthlyAmount(s)), s.currency, settingsVM.currency), 0)
 	);
 
 	constructor() {

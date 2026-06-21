@@ -2,8 +2,9 @@ import { expensesVM } from '$features/expenses/expenses.svelte.js';
 import { accountsVM } from '$features/accounts/accounts.svelte.js';
 import { settingsVM } from '$features/settings/settings.svelte.js';
 import { categoriesVM } from '$features/categories/categories.svelte.js';
-import { getAccStats, calcDailyRemaining, getPeriodStart, getEffectiveStart, getEffectiveBudget } from '$lib/utils/budget.js';
+import { getTodaySpent, daysUntilPayday, dailyAllowance, sumBillsDueBefore, type UpcomingBill } from '$lib/utils/budget.js';
 import { recurringVM } from '$features/recurring/recurring.svelte.js';
+import { subscriptionsVM } from '$features/subscriptions/subscriptions.svelte.js';
 import { getRate, convert } from '$lib/utils/currency.js';
 import { getRecentUnique, type QuickChip } from './quick-chips/quick-chips.js';
 import { nowISO, isoToDateInput, dateInputToISO } from '$lib/utils/format.js';
@@ -53,23 +54,29 @@ export class AddExpenseSheetViewModel {
 		const acc = this.selectedAccount;
 		if (!acc) return 0;
 
-		const totalBudget = acc.budget || settingsVM.budget;
-		const spent = getAccStats(expensesVM.expenses, acc.id);
-		const accExpenses = expensesVM.expenses.filter((e) => e.accountId === acc.id && e.type === 'expense');
-		const earliestDate = accExpenses.length > 0
-			? accExpenses.reduce((min, e) => e.date < min ? e.date : min, accExpenses[0].date)
-			: undefined;
-
 		const salary = recurringVM.items.find((r) => r.id === 'rec-salary');
 		const nextPayday = salary?.nextDate
 			? new Date(salary.nextDate)
 			: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-		const periodStart = getPeriodStart(nextPayday, settingsVM.payday);
-		const effectiveStart = getEffectiveStart(periodStart, acc.createdAt, earliestDate);
-		const effectiveBudget = getEffectiveBudget(totalBudget, periodStart, nextPayday, effectiveStart);
+		const daysLeft = daysUntilPayday(nextPayday);
+
+		const now = new Date();
+		now.setHours(0, 0, 0, 0);
+		const bills: UpcomingBill[] = [
+			...subscriptionsVM.items
+				.filter((s) => !s.deleted && s.status === 'active' && s.accountId === acc.id)
+				.map((s) => ({ amount: s.amount, currency: s.currency, nextDate: s.nextDate })),
+			...recurringVM.items
+				.filter((r) => !r.deleted && r.enabled && r.type === 'expense' && r.accountId === acc.id)
+				.map((r) => ({ amount: r.amount, currency: acc.currencyCode, nextDate: r.nextDate }))
+		];
+		const reserve = sumBillsDueBefore(bills, now, nextPayday, acc.currencyCode);
+
+		const available = Math.max(0, acc.balance - reserve);
+		const todaySpent = getTodaySpent(expensesVM.expenses, acc.id);
 
 		return settingsVM.toDisplay(
-			calcDailyRemaining(effectiveBudget, spent, effectiveStart, nextPayday),
+			dailyAllowance(available, daysLeft) - todaySpent,
 			acc.currencyCode
 		);
 	});

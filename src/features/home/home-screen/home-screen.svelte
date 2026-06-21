@@ -41,6 +41,11 @@
 			{/if}
 			<span class="sub-item">{vm.currency} {fmt(vm.dailyBudget)} {m.home_budget_per_day()}</span>
 		</div>
+		{#if vm.hasRecommendedDaily}
+			<div class="mt-1.5 text-2xs text-text-mid leading-snug">
+				{m.home_recommended_label()} ≤ {vm.currency} {fmt(vm.recommendedDaily)} {m.home_budget_per_day()}
+			</div>
+		{/if}
 	</div>
 
 	<!-- Stat Cards — завжди -->
