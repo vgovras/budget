@@ -27,8 +27,9 @@ export class HistoryScreenViewModel {
 		this.dateFrom !== null && this.dateTo !== null
 	);
 
+	// Історія показує основний (primary) рахунок — як і головний екран.
 	readonly nativeCurrency = $derived(
-		accountsVM.active?.currencyCode ?? settingsVM.currency
+		accountsVM.primary?.currencyCode ?? settingsVM.currency
 	);
 
 	readonly displayCurrency = $derived(
@@ -41,7 +42,7 @@ export class HistoryScreenViewModel {
 
 	readonly filtered = $derived.by(() => {
 		let base = expensesVM.expenses.filter(
-			(e: Expense) => e.accountId === accountsVM.active?.id
+			(e: Expense) => e.accountId === accountsVM.primary?.id
 		);
 
 		if (this.selectedCategories.size > 0) {
